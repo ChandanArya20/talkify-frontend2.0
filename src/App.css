@@ -1,0 +1,13 @@
+/* For Webkit browsers (Chrome, Safari) */
+::-webkit-scrollbar {
+    width: 0;  /* Set the width to 0 to hide the scrollbar */
+  }
+  
+  /* Optional: You can also hide scrollbar track and buttons */
+  ::-webkit-scrollbar-track {
+    display: none;
+  }
+  
+  ::-webkit-scrollbar-button {
+    display: none;
+  }
