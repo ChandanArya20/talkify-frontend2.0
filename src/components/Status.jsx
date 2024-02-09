@@ -6,6 +6,7 @@ import { BsLockFill } from "react-icons/bs";
 import statusData from "../assets/statusData";
 import StatusViewer from "./StatusViewer";
 import loginuser from "../assets/loginuser.jpg";
+import { useSelector } from "react-redux";
 
 const Status = ({ closeOpenStatus }) => {
     
@@ -14,6 +15,8 @@ const Status = ({ closeOpenStatus }) => {
     const [isViewerOpen, setIsViewerOpen] = useState(false);
     // State to store the selected status for viewing
     const [selectedStatus, setSelectedStatus] = useState(null);
+
+    const {currentUser} = useSelector(state=>state.userStore);
 
     // Function to open the StatusViewer modal
     const openStatusViewer = (status) => {

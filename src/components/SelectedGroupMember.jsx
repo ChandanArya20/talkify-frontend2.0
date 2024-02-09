@@ -1,18 +1,21 @@
 import React from "react";
 import { IoCloseOutline } from "react-icons/io5";
+import { useSelector } from "react-redux";
+import DefaultUser from '../assets/default-user.png'
 
-const SelectedGroupMember = ({ handleRemoveMember, member }) => {
+const SelectedGroupMember = ({ handleRemoveMember, user }) => {
+
     return (
         <>
             <div className="flex items-center justify-center rounded-full">
                 <img
                     className="w-7 h-7 rounded-full"
-                    src="https://cdn.pixabay.com/photo/2016/03/27/21/52/woman-1284411_1280.jpg"
+                    src={user.profileImage || DefaultUser}
                     alt=""
                 />
                 <div className="w-full h-full my-auto">
                     <p className="text-gray-300 px-2 text-nowrap">
-                        {member.userName}
+                        {user.name}
                     </p>
                 </div>
 

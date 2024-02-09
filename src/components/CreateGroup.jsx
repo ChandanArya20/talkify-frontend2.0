@@ -1,48 +1,54 @@
 import React, { useEffect, useState } from "react";
-import { IoIosSearch, IoMdArrowBack } from "react-icons/io";
+import { IoMdArrowBack } from "react-icons/io";
 import SelectedGroupMember from "./SelectedGroupMember";
-import chatUserData from "../assets/chatUserData";
 import ChatUserCard from "./ChatUserCard";
 import { IoMdArrowForward } from "react-icons/io";
 import NewGroup from "./NewGroup";
+import { useDispatch, useSelector } from "react-redux";
+import { SearchUser } from "../Redux/Auth/action";
 
 const CreateGroup = ({ closeOpenCreateGroup }) => {
     
     const [groupMember, setGroupMember] = useState(new Set());  // State to manage the selected group members
     const [query, setQuery] = useState("");
     // State to store chat users
-    const [chatUsers, setChatUsers] = useState(chatUserData);
+    const userStore=useSelector(state=>state.userStore);
+    
+    const [chatUsers, setChatUsers] = useState(userStore?.searchedUsers);
     const [isNewGroup, setIsNewGroup]=useState(false);
+    const dispatch=useDispatch();
 
-    // Function to handle removal of a group member
-    const handleRemoveMember = (item) => {
-        const newGroupMember = new Set(groupMember);
-        newGroupMember.delete(item);
-        setGroupMember(newGroupMember);
-    };
+    useEffect(()=>{
+        setChatUsers(userStore.searchedUsers);
+    },[userStore.searchedUsers]);
 
-    // Effect to filter out selected group members from the available chat users
-    useEffect(() => {
-        const filteredChatUsers = chatUserData.filter(
-            (chatUser) => !groupMember.has(chatUser)
-        );
-        setChatUsers(filteredChatUsers);
-    }, [groupMember]);
+    console.log(chatUsers);
+    console.log(groupMember);
 
     // Function to add a group member
-    const addGroupMember = (item) => {
+    const addGroupMember = (user) => {
         const newGroupMember = new Set(groupMember);
-        newGroupMember.add(item);
+        newGroupMember.add(user);
         setGroupMember(newGroupMember);
         setQuery("");
     };
 
+    // Effect to filter out selected group members from the available chat users
+    useEffect(() => {
+        const filteredChatUsers = userStore.searchedUsers.filter(chatUser => !groupMember.has(chatUser));
+        setChatUsers(filteredChatUsers);
+    }, [groupMember]);
+    
+    // Function to handle removal of a group member
+    const handleRemoveMember = (user) => {
+        const newGroupMember = new Set(groupMember);
+        newGroupMember.delete(user);
+        setGroupMember(newGroupMember);
+    };
+    
     // Function to handle search
     const handleSearch = (query) => {
-        const filteredChatUsers = chatUserData.filter((chatUser) =>
-            chatUser.userName.toLowerCase().includes(query.toLowerCase())
-        );
-        setChatUsers(filteredChatUsers);
+        dispatch(SearchUser(query));
     };
 
     const closeNewGroup=()=>{
@@ -71,12 +77,12 @@ const CreateGroup = ({ closeOpenCreateGroup }) => {
                 <div className="w-full pt-5 px-2 md:px-8">
                     <div className="flex flex-wrap">
                         {groupMember.size > 0 &&
-                            Array.from(groupMember).map((item, index) => (
+                            Array.from(groupMember).map((user, index) => (
                                 <div key={index} className="pb-2">
                                     <SelectedGroupMember
-                                        member={item}
+                                        user={user}
                                         handleRemoveMember={() =>
-                                            handleRemoveMember(item)
+                                            handleRemoveMember(user)
                                         }
                                     />
                                 </div>
@@ -102,9 +108,9 @@ const CreateGroup = ({ closeOpenCreateGroup }) => {
 
                 {/* Display available chat users */}
                 <div className="flex-1 overflow-y-scroll mt-5">
-                    {chatUsers.map((item, index) => (
-                        <div key={index} onClick={() => addGroupMember(item)}>
-                            <ChatUserCard {...item} />
+                    {chatUsers.map((user, index) => (
+                        <div key={index} onClick={() => addGroupMember(user)}>
+                            <ChatUserCard {...user} />
                         </div>
                     ))}
                 </div>
@@ -122,7 +128,7 @@ const CreateGroup = ({ closeOpenCreateGroup }) => {
                 )}
             </div> :
 
-            <NewGroup closeNewGroup={closeNewGroup} />
+            <NewGroup closeNewGroup={closeNewGroup} closeOpenCreateGroup={closeOpenCreateGroup} groupMembersId={Array.from(groupMember).map(member=>member.id)}/>
 
             
         }

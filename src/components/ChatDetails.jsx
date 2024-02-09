@@ -9,7 +9,8 @@ import MessageCard from "./MessageCard";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { createNewMessage, getAllMessages } from "../Redux/Message/action";
-import { logout } from "../Redux/Auth/action";
+import DefaultUser from '../assets/default-user.png'
+import DefaultGroup from '../assets/default-group.png'
 
 function ChatDetails({chatData}) {
 
@@ -22,7 +23,7 @@ function ChatDetails({chatData}) {
 
     const finalChatData= location.state || chatData;
     const {chatName, chatImage, isGroup, members, messages}=finalChatData;
-    const chatUser = members?.filter(member=>members.id!==currentUser.id)[0];
+    const chatUser = members?.filter(member=>member.id!==currentUser.id)[0];
 
     const handleSendMessage = () => {
 
@@ -36,8 +37,6 @@ function ChatDetails({chatData}) {
         dispatch(getAllMessages(finalChatData.id));
 
     },[finalChatData, messageStore.newMessage])
-
-    console.log(finalChatData.messages.length);
 
     return (
         <div className="w-full md:w-[60%] h-screen md:h-screen flex flex-col justify-between fixed">
@@ -55,7 +54,7 @@ function ChatDetails({chatData}) {
                         <div className="w-10 h-10 rounded-full bg-white cursor-pointer">
                             <img
                                 className="w-full h-full rounded-full object-cover"
-                                src={ isGroup ? chatImage || 'https://cdn.pixabay.com/photo/2018/01/24/19/49/friendship-day-3104635_1280.jpg' : chatUser.profileImage || 'https://cdn.pixabay.com/photo/2016/03/27/21/52/woman-1284411_1280.jpg'}
+                                src={ isGroup ? chatImage || DefaultGroup : chatUser.profileImage || DefaultUser}
                                 alt=""
                             />
                         </div>

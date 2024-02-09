@@ -6,6 +6,7 @@ const isLoggedin=localStorage.getItem("isLoggedin") === "true";
 const initialState = {
     currentUser: user || null,
     isAuthenticated: isLoggedin || false,
+    searchedUsers:[]
 };
 
 export const userReducer = (state = initialState, { type, payload }) => {
@@ -19,7 +20,7 @@ export const userReducer = (state = initialState, { type, payload }) => {
             return {...state,currentUser:payload};
 
         case SEARCH_USER:
-            return {...state,searchUser:payload};
+            return {...state,searchedUsers:payload};
 
         case LOGIN:
             return { ...state, currentUser:payload, isAuthenticated: true };

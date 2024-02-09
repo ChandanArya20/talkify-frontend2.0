@@ -1,3 +1,5 @@
+import DefaultUser from '../assets/default-user.png'
+
 function StatusCard({ userName, statusImages, statusTimeStamp }) {
     return (
         <div className="w-[98%] p-3 border-t-2 border-gray-800 flex justify-between cursor-pointer hover:bg-[#222E35]">

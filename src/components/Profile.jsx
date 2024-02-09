@@ -3,12 +3,11 @@ import { IoMdArrowBack } from "react-icons/io";
 import { FaPen } from "react-icons/fa";
 import { IoCheckmarkOutline } from "react-icons/io5";
 import { FaRegFaceSmile } from "react-icons/fa6";
-import { useNavigate } from "react-router-dom";
-import loginuser from "../assets/loginuser.jpg";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { updateUser } from "../Redux/Auth/action";
 import { ClipLoader } from "react-spinners";
+import DefaultUser from '../assets/default-user.png'
 
 const Profile = ({ closeOpenProfile }) => {
     
@@ -65,13 +64,13 @@ const Profile = ({ closeOpenProfile }) => {
             {/* main section  */}
             <div className="mt-28 overflow-y-scroll space-y-8 h-[80vh]">
                 {/* image section */}
-                <div className="h-60 flex items-center justify-center relative">
+                <div className="h-60 flex items-center justify-center relative ">
                     {loading && <ClipLoader color="#2d0442" className="absolute"/>}
                     <div className="w-44 h-44 md:w-48 md:h-48 rounded-full bg-white cursor-pointer">
                         <label htmlFor="imageInput">
                             <img
                                 className=" w-full h-full rounded-full object-cover cursor-pointer"
-                                src={profileImage || loginuser}
+                                src={profileImage || DefaultUser}
                                 alt=""
                             />
                         </label>

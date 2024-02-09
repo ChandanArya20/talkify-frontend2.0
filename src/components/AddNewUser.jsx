@@ -19,6 +19,7 @@ const AddNewUser = ({ closeAddNewUserSection }) => {
 
     const handleCreateChat=(participantId)=>{
         dispatch(createChat(participantId));
+        closeAddNewUserSection();
     };
 
     return (
@@ -71,7 +72,7 @@ const AddNewUser = ({ closeAddNewUserSection }) => {
 
                 {/* Display available chat users */}
                 <div >
-                    {userStore.searchUser?.map((user, index) => (
+                    {userStore?.searchedUsers?.map((user, index) => (
                         <div key={index} onClick={() => handleCreateChat(user.id)}>
                             <ChatUserCard {...user} />
                         </div>

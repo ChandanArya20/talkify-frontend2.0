@@ -1,5 +1,7 @@
 import { IoCheckmarkOutline } from "react-icons/io5";
 import { useSelector } from "react-redux";
+import DefaultUser from '../assets/default-user.png'
+import DefaultGroup from '../assets/default-group.png'
 
 function ChatCard({id, chatName, chatImage, isGroup, members, messages, selectedChatId}) {
 
@@ -15,7 +17,7 @@ function ChatCard({id, chatName, chatImage, isGroup, members, messages, selected
                 <div className="w-12 h-12 rounded-full bg-white cursor-pointer">
                     <img
                         className=" w-full h-full rounded-full object-cover"
-                        src={ isGroup ? chatImage || 'https://cdn.pixabay.com/photo/2018/01/24/19/49/friendship-day-3104635_1280.jpg' : chatUser.profileImage || 'https://cdn.pixabay.com/photo/2016/03/27/21/52/woman-1284411_1280.jpg'}
+                        src={ isGroup ? chatImage || DefaultGroup : chatUser.profileImage || DefaultUser}
                         alt=""
                     />
                 </div>

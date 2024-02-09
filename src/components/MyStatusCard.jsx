@@ -1,4 +1,5 @@
 function MyStatusCard({ statusImages, statusTimeStamp }) {
+    
     return (
         <div className="w-[98%] p-3 flex justify-between ]">
             <div className="flex items-center space-x-4">

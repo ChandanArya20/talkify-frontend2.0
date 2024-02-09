@@ -5,8 +5,9 @@ import { RiWechat2Line } from "react-icons/ri";
 import { FaPeopleGroup } from "react-icons/fa6";
 import { IoIosSearch, IoMdArrowBack } from "react-icons/io";
 import { IoFilter } from "react-icons/io5";
+import DefaultUser from '../assets/default-user.png'
 import ChatCard from "../components/ChatCard";
-import { Profiler, useEffect, useState } from "react";
+import {useEffect, useState } from "react";
 import chatsData from "../assets/chatsData";
 import ChatDetails from "../components/ChatDetails";
 import Profile from "../components/Profile";
@@ -14,7 +15,6 @@ import { useNavigate } from "react-router-dom";
 import Status from "../components/Status";
 import { Menu, MenuItem } from "@mui/material";
 import applogo from "../assets/applogo.png";
-import loginuser from "../assets/loginuser.jpg";
 import CreateGroup from "../components/CreateGroup";
 import AddNewUser from "../components/AddNewUser";
 import HomePageImage from "../assets/login-image.png";
@@ -25,7 +25,7 @@ import axios from "axios";
 
 function HomePage() {
 
-    const {isAuthenticated}=useSelector(state=>state.userStore);
+    const {isAuthenticated, currentUser}=useSelector(state=>state.userStore);
     const navigate=useNavigate();
 
     useEffect(()=>{
@@ -42,13 +42,13 @@ function HomePage() {
     const [isAddNewUser, setIsAddNewUser]= useState(false);
     const [isSearchClicked, setIsSearchClicked]=useState(false);
     const dispatch = useDispatch();
-    const userStore = useSelector(store=>store.userStore);
-    const chatStore = useSelector(store=>store.chatStore);
+    const {chats, createdChat, createdGroup} = useSelector(store=>store.chatStore);
+    const [filteredChats, setFilteredChats] = useState(chats);
     const [anchorEl, setAnchorEl] = useState(null);
     const open = Boolean(anchorEl);
 
     useEffect(() => {
-
+        
         const fetchData = async () => {
             try {
                 await dispatch(getUsersChat());
@@ -64,7 +64,7 @@ function HomePage() {
     
         fetchData(); // Call the function immediately
     
-    }, [chatStore.createdChat, chatStore.CreateGroup]);
+    }, [createdChat, createdGroup]);
 
 
     // Function to handle opening the dropdown menu
@@ -79,11 +79,17 @@ function HomePage() {
 
     // Function to filter chats based on the search query
     const handleSearch = (query) => {
-        const filteredChats = chatsData.filter((chat) =>
-            chat.userName.toLowerCase().includes(query.toLowerCase())
-        );
-        setChats(filteredChats);
+        const filteredChats = chats.filter((chat) => {
+            if (chat.isGroup) {
+                return chat.chatName.toLowerCase().includes(query.toLowerCase());
+            } else {
+                const chatUser = chat.members.filter((member) => member.id !== currentUser.id)[0];
+                return chatUser.name.toLowerCase().includes(query.toLowerCase());
+            }
+        });
+        setFilteredChats(filteredChats);
     };
+    
 
     // Function to handle clicking the filter button
     const handleFilterClick = () => {
@@ -160,7 +166,7 @@ function HomePage() {
                                 >
                                     <img
                                         className=" w-full h-full rounded-full object-cover"
-                                        src={userStore.currentUser?.profileImage}
+                                        src={currentUser?.profileImage || DefaultUser}
                                         alt=""
                                     />
                                 </div>
@@ -257,7 +263,7 @@ function HomePage() {
                         </div>
                         {/* Chat Cards */}
                         <div className="w-full h-[83vh] ml-3 mt-2 overflow-y-scroll pb-5">
-                            {chatStore.chats.map((item) => (
+                            {chats.map((item) => (
                                 <div
                                     key={item.id}
                                     onClick={() => handleCurrentChatClick(item)}

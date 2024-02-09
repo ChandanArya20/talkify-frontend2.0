@@ -1,15 +1,46 @@
 import React, { useState } from 'react'
 import { FaRegFaceSmile } from 'react-icons/fa6';
 import { IoMdArrowBack } from 'react-icons/io';
-import { IoCheckmarkOutline } from 'react-icons/io5';
 import { useNavigate } from 'react-router-dom';
 import { IoChevronForwardOutline } from "react-icons/io5";
 import { IoMdCheckmark } from "react-icons/io";
+import DefaultGroup from '../assets/default-group.png'
+import axios from 'axios';
+import { useDispatch } from 'react-redux';
+import { ClipLoader } from 'react-spinners';
+import { createGroupChat } from '../Redux/Chat/action';
 
-const NewGroup = ({closeNewGroup}) => {
+const NewGroup = ({closeNewGroup, closeOpenCreateGroup, groupMembersId}) => {
 
     const navigate=useNavigate();
     const [groupSubject, setGroupSubject]=useState('');
+    const [groupImage, setGroupImage]=useState(null);
+    const [loading, setLoading]=useState(false);
+    const dispatch = useDispatch();
+
+    const handleProfileImageChange=async(imageFile)=>{
+       
+        const data=new FormData();
+        data.append("file",imageFile);
+        data.append("upload_preset","talkify-images");
+        data.append("cloud_name","ddj5asxve");
+
+        setLoading(true);
+        const response=await axios.post("https://api.cloudinary.com/v1_1/ddj5asxve/image/upload",data)
+        const imageURL=response.data.url;
+        setGroupImage(imageURL);
+        console.log(imageURL);
+        setLoading(false);
+    }
+
+    const createNewGroup=()=>{
+        console.log(groupMembersId);
+        dispatch(createGroupChat({groupName:groupSubject, groupImage:groupImage, membersId:groupMembersId}));
+        closeNewGroup();
+        closeOpenCreateGroup();
+    }
+
+    console.log(groupMembersId);
 
     return (
         <div className='flex flex-col justify-between w-full h-full'>
@@ -24,21 +55,25 @@ const NewGroup = ({closeNewGroup}) => {
                 </div>
             </div>
 
-            <div className='w-full flex-1 overflow-y-scroll p-5 md:p-8'>
+            <div className='w-full flex-1 overflow-y-scroll p-5 md:p-8 '>
                 {/* image section */}
-                <div className='mt-28 '>
+                <div className='mt-28 relative'>
+                    {loading && <ClipLoader color="#ddd" className="absolute"/>}
                     <div className="h-60 flex items-center justify-center">
-                        <div className="w-48 h-48 md:w-48 md:h-48 rounded-full cursor-pointer relative">  
-                            <img
-                                className=" w-full h-full rounded-full object-cover cursor-pointer "
-                                src="https://t4.ftcdn.net/jpg/03/78/40/51/360_F_378405187_PyVLw51NVo3KltNlhUOpKfULdkUOUn7j.jpg"
-                                alt=""
-                            /> 
+                        <div className="w-48 h-48 md:w-48 md:h-48 rounded-full cursor-pointer relative ">  
+                            <label htmlFor="imageInput">
+                                <img
+                                    className=" w-full h-full rounded-full object-cover cursor-pointer "
+                                    src={groupImage || DefaultGroup}
+                                    alt=""
+                                /> 
+                            </label>
                             <input
                                 type="file"
                                 id="imageInput"
                                 accept="image/*"
                                 className=" w-full h-full rounded-full object-cover hidden"
+                                onChange={e=>handleProfileImageChange(e.target.files[0])}
                             />
                         </div>
                     </div>
@@ -49,7 +84,7 @@ const NewGroup = ({closeNewGroup}) => {
                         <input
                             type="text"
                             value={groupSubject}
-                            placeholder='Group Subject (Optional)'
+                            placeholder='Group Subject'
                             className="flex-1 bg-transparent outline-none text-gray-300"
                             onChange={(e) => {
                                 setGroupSubject(e.target.value);
@@ -62,7 +97,7 @@ const NewGroup = ({closeNewGroup}) => {
                     
                 </div>
 
-                <div className='w-full flex justify-between py-12 '>
+                <div className='w-full flex justify-between py-8'>
                     <div className='cursor-pointer'>
                         <p className='text-white'>Dissapearing Messages</p>
                         <p className='text-gray-400'>Off</p>
@@ -71,12 +106,16 @@ const NewGroup = ({closeNewGroup}) => {
                         <IoChevronForwardOutline className='text-gray-400 text-lg'/>
                     </div>
                 </div>
-
-                <div className='w-full flex justify-center '>
-                    <div className='w-12 h-12 rounded-full bg-[#00A884] flex items-center justify-center cursor-pointer'>
-                        <IoMdCheckmark  className='text-white text-3xl'/>
+                {   groupSubject.trim().length > 0 &&
+                    <div className='w-full flex justify-center '>
+                        <div className='w-12 h-12 rounded-full bg-[#00A884] flex items-center justify-center cursor-pointer'>
+                            <IoMdCheckmark  
+                                className='text-white text-3xl'
+                                onClick={createNewGroup}
+                            />
+                        </div>
                     </div>
-                </div>
+                }
 
             </div>
         </div>

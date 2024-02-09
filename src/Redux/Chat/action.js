@@ -24,7 +24,7 @@ export const createGroupChat = (chatData) => async(dispatch) => {
         const response = await axios.post(`${BASE_API_URL}/chat/create-group`,chatData,{ withCredentials: true });
         const resData = response.data;
     
-        console.log(resData);
+        console.log("group created ", resData);
         dispatch({ type: CREATE_GROUP, payload: resData });
     } catch (error) {
         console.log(error);
