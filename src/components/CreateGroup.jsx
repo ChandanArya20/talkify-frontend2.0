@@ -14,7 +14,7 @@ const CreateGroup = ({ closeOpenCreateGroup }) => {
     // State to store chat users
     const userStore=useSelector(state=>state.userStore);
     
-    const [chatUsers, setChatUsers] = useState(userStore?.searchedUsers);
+    const [chatUsers, setChatUsers] = useState([]);
     const [isNewGroup, setIsNewGroup]=useState(false);
     const dispatch=useDispatch();
 
@@ -117,7 +117,7 @@ const CreateGroup = ({ closeOpenCreateGroup }) => {
 
                 {/* Display forward arrow if there are selected group members */}
                 {groupMember.size > 0 && (
-                    <div className="w-full h-28 bg-[#111B21] flex items-center justify-center">
+                    <div className="w-full h-20 bg-slate-700 flex items-center justify-center">
                         <div className="w-12 h-12 bg-[#00A884] rounded-full flex items-center justify-center">
                             <IoMdArrowForward 
                                 className="text-white text-2xl cursor-pointer" 

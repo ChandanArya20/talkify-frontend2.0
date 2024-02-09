@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, {useState } from "react";
 import { IoIosSearch, IoMdArrowBack, IoMdArrowForward } from "react-icons/io";
 import ChatUserCard from "./ChatUserCard";
 import { useDispatch, useSelector } from "react-redux";

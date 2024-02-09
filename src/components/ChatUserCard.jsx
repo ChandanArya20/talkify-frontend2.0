@@ -1,6 +1,5 @@
 import React from "react";
 import DefaultUser from '../assets/default-user.png'
-import { useSelector } from "react-redux";
 
 const ChatUserCard = ({profileImage, name, about}) => {
   

@@ -8,7 +8,6 @@ import { IoFilter } from "react-icons/io5";
 import DefaultUser from '../assets/default-user.png'
 import ChatCard from "../components/ChatCard";
 import {useEffect, useState } from "react";
-import chatsData from "../assets/chatsData";
 import ChatDetails from "../components/ChatDetails";
 import Profile from "../components/Profile";
 import { useNavigate } from "react-router-dom";
@@ -43,7 +42,7 @@ function HomePage() {
     const [isSearchClicked, setIsSearchClicked]=useState(false);
     const dispatch = useDispatch();
     const {chats, createdChat, createdGroup} = useSelector(store=>store.chatStore);
-    const [filteredChats, setFilteredChats] = useState(chats);
+    const [filteredChats, setFilteredChats] = useState([]);
     const [anchorEl, setAnchorEl] = useState(null);
     const open = Boolean(anchorEl);
 
@@ -66,6 +65,11 @@ function HomePage() {
     
     }, [createdChat, createdGroup]);
 
+    useEffect(()=>{
+        setFilteredChats(chats);
+    },[chats])
+
+    console.log(filteredChats);
 
     // Function to handle opening the dropdown menu
     const handleClick = (event) => {
@@ -87,6 +91,7 @@ function HomePage() {
                 return chatUser.name.toLowerCase().includes(query.toLowerCase());
             }
         });
+        console.log(filteredChats);
         setFilteredChats(filteredChats);
     };
     
@@ -94,6 +99,8 @@ function HomePage() {
     // Function to handle clicking the filter button
     const handleFilterClick = () => {
         setIsFilterClicked(!isFilterClicked);
+
+        
     };
 
     // Function to handle clicking on the current chat
@@ -263,7 +270,7 @@ function HomePage() {
                         </div>
                         {/* Chat Cards */}
                         <div className="w-full h-[83vh] ml-3 mt-2 overflow-y-scroll pb-5">
-                            {chats.map((item) => (
+                            {filteredChats.map((item) => (
                                 <div
                                     key={item.id}
                                     onClick={() => handleCurrentChatClick(item)}

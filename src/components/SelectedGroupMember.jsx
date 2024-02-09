@@ -1,6 +1,5 @@
 import React from "react";
 import { IoCloseOutline } from "react-icons/io5";
-import { useSelector } from "react-redux";
 import DefaultUser from '../assets/default-user.png'
 
 const SelectedGroupMember = ({ handleRemoveMember, user }) => {
