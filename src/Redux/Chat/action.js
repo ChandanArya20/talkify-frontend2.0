@@ -5,7 +5,7 @@ import { CREATE_CHAT, CREATE_GROUP, GET_USERS_CHAT } from "./actionType";
 export const createChat = (participantId) => async(dispatch) => {
     try {
         const response = await axios.post(
-            `${BASE_API_URL}/chat/single?participantId=${participantId}`, {}, {  withCredentials: true}); 
+            `${BASE_API_URL}/api/chat/single?participantId=${participantId}`, {}, {  withCredentials: true}); 
 
         const resData = response.data;
         console.log(resData);
@@ -21,7 +21,7 @@ export const createChat = (participantId) => async(dispatch) => {
 export const createGroupChat = (chatData) => async(dispatch) => {
    
     try {
-        const response = await axios.post(`${BASE_API_URL}/chat/create-group`,chatData,{ withCredentials: true });
+        const response = await axios.post(`${BASE_API_URL}/api/chat/create-group`,chatData,{ withCredentials: true });
         const resData = response.data;
     
         console.log("group created ", resData);
@@ -34,7 +34,7 @@ export const createGroupChat = (chatData) => async(dispatch) => {
 
 export const getUsersChat = () => async(dispatch) => {
    
-    const response = await axios.get(`${BASE_API_URL}/chat/all-chat`,{ withCredentials: true });
+    const response = await axios.get(`${BASE_API_URL}/api/chat/all-chat`,{ withCredentials: true });
     const resData = response.data;
     
     console.log(resData);

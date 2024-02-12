@@ -5,7 +5,7 @@ import { BASE_API_URL } from "../../config/api";
 export const createNewMessage = (messageData) => async(dispatch) => {
 
     try {
-        const response = await axios.post(`${BASE_API_URL}/message/send`,messageData,{ withCredentials: true });
+        const response = await axios.post(`${BASE_API_URL}/api/message/send`,messageData,{ withCredentials: true });
         const resData = response.data;
     
         console.log(resData);
@@ -19,7 +19,7 @@ export const createNewMessage = (messageData) => async(dispatch) => {
 export const getAllMessages = (chatId) => async(dispatch) => {
    
     try {
-        const response = await axios.get(`${BASE_API_URL}/message/chat/${chatId}`,{ withCredentials: true });
+        const response = await axios.get(`${BASE_API_URL}/api/message/chat/${chatId}`,{ withCredentials: true });
         const resData = response.data;
         
         console.log(resData);

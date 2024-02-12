@@ -95,12 +95,9 @@ function HomePage() {
         setFilteredChats(filteredChats);
     };
     
-
     // Function to handle clicking the filter button
     const handleFilterClick = () => {
         setIsFilterClicked(!isFilterClicked);
-
-        
     };
 
     // Function to handle clicking on the current chat
@@ -151,7 +148,6 @@ function HomePage() {
     const handleLogout=()=>{
         dispatch(logout());
     };
-
 
     return (
         <div className="w-full h-screen bg-[#222E35] flex overflow-hidden">

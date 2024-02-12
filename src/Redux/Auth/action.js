@@ -4,7 +4,7 @@ import { LOGIN, LOGOUT, REGISTER, REQ_USER, SEARCH_USER, UPDATE_USER } from "./a
 
 export const register = (userData) => async (dispatch) => {
    
-    const response = await axios.post(`${BASE_API_URL}/user/register`,userData,{ withCredentials: true });
+    const response = await axios.post(`${BASE_API_URL}/api/user/register`,userData,{ withCredentials: true });
     
     const resData = response.data;
     localStorage.setItem("user", JSON.stringify(resData));
@@ -15,7 +15,7 @@ export const register = (userData) => async (dispatch) => {
 
 export const login = (userData) => async(dispatch) => {
     
-    const response = await axios.post(`${BASE_API_URL}/user/login`,userData,{ withCredentials: true });
+    const response = await axios.post(`${BASE_API_URL}/api/user/login`,userData,{ withCredentials: true });
     
     const resData = response.data;
     localStorage.setItem("user", JSON.stringify(resData));
@@ -28,7 +28,7 @@ export const login = (userData) => async(dispatch) => {
 export const logout = () => async (dispatch) => {
     try {
         const response = await axios.get(
-            `${BASE_API_URL}/user/logout`,{ withCredentials: true }
+            `${BASE_API_URL}/api/user/logout`,{ withCredentials: true }
         );
         const resData = response.data;
         console.log("User logged out : ", resData);
@@ -44,7 +44,7 @@ export const logout = () => async (dispatch) => {
 
 export const currentUser = () => async (dispatch) => {
     try {
-        const response = await axios.get(`${BASE_API_URL}/user/profile`, {
+        const response = await axios.get(`${BASE_API_URL}/api/user/profile`, {
             withCredentials: true,
         });
         const resData = response.data;
@@ -57,7 +57,7 @@ export const currentUser = () => async (dispatch) => {
 
 export const SearchUser = (query) => async (dispatch) => {
     try {
-        const response = await axios.get(`${BASE_API_URL}/user/search-users?query=${query}`,
+        const response = await axios.get(`${BASE_API_URL}/api/user/search-users?query=${query}`,
         { withCredentials: true }
         );
         const resData = response.data;
@@ -70,7 +70,7 @@ export const SearchUser = (query) => async (dispatch) => {
 
 export const updateUser = (userData) => async (dispatch) => {
     try {
-        const response = await axios.post(`${BASE_API_URL}/user/update`, userData, 
+        const response = await axios.post(`${BASE_API_URL}/api/user/update`, userData, 
         { withCredentials: true });
 
         const resData = response.data;

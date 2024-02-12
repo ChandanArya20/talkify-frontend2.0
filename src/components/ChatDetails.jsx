@@ -4,13 +4,16 @@ import { FaRegFaceSmile } from "react-icons/fa6";
 import { FaPlus } from "react-icons/fa";
 import { HiMicrophone } from "react-icons/hi2";
 import { useEffect, useState } from "react";
-import { IoSend } from "react-icons/io5";
+import { IoFastFoodOutline, IoSend } from "react-icons/io5";
 import MessageCard from "./MessageCard";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { createNewMessage, getAllMessages } from "../Redux/Message/action";
 import DefaultUser from '../assets/default-user.png'
 import DefaultGroup from '../assets/default-group.png'
+import sockjs, { log } from "sockjs-client/dist/sockjs";
+import Stomp from 'stompjs'
+import { BASE_API_URL } from "../config/api";
 
 function ChatDetails({chatData}) {
 
@@ -19,18 +22,75 @@ function ChatDetails({chatData}) {
     const location=useLocation()
     const {currentUser} = useSelector(state=>state.userStore);
     const messageStore = useSelector(state=>state.messageStore);
+    const [messageList, setMessageList] = useState([]);
     const dispatch=useDispatch();
 
     const finalChatData= location.state || chatData;
     const {chatName, chatImage, isGroup, members, messages}=finalChatData;
     const chatUser = members?.filter(member=>member.id!==currentUser.id)[0];
+    const [stompClient, setStompClient]=useState();
+    const [isConnect, setIsConnect] = useState(false);
+
+    useEffect(()=>{
+        setMessageList(messageStore.messages);
+    },[messageStore.messages])
+
+    console.log(messageList);
+   
+    useEffect(() => {
+
+        // Create a new Stomp client and connect to the WebSocket
+        const socket = new sockjs(BASE_API_URL + "/websocket");
+        const stmClient = Stomp.over(socket);
+        setStompClient(stmClient);
+        
+        stmClient.connect({}, onConnect, onError)
+
+        return () => {
+            stmClient.disconnect();
+        };
+    
+    },[]);
+
+    const onConnect=(response)=>{
+        setIsConnect(true);
+    }
+
+    const onError=(error)=>{
+        console.log(error);
+    }
+
+    useEffect(() => {
+        let subscription;
+    
+        if (stompClient && isConnect) {
+            // Establish subscription only if the stompClient or isConnect changes
+            subscription = stompClient.subscribe("/topic/message" + finalChatData.id.toString(), onMessageRecieve);
+        }
+    
+        // Cleanup subscription when stompClient or isConnect changes or when the component unmounts
+        return () => {
+            if (subscription) {
+                subscription.unsubscribe();
+            }
+        };
+    }, [stompClient, isConnect, finalChatData.id]);
+    
+
+    const onMessageRecieve=(response)=>{
+       
+        const message = JSON.parse(response.body);
+        console.log(message);
+        setMessageList([...messageList, message]);
+       
+    }
 
     const handleSendMessage = () => {
 
-        setTextMessage("");
         if(textMessage.trim().length>0){
             dispatch(createNewMessage({chatId:finalChatData.id, content:textMessage}))
         }
+        setTextMessage("");
     };
 
     useEffect(()=>{
@@ -77,7 +137,7 @@ function ChatDetails({chatData}) {
             {/* Middle content */}
             <div className="flex-1 bg-[#111B21] overflow-y-scroll">
                 <div className="flex flex-col space-y-1 p-3 md:p-10 ">
-                    {messageStore?.messages.map((message) => (
+                    {messageList.map((message) => (
                         <MessageCard
                             key={message.id}
                             isReqUserMsg={message.createdBy.id===currentUser.id}
