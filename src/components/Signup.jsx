@@ -7,7 +7,7 @@ import axios from "axios";
 
 const Signup = ({ closeSignup }) => {
 
-    const {isAuthenticated}=useSelector(state=>state.userReducer);
+    const {isAuthenticated}=useSelector(state=>state.userStore);
     const navigate=useNavigate();
 
     useEffect(()=>{

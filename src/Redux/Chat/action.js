@@ -3,6 +3,7 @@ import { BASE_API_URL } from "../../config/api";
 import { CREATE_CHAT, CREATE_GROUP, GET_USERS_CHAT } from "./actionType";
 
 export const createChat = (participantId) => async(dispatch) => {
+    console.log();
     try {
         const response = await axios.post(
             `${BASE_API_URL}/api/chat/single?participantId=${participantId}`, {}, {  withCredentials: true}); 

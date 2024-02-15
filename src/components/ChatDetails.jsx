@@ -3,17 +3,18 @@ import { IoIosSearch, IoMdArrowBack } from "react-icons/io";
 import { FaRegFaceSmile } from "react-icons/fa6";
 import { FaPlus } from "react-icons/fa";
 import { HiMicrophone } from "react-icons/hi2";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { IoFastFoodOutline, IoSend } from "react-icons/io5";
 import MessageCard from "./MessageCard";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { createNewMessage, getAllMessages } from "../Redux/Message/action";
+import { addNewMessage, createNewMessage, getAllMessages } from "../Redux/Message/action";
 import DefaultUser from '../assets/default-user.png'
 import DefaultGroup from '../assets/default-group.png'
 import sockjs, { log } from "sockjs-client/dist/sockjs";
 import Stomp from 'stompjs'
 import { BASE_API_URL } from "../config/api";
+
 
 function ChatDetails({chatData}) {
 
@@ -30,12 +31,20 @@ function ChatDetails({chatData}) {
     const chatUser = members?.filter(member=>member.id!==currentUser.id)[0];
     const [stompClient, setStompClient]=useState();
     const [isConnect, setIsConnect] = useState(false);
+    const latestMessagesRef = useRef(messageStore.messages);
 
     useEffect(()=>{
+        console.log("Get all messages");
         setMessageList(messageStore.messages);
+        latestMessagesRef.current = messageStore.messages;
     },[messageStore.messages])
 
-    console.log(messageList);
+    useEffect(()=>{
+        console.log(messageStore.messages);
+    },[messageStore.messages])
+    useEffect(()=>{
+        console.log(messageList);
+    },[messageList])
    
     useEffect(() => {
 
@@ -70,25 +79,32 @@ function ChatDetails({chatData}) {
     
         // Cleanup subscription when stompClient or isConnect changes or when the component unmounts
         return () => {
-            if (subscription) {
-                subscription.unsubscribe();
+            if(subscription){
+                subscription.unsubscribe(); 
             }
         };
+
     }, [stompClient, isConnect, finalChatData.id]);
     
 
     const onMessageRecieve=(response)=>{
        
-        const message = JSON.parse(response.body);
-        console.log(message);
-        setMessageList([...messageList, message]);
-       
+        const newMessage = JSON.parse(response.body);
+        console.log("Recieved Message : ", newMessage);
+        console.log(messageList);
+        console.log(messageStore.messages);
+        const latestMessages = latestMessagesRef.current;
+
+        if(newMessage.createdBy.id!==currentUser.id){
+            dispatch(addNewMessage(latestMessages, newMessage));
+        }
     }
 
     const handleSendMessage = () => {
-
-        if(textMessage.trim().length>0){
-            dispatch(createNewMessage({chatId:finalChatData.id, content:textMessage}))
+        console.log("handleSendMessage");
+        console.log(messageStore.messages);
+        if(textMessage.trim().length > 0){
+            dispatch(createNewMessage(messageStore.messages, {chatId:finalChatData.id, content:textMessage}))
         }
         setTextMessage("");
     };
@@ -96,7 +112,26 @@ function ChatDetails({chatData}) {
     useEffect(()=>{
         dispatch(getAllMessages(finalChatData.id));
 
-    },[finalChatData, messageStore.newMessage])
+    },[finalChatData])
+
+    // useEffect(() => {
+    //     console.log("fetch All users chat");
+    //     const fetchData = async () => {
+    //         try {
+    //             await dispatch(getUsersChat());
+    //         } catch (error) {
+    //             console.log(error);
+    //             if (axios.isAxiosError(error)) {
+    //                 if (error?.response.status === 400) {
+    //                     dispatch(logout());
+    //                 }
+    //             }
+    //         }
+    //     };
+    
+    //     fetchData(); // Call the function immediately
+    
+    // }, [messageStore.newMessage]);
 
     return (
         <div className="w-full md:w-[60%] h-screen md:h-screen flex flex-col justify-between fixed">
@@ -142,6 +177,7 @@ function ChatDetails({chatData}) {
                             key={message.id}
                             isReqUserMsg={message.createdBy.id===currentUser.id}
                             textMessage={message.textMessage}
+                            creationTime={message.creationTime}
                         />
                     ))}
                 </div>

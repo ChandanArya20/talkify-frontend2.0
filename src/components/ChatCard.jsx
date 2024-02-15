@@ -11,6 +11,17 @@ function ChatCard({id, chatName, chatImage, isGroup, members, messages, selected
     const lastMessage = messages[messages.length - 1];
     const isLastMessageFromCurrentUser = lastMessage && lastMessage.createdBy.id === currentUser.id;
 
+    // Count the new messages
+    let newMessages = 0;
+    for (let i = messages.length - 1; i >= 0; i--) {
+        if (messages[i].createdBy.id !== currentUser.id) {
+            newMessages++;
+        } else {
+            // Stop counting when the first message from chatUser is encountered
+            break;
+        }
+    }
+
     return (
         <div className={`w-[98%] p-3 border-b-2 border-gray-800 flex justify-between cursor-pointer ${id===selectedChatId ? 'bg-[#222E35]' : 'hover:bg-[#222e35a5]'} `}>
             <div className="flex items-center">
@@ -35,11 +46,14 @@ function ChatCard({id, chatName, chatImage, isGroup, members, messages, selected
             </div>
             <div className="space-y-2 flex flex-col items-end">
                 <div>
-                    <p className="text-white text-xs">12:08 pm</p>
+                    <p className={`${newMessages ? 'text-[#00A884] font-bold':'text-gray-400'} text-xs`}>{lastMessage?.creationTime}</p>
                 </div>
-                <div className="w-5 h-5 rounded-full bg-[#00A884] text-center">
-                    <p className="text-sm font-medium">3</p>
-                </div>
+                {
+                    newMessages &&
+                    <div className="w-5 h-5 rounded-full bg-[#00A884] text-center">
+                        <p className="text-sm font-medium">{newMessages}</p>
+                    </div>
+                }
             </div>
         </div>
     );

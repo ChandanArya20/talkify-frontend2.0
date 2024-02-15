@@ -1,6 +1,6 @@
 import React from 'react';
 
-export const MessageCard = ({ isReqUserMsg, textMessage }) => {
+export const MessageCard = ({ isReqUserMsg, textMessage, creationTime}) => {
     
     return (
         <div
@@ -11,7 +11,7 @@ export const MessageCard = ({ isReqUserMsg, textMessage }) => {
             <div className='p-2 flex space-x-2'>
                 <p className='text-sm text-white'>{textMessage}</p>
                 <div className='flex flex-col justify-end'>
-                    <p className='text-xs text-gray-400 mt-2'>12:14 pm</p>
+                    <p className='text-xs text-gray-400 mt-2'>{creationTime}</p>
                 </div>
             </div>
             

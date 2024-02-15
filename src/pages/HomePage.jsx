@@ -65,9 +65,45 @@ function HomePage() {
     
     }, [createdChat, createdGroup]);
 
+    const rearrangeChats=()=>{
+
+        // Iterate through chats to identify chats with new messages
+        const chatsWithNewMessages = [];
+        const chatsWithoutNewMessages = [];
+
+        for(let chat of chats) {
+
+            if(chat.messages.length===0){
+                chatsWithoutNewMessages.push(chat);
+                continue;
+            }
+            const lastMessage = chat.messages[chat.messages.length - 1];
+            const isLastMessageFromCurrentUser = lastMessage && lastMessage.createdBy.id === currentUser.id;
+
+            if (!isLastMessageFromCurrentUser) {
+                chatsWithNewMessages.push(chat);
+            } else {
+                chatsWithoutNewMessages.push(chat);
+            }
+        }
+
+        // Further separate chatsWithoutNewMessages into two arrays based on empty messages
+        const chatsWithEmptyMessages = chatsWithoutNewMessages.filter(chat => !chat.messages.length);
+        const chatsWithoutEmptyMessages = chatsWithoutNewMessages.filter(chat => chat.messages.length);
+
+
+        // Combine the arrays, putting chats with new messages first and those without empty messages first
+        const rearrangedChats = [...chatsWithNewMessages, ...chatsWithoutEmptyMessages, ...chatsWithEmptyMessages];
+
+        // Update filteredChats with the rearranged array
+        setFilteredChats(rearrangedChats);
+
+    }
+
     useEffect(()=>{
-        setFilteredChats(chats);
+        rearrangeChats();
     },[chats])
+
 
     console.log(filteredChats);
 
@@ -91,14 +127,40 @@ function HomePage() {
                 return chatUser.name.toLowerCase().includes(query.toLowerCase());
             }
         });
-        console.log(filteredChats);
         setFilteredChats(filteredChats);
     };
     
     // Function to handle clicking the filter button
     const handleFilterClick = () => {
+
         setIsFilterClicked(!isFilterClicked);
     };
+
+    useEffect(()=>{
+
+        if(isFilterClicked){
+
+            const chatsWithNewMessages = [];
+    
+            for(let chat of chats) {
+    
+                if(chat.messages.length===0){
+                    continue;
+                }
+                const lastMessage = chat.messages[chat.messages.length - 1];
+                const isLastMessageFromCurrentUser = lastMessage && lastMessage.createdBy.id === currentUser.id;
+    
+                if (!isLastMessageFromCurrentUser) {
+                    chatsWithNewMessages.push(chat);
+                }  
+            }
+            console.log(chatsWithNewMessages);
+            setFilteredChats(chatsWithNewMessages);
+        } else{
+            rearrangeChats();
+        }
+
+    },[isFilterClicked])
 
     // Function to handle clicking on the current chat
     const handleCurrentChatClick = (chat) => {
