@@ -4,134 +4,128 @@ import { FaRegFaceSmile } from "react-icons/fa6";
 import { FaPlus } from "react-icons/fa";
 import { HiMicrophone } from "react-icons/hi2";
 import { useEffect, useRef, useState } from "react";
-import { IoFastFoodOutline, IoSend } from "react-icons/io5";
+import { IoSend } from "react-icons/io5";
 import MessageCard from "./MessageCard";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { addNewMessage, createNewMessage, getAllMessages } from "../Redux/Message/action";
-import DefaultUser from '../assets/default-user.png'
-import DefaultGroup from '../assets/default-group.png'
-import sockjs, { log } from "sockjs-client/dist/sockjs";
-import Stomp from 'stompjs'
+import { addNewMessage, setAllMessages } from "../Redux/Message/action";
+import DefaultUser from "../assets/default-user.png";
+import DefaultGroup from "../assets/default-group.png";
+import sockjs from "sockjs-client/dist/sockjs";
+import Stomp from "stompjs";
 import { BASE_API_URL } from "../config/api";
 
-
-function ChatDetails({chatData}) {
-
+function ChatDetails({ chatData }) {
+    
     const [textMessage, setTextMessage] = useState("");
     const navigate = useNavigate();
-    const location=useLocation()
-    const {currentUser} = useSelector(state=>state.userStore);
-    const messageStore = useSelector(state=>state.messageStore);
+    const location = useLocation();
+    const { currentUser } = useSelector((state) => state.userStore);
+    const messageStore = useSelector((state) => state.messageStore);
     const [messageList, setMessageList] = useState([]);
-    const dispatch=useDispatch();
+    const dispatch = useDispatch();
 
-    const finalChatData= location.state || chatData;
-    const {chatName, chatImage, isGroup, members, messages}=finalChatData;
-    const chatUser = members?.filter(member=>member.id!==currentUser.id)[0];
-    const [stompClient, setStompClient]=useState();
+    const finalChatData = location.state || chatData;
+    const { chatName, chatImage, isGroup, members } = finalChatData;
+    const chatUser = members?.filter((member) => member.id !== currentUser.id)[0];
+    const [stompClient, setStompClient] = useState();
     const [isConnect, setIsConnect] = useState(false);
     const latestMessagesRef = useRef(messageStore.messages);
 
-    useEffect(()=>{
-        console.log("Get all messages");
+    useEffect(() => {
         setMessageList(messageStore.messages);
         latestMessagesRef.current = messageStore.messages;
-    },[messageStore.messages])
+    }, [messageStore.messages]);
 
-    useEffect(()=>{
-        console.log(messageStore.messages);
-    },[messageStore.messages])
-    useEffect(()=>{
-        console.log(messageList);
-    },[messageList])
-   
     useEffect(() => {
+        console.log(messageList);
+    }, [messageList]);
 
+    useEffect(() => {
         // Create a new Stomp client and connect to the WebSocket
         const socket = new sockjs(BASE_API_URL + "/websocket");
         const stmClient = Stomp.over(socket);
         setStompClient(stmClient);
-        
-        stmClient.connect({}, onConnect, onError)
+
+        // Attach the authentication token to the WebSocket headers
+        // const authToken = "0f6f9cde-c100-4684-b2fd-d79cd31e396a" // Implement a function to retrieve the authentication token
+        // const headers = { Authorization: authToken };
+
+        stmClient.connect({ name: "Chandan" }, onConnect, onError);
 
         return () => {
             stmClient.disconnect();
         };
-    
-    },[]);
+    }, []);
 
-    const onConnect=(response)=>{
+    const onConnect = (response) => {
         setIsConnect(true);
-    }
+    };
 
-    const onError=(error)=>{
+    const onError = (error) => {
         console.log(error);
-    }
+    };
 
     useEffect(() => {
+
         let subscription;
-    
+
         if (stompClient && isConnect) {
             // Establish subscription only if the stompClient or isConnect changes
-            subscription = stompClient.subscribe("/topic/message" + finalChatData.id.toString(), onMessageRecieve);
+
+            subscription = stompClient.subscribe("/topic/messages" + finalChatData.id.toString(),
+                onChatMessagesRecieve);
+
+            stompClient.send("/app/messages/chat",{},
+                JSON.stringify({
+                    reqUserId: currentUser.id,
+                    chatId: finalChatData.id,
+                })
+            );
+
+            subscription = stompClient.subscribe("/topic/message" + finalChatData.id.toString(),onMessageRecieve);
         }
-    
+
         // Cleanup subscription when stompClient or isConnect changes or when the component unmounts
         return () => {
-            if(subscription){
-                subscription.unsubscribe(); 
+            if (subscription) {
+                subscription.unsubscribe();
             }
         };
-
     }, [stompClient, isConnect, finalChatData.id]);
-    
-
-    const onMessageRecieve=(response)=>{
-       
-        const newMessage = JSON.parse(response.body);
-        console.log("Recieved Message : ", newMessage);
-        console.log(messageList);
-        console.log(messageStore.messages);
-        const latestMessages = latestMessagesRef.current;
-
-        if(newMessage.createdBy.id!==currentUser.id){
-            dispatch(addNewMessage(latestMessages, newMessage));
-        }
-    }
 
     const handleSendMessage = () => {
         console.log("handleSendMessage");
         console.log(messageStore.messages);
-        if(textMessage.trim().length > 0){
-            dispatch(createNewMessage(messageStore.messages, {chatId:finalChatData.id, content:textMessage}))
+
+        if (stompClient && isConnect) {
+            if (textMessage.trim().length > 0) {
+                stompClient.send("/app/message/send", {},
+                    JSON.stringify({
+                        userId: currentUser.id,
+                        chatId: finalChatData.id,
+                        content: textMessage,
+                    })
+                );
+            }
         }
         setTextMessage("");
     };
 
-    useEffect(()=>{
-        dispatch(getAllMessages(finalChatData.id));
+    const onMessageRecieve = (response) => {
+        const newMessage = JSON.parse(response.body);
+        console.log("Recieved Message : ", newMessage);
+        const latestMessages = latestMessagesRef.current;
 
-    },[finalChatData])
+        dispatch(addNewMessage(latestMessages, newMessage));
+    };
 
-    // useEffect(() => {
-    //     console.log("fetch All users chat");
-    //     const fetchData = async () => {
-    //         try {
-    //             await dispatch(getUsersChat());
-    //         } catch (error) {
-    //             console.log(error);
-    //             if (axios.isAxiosError(error)) {
-    //                 if (error?.response.status === 400) {
-    //                     dispatch(logout());
-    //                 }
-    //             }
-    //         }
-    //     };
-    
-    //     fetchData(); // Call the function immediately
-    
-    // }, [messageStore.newMessage]);
+    const onChatMessagesRecieve = (response) => {
+        const messages = JSON.parse(response.body);
+        console.log("Recieved Messages : ", messages);
+
+        dispatch(setAllMessages(messages));
+    };
 
     return (
         <div className="w-full md:w-[60%] h-screen md:h-screen flex flex-col justify-between fixed">
@@ -149,7 +143,11 @@ function ChatDetails({chatData}) {
                         <div className="w-10 h-10 rounded-full bg-white cursor-pointer">
                             <img
                                 className="w-full h-full rounded-full object-cover"
-                                src={ isGroup ? chatImage || DefaultGroup : chatUser.profileImage || DefaultUser}
+                                src={
+                                    isGroup
+                                        ? chatImage || DefaultGroup
+                                        : chatUser.profileImage || DefaultUser
+                                }
                                 alt=""
                             />
                         </div>
@@ -175,7 +173,9 @@ function ChatDetails({chatData}) {
                     {messageList.map((message) => (
                         <MessageCard
                             key={message.id}
-                            isReqUserMsg={message.createdBy.id===currentUser.id}
+                            isReqUserMsg={
+                                message.createdBy.id === currentUser.id
+                            }
                             textMessage={message.textMessage}
                             creationTime={message.creationTime}
                         />

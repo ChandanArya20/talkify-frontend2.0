@@ -49,7 +49,7 @@ function ChatCard({id, chatName, chatImage, isGroup, members, messages, selected
                     <p className={`${newMessages ? 'text-[#00A884] font-bold':'text-gray-400'} text-xs`}>{lastMessage?.creationTime}</p>
                 </div>
                 {
-                    newMessages &&
+                    newMessages > 0 &&
                     <div className="w-5 h-5 rounded-full bg-[#00A884] text-center">
                         <p className="text-sm font-medium">{newMessages}</p>
                     </div>
