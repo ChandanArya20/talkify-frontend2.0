@@ -27,4 +27,17 @@ export const addNewMessage = (messages, newMessage) =>  {
     return { type: ADD_NEW_MESSAGE, payload: {messages,newMessage} };
 };
 
+// export const getAllMessagesFromServer = (chatId) => async(dispatch) => {
+   
+//     try {
+//         const response = await axios.get(`${BASE_API_URL}/api/message/chat/${chatId}`,{ withCredentials: true });
+//         const resData = response.data;
+        
+//         console.log(resData);
+//         dispatch({ type: SET_ALL_MESSAGES, payload: resData });
+//     } catch (error) {
+//         console.log(error);
+//     }
+// };
+
 

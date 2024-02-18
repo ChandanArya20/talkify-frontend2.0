@@ -1,13 +1,14 @@
 import { PiCircleDashedBold } from "react-icons/pi";
+import { RiChatNewLine } from "react-icons/ri";
 import { MdOutlineChat } from "react-icons/md";
 import { BiDotsVerticalRounded } from "react-icons/bi";
 import { RiWechat2Line } from "react-icons/ri";
 import { FaPeopleGroup } from "react-icons/fa6";
 import { IoIosSearch, IoMdArrowBack } from "react-icons/io";
 import { IoFilter } from "react-icons/io5";
-import DefaultUser from '../assets/default-user.png'
+import DefaultUser from "../assets/default-user.png";
 import ChatCard from "../components/ChatCard";
-import {useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import ChatDetails from "../components/ChatDetails";
 import Profile from "../components/Profile";
 import { useNavigate } from "react-router-dom";
@@ -21,33 +22,45 @@ import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../Redux/Auth/action";
 import { getUsersChat } from "../Redux/Chat/action";
 import axios from "axios";
+import SearchMessages from "../components/SearchMessages";
 
 function HomePage() {
+    const { isAuthenticated, currentUser } = useSelector(
+        (state) => state.userStore
+    );
+    const navigate = useNavigate();
 
-    const {isAuthenticated, currentUser}=useSelector(state=>state.userStore);
-    const navigate=useNavigate();
-
-    useEffect(()=>{
+    useEffect(() => {
         !isAuthenticated && navigate("/signing");
-    },[isAuthenticated])
-    
+    }, [isAuthenticated]);
+
     const [query, setQuery] = useState("");
     const [isFilterClicked, setIsFilterClicked] = useState(false);
-    const [currentChat, setCurrentChat] =useState(false);
-    const [selectedChat, setSelectedChat]= useState(null);
+    const [currentChat, setCurrentChat] = useState(false);
+    const [selectedChat, setSelectedChat] = useState(null);
     const [isProfile, setIsProfile] = useState(false);
     const [isStatus, setIsStatus] = useState(false);
     const [isGroup, setIsGroup] = useState(false);
-    const [isAddNewUser, setIsAddNewUser]= useState(false);
-    const [isSearchClicked, setIsSearchClicked]=useState(false);
+    const [isAddNewUser, setIsAddNewUser] = useState(false);
+    const [isSearchClicked, setIsSearchClicked] = useState(false);
     const dispatch = useDispatch();
-    const {chats, createdChat, createdGroup} = useSelector(store=>store.chatStore);
+    const { chats, createdChat, createdGroup } = useSelector(
+        (store) => store.chatStore
+    );
     const [filteredChats, setFilteredChats] = useState([]);
+
     const [anchorEl, setAnchorEl] = useState(null);
     const open = Boolean(anchorEl);
+    // Function to handle opening the dropdown menu
+    const handleClick = (event) => {
+        setAnchorEl(event.currentTarget);
+    };
+    // Function to handle closing the dropdown menu
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
 
     useEffect(() => {
-        
         const fetchData = async () => {
             try {
                 await dispatch(getUsersChat());
@@ -60,25 +73,23 @@ function HomePage() {
                 }
             }
         };
-    
+
         fetchData(); // Call the function immediately
-    
     }, [createdChat, createdGroup]);
 
-    const rearrangeChats=()=>{
-
+    const rearrangeChats = () => {
         // Iterate through chats to identify chats with new messages
         const chatsWithNewMessages = [];
         const chatsWithoutNewMessages = [];
 
-        for(let chat of chats) {
-
-            if(chat.messages.length===0){
+        for (let chat of chats) {
+            if (chat.messages.length === 0) {
                 chatsWithoutNewMessages.push(chat);
                 continue;
             }
             const lastMessage = chat.messages[chat.messages.length - 1];
-            const isLastMessageFromCurrentUser = lastMessage && lastMessage.createdBy.id === currentUser.id;
+            const isLastMessageFromCurrentUser =
+                lastMessage && lastMessage.createdBy.id === currentUser.id;
 
             if (!isLastMessageFromCurrentUser) {
                 chatsWithNewMessages.push(chat);
@@ -88,90 +99,88 @@ function HomePage() {
         }
 
         // Further separate chatsWithoutNewMessages into two arrays based on empty messages
-        const chatsWithEmptyMessages = chatsWithoutNewMessages.filter(chat => !chat.messages.length);
-        const chatsWithoutEmptyMessages = chatsWithoutNewMessages.filter(chat => chat.messages.length);
-
+        const chatsWithEmptyMessages = chatsWithoutNewMessages.filter(
+            (chat) => !chat.messages.length
+        );
+        const chatsWithoutEmptyMessages = chatsWithoutNewMessages.filter(
+            (chat) => chat.messages.length
+        );
 
         // Combine the arrays, putting chats with new messages first and those without empty messages first
-        const rearrangedChats = [...chatsWithNewMessages, ...chatsWithoutEmptyMessages, ...chatsWithEmptyMessages];
+        const rearrangedChats = [
+            ...chatsWithNewMessages,
+            ...chatsWithoutEmptyMessages,
+            ...chatsWithEmptyMessages,
+        ];
 
         // Update filteredChats with the rearranged array
         setFilteredChats(rearrangedChats);
+    };
 
-    }
-
-    useEffect(()=>{
+    useEffect(() => {
         rearrangeChats();
-    },[chats])
+    }, [chats]);
 
-
-    console.log(filteredChats);
-
-    // Function to handle opening the dropdown menu
-    const handleClick = (event) => {
-        setAnchorEl(event.currentTarget);
-    };
-
-    // Function to handle closing the dropdown menu
-    const handleClose = () => {
-        setAnchorEl(null);
-    };
+    useEffect(() => {
+        console.log(filteredChats);
+    }, [filteredChats]);
 
     // Function to filter chats based on the search query
     const handleSearch = (query) => {
         const filteredChats = chats.filter((chat) => {
             if (chat.isGroup) {
-                return chat.chatName.toLowerCase().includes(query.toLowerCase());
+                return chat.chatName
+                    .toLowerCase()
+                    .includes(query.toLowerCase());
             } else {
-                const chatUser = chat.members.filter((member) => member.id !== currentUser.id)[0];
-                return chatUser.name.toLowerCase().includes(query.toLowerCase());
+                const chatUser = chat.members.filter(
+                    (member) => member.id !== currentUser.id
+                )[0];
+                return chatUser.name
+                    .toLowerCase()
+                    .includes(query.toLowerCase());
             }
         });
         setFilteredChats(filteredChats);
     };
-    
+
     // Function to handle clicking the filter button
     const handleFilterClick = () => {
-
         setIsFilterClicked(!isFilterClicked);
     };
 
-    useEffect(()=>{
-
-        if(isFilterClicked){
-
+    useEffect(() => {
+        if (isFilterClicked) {
             const chatsWithNewMessages = [];
-    
-            for(let chat of chats) {
-    
-                if(chat.messages.length===0){
+
+            for (let chat of chats) {
+                if (chat.messages.length === 0) {
                     continue;
                 }
                 const lastMessage = chat.messages[chat.messages.length - 1];
-                const isLastMessageFromCurrentUser = lastMessage && lastMessage.createdBy.id === currentUser.id;
-    
+                const isLastMessageFromCurrentUser =
+                    lastMessage && lastMessage.createdBy.id === currentUser.id;
+
                 if (!isLastMessageFromCurrentUser) {
                     chatsWithNewMessages.push(chat);
-                }  
+                }
             }
             console.log(chatsWithNewMessages);
             setFilteredChats(chatsWithNewMessages);
-        } else{
+        } else {
             rearrangeChats();
         }
-
-    },[isFilterClicked])
+    }, [isFilterClicked]);
 
     // Function to handle clicking on the current chat
     const handleCurrentChatClick = (chat) => {
-       
-        if(selectedChat?.id==chat.id){
+        if (selectedChat?.id == chat.id) {
             return;
         }
         setSelectedChat(chat);
         // Navigate to chat details on small devices, otherwise set the current chat
         if (window.innerWidth < 640) {
-            navigate("/chat-details",{state:chat});
+            navigate("/chat-details", { state: chat });
         } else {
             setCurrentChat(true);
         }
@@ -203,22 +212,33 @@ function HomePage() {
         handleClose();
     };
 
-    const closeAddNewUserSection=()=>{
+    const closeAddNewUserSection = () => {
         setIsAddNewUser(false);
     };
 
-    const handleLogout=()=>{
+    const handleLogout = () => {
         dispatch(logout());
+    };
+
+    const closeChatDetails = () => {
+        setCurrentChat(false);
+        setSelectedChat(null);
     };
 
     return (
         <div className="w-full h-screen bg-[#222E35] flex overflow-hidden">
             {/* Left Section */}
-            <div className="w-[100%] md:w-[40%] bg-[#111B21] border-l-6 border-gray-200">
+            <div className="w-[100%] md:w-[40%] bg-[#111B21]">
                 {isProfile && <Profile closeOpenProfile={closeOpenProfile} />}
                 {isStatus && <Status closeOpenStatus={closeOpenStatus} />}
-                {isGroup && <CreateGroup closeOpenCreateGroup={closeOpenCreateGroup} />}
-                {isAddNewUser && <AddNewUser closeAddNewUserSection={closeAddNewUserSection}/>}
+                {isGroup && (
+                    <CreateGroup closeOpenCreateGroup={closeOpenCreateGroup} />
+                )}
+                {isAddNewUser && (
+                    <AddNewUser
+                        closeAddNewUserSection={closeAddNewUserSection}
+                    />
+                )}
 
                 {!isProfile && !isStatus && !isGroup && !isAddNewUser && (
                     <>
@@ -231,18 +251,27 @@ function HomePage() {
                                 >
                                     <img
                                         className=" w-full h-full rounded-full object-cover"
-                                        src={currentUser?.profileImage || DefaultUser}
+                                        src={
+                                            currentUser?.profileImage ||
+                                            DefaultUser
+                                        }
                                         alt=""
                                     />
                                 </div>
                                 <div className="flex space-x-7 text-2xl my-auto text-gray-400">
-                                    <FaPeopleGroup className="cursor-pointer" />
+                                    <FaPeopleGroup
+                                        className="cursor-pointer"
+                                        onClick={() => setIsGroup(true)}
+                                    />
                                     <PiCircleDashedBold
                                         className="cursor-pointer"
                                         onClick={() => setIsStatus(true)}
                                     />
                                     <RiWechat2Line className="cursor-pointer" />
-                                    <MdOutlineChat className="cursor-pointer" onClick={()=>setIsAddNewUser(true)} />
+                                    <RiChatNewLine
+                                        className="cursor-pointer"
+                                        onClick={() => setIsAddNewUser(true)}
+                                    />
                                     <div>
                                         <BiDotsVerticalRounded
                                             className="cursor-pointer"
@@ -263,9 +292,9 @@ function HomePage() {
                                             >
                                                 New group
                                             </MenuItem>
-                                            <MenuItem onClick={handleClose}>
+                                            {/* <MenuItem onClick={handleClose}>
                                                 New community
-                                            </MenuItem>
+                                            </MenuItem> */}
                                             <MenuItem onClick={handleClose}>
                                                 Starred messages
                                             </MenuItem>
@@ -287,17 +316,21 @@ function HomePage() {
                         <div className="ml-3 mt-2 flex items-center">
                             <div className="w-[87%] md:w-[92%] h-9 rounded-lg flex justify-items-start items-center space-x-4 md:space-x-6 bg-[#202C33]">
                                 <div className="w-12 h-12 ml-1 flex items-center justify-center">
-                                    {
-                                        !isSearchClicked ?
-                                        <IoIosSearch 
-                                            className="text-gray-400 text-xl cursor-pointer" 
-                                            onClick={()=>setIsSearchClicked(true)}
-                                        /> :
+                                    {!isSearchClicked ? (
+                                        <IoIosSearch
+                                            className="text-gray-400 text-xl cursor-pointer"
+                                            onClick={() =>
+                                                setIsSearchClicked(true)
+                                            }
+                                        />
+                                    ) : (
                                         <IoMdArrowBack
                                             className="text-[#00A884] text-2xl cursor-pointer"
-                                            onClick={()=>setIsSearchClicked(false)}
+                                            onClick={() =>
+                                                setIsSearchClicked(false)
+                                            }
                                         />
-                                    }
+                                    )}
                                 </div>
                                 <input
                                     type="text"
@@ -308,7 +341,7 @@ function HomePage() {
                                         setQuery(e.target.value);
                                         handleSearch(e.target.value);
                                     }}
-                                    onClick={()=>setIsSearchClicked(true)}
+                                    onClick={() => setIsSearchClicked(true)}
                                 />
                             </div>
                             <div
@@ -327,13 +360,16 @@ function HomePage() {
                             </div>
                         </div>
                         {/* Chat Cards */}
-                        <div className="w-full h-[83vh] ml-3 mt-2 overflow-y-scroll pb-5">
+                        <div className="w-full h-[83vh] ml-3 mt-2 overflow-y-scroll pb-5 pr-4">
                             {filteredChats.map((item) => (
                                 <div
                                     key={item.id}
                                     onClick={() => handleCurrentChatClick(item)}
                                 >
-                                    <ChatCard {...item} selectedChatId={selectedChat?.id}/>
+                                    <ChatCard
+                                        {...item}
+                                        selectedChatId={selectedChat?.id}
+                                    />
                                 </div>
                             ))}
                         </div>
@@ -342,9 +378,12 @@ function HomePage() {
             </div>
 
             {/* Right Section */}
-            <div className="hidden md:flex md:w-[60%] border-l-2 border-gray-700">
-                {currentChat ? (
-                    <ChatDetails chatData={selectedChat} />
+            <div className="hidden md:flex md:w-[60%] border-l-2 border-slate-800">
+                {currentChat && !isSearchClicked ? (
+                    <ChatDetails
+                        chatData={selectedChat}
+                        closeChatDetails={closeChatDetails}
+                    />
                 ) : (
                     <div className="w-full h-screen flex flex-col items-center justify-center">
                         {/* Image */}

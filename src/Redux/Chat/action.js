@@ -1,6 +1,6 @@
 import axios from "axios";
 import { BASE_API_URL } from "../../config/api";
-import { CREATE_CHAT, CREATE_GROUP, GET_USERS_CHAT } from "./actionType";
+import { CREATE_CHAT, CREATE_GROUP, GET_USERS_CHAT, UPDATE_MESSAGES_IN_CHAT } from "./actionType";
 
 export const createChat = (participantId) => async(dispatch) => {
     console.log();
@@ -40,6 +40,23 @@ export const getUsersChat = () => async(dispatch) => {
     
     console.log(resData);
     dispatch({ type: GET_USERS_CHAT, payload: resData }); 
+};
+
+export const updateMessageInChat = (chats, chatId, newMessage)=> {
+
+    console.log(chats);
+    console.log(chatId);
+    console.log(newMessage);
+   
+    const filteredChat = chats.filter(chat=>chat.id===chatId)[0];
+    const newChats = chats.filter(chat=>chat.id!==chatId);
+
+    filteredChat.messages=[...filteredChat.messages, newMessage];
+    chats=[...newChats, filteredChat];
+ 
+
+    return {type:UPDATE_MESSAGES_IN_CHAT, payload:chats}
+
 };
 
 

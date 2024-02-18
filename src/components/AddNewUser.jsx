@@ -24,7 +24,7 @@ const AddNewUser = ({ closeAddNewUserSection }) => {
 
     return (
         <div className="flex w-full h-full flex-col justify-between">
-            {/* Group header */}
+            {/* header */}
             <div className="w-full h-14 md:h-28 bg-[#222e35] ">
                 <div className="w-full h-full flex flex-col justify-center md:justify-end">
                     <div className="w-full flex space-x-7 items-center font-semibold text-gray-300 ml-2 md:ml-6 md:mb-4">

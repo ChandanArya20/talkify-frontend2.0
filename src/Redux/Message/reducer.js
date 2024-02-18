@@ -17,7 +17,6 @@ export const messageReducer = (state = initialState, { type, payload }) => {
             return { ...state, messages: payload };
 
         case ADD_NEW_MESSAGE:
-            console.log(payload);
             return { messages: [...payload.messages, payload.newMessage], newMessage: payload.newMessage };
 
         default:

@@ -2,7 +2,11 @@
 export default {
   content: ["*"],
   theme: {
-    extend: {},
+    extend: {
+      rotate: {
+        '135': '135deg',
+      }
+    },
   },
   plugins: [],
 }
