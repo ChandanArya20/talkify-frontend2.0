@@ -159,11 +159,11 @@ const ContactInfo = ({ closeContactInfo, chatUser}) => {
                 <div className="h-30 flex flex-col p-3 bg-[#111B21]">
                     <div className="flex text-lg space-x-5 items-center text-red-500 p-3 hover:bg-gray-800 cursor-pointer">
                         <MdBlock/>
-                        <p>{`Block Ayaush`}</p>
+                        <p>{`Block ${chatUser.name}`}</p>
                     </div>
                     <div className="flex text-lg space-x-5 items-center text-red-500 p-3 hover:bg-gray-800 cursor-pointer">
                         <BsHandThumbsDownFill/>
-                        <p>{`Report Ayush`}</p>
+                        <p>{`Report ${chatUser.name}`}</p>
                     </div>
                     <div className="flex text-lg space-x-5 items-center text-red-500 p-3 hover:bg-gray-800 cursor-pointer">
                         <MdDelete/>

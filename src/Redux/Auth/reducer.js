@@ -14,7 +14,7 @@ export const userReducer = (state = initialState, { type, payload }) => {
     switch (type) {
 
         case REGISTER:
-            return { ...state, userData: payload, isAuthenticated: true };
+            return { ...state, currentUser: payload, isAuthenticated: true };
         
         case REQ_USER:
             return {...state,currentUser:payload};
@@ -26,7 +26,7 @@ export const userReducer = (state = initialState, { type, payload }) => {
             return { ...state, currentUser:payload, isAuthenticated: true };
 
         case LOGOUT:
-            return { ...state, userData:null, isAuthenticated: false };
+            return { ...state, currentUser:{}, isAuthenticated: false };
 
         case UPDATE_USER:
             return { ...state, currentUser:payload };

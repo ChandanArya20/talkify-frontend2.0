@@ -6,7 +6,6 @@ import {
     IoMdPhotos,
 } from "react-icons/io";
 import { GrEmoji } from "react-icons/gr";
-import { FiPlus } from "react-icons/fi";
 import { HiMicrophone } from "react-icons/hi2";
 import { useEffect, useRef, useState } from "react";
 import { IoDocumentText, IoSend } from "react-icons/io5";
@@ -19,7 +18,7 @@ import DefaultGroup from "../assets/default-group.png";
 import sockjs from "sockjs-client/dist/sockjs";
 import Stomp from "stompjs";
 import { BASE_API_URL } from "../config/api";
-import { updateMessageInChat } from "../Redux/Chat/action";
+import { deleteALLMessagesByChatId, deleteChat, updateMessageInChat } from "../Redux/Chat/action";
 import data from "@emoji-mart/data";
 import Picker from "@emoji-mart/react";
 import { AiOutlineClose } from "react-icons/ai";
@@ -104,25 +103,26 @@ function ChatDetails({ chatData, closeChatDetails }) {
     }, [messageStore.messages]);
 
     useEffect(() => {
+        console.log(messageStore.messages);
         console.log(messageList);
     }, [messageList]);
 
-    // useEffect(() => {
-    //     // Create a new Stomp client and connect to the WebSocket
-    //     const socket = new sockjs(BASE_API_URL + "/websocket");
-    //     const stmClient = Stomp.over(socket);
-    //     setStompClient(stmClient);
+    useEffect(() => {
+        // Create a new Stomp client and connect to the WebSocket
+        const socket = new sockjs(BASE_API_URL + "/websocket");
+        const stmClient = Stomp.over(socket);
+        setStompClient(stmClient);
 
-    //     // Attach the authentication token to the WebSocket headers
-    //     // const authToken = "0f6f9cde-c100-4684-b2fd-d79cd31e396a" // Implement a function to retrieve the authentication token
-    //     // const headers = { Authorization: authToken };
+        // Attach the authentication token to the WebSocket headers
+        // const authToken = "0f6f9cde-c100-4684-b2fd-d79cd31e396a" // Implement a function to retrieve the authentication token
+        // const headers = { Authorization: authToken };
 
-    //     stmClient.connect({ name: "Chandan" }, onConnect, onError);
+        stmClient.connect({ name: "Chandan" }, onConnect, onError);
 
-    //     return () => {
-    //         stmClient.disconnect();
-    //     };
-    // }, []);
+        return () => {
+            stmClient.disconnect();
+        };
+    }, []);
 
     const onConnect = (response) => {
         setIsConnect(true);
@@ -141,7 +141,7 @@ function ChatDetails({ chatData, closeChatDetails }) {
             // subscription = stompClient.subscribe("/topic/messages" + finalChatData.id.toString(),
             //     onChatMessagesRecieve);
 
-            // stompClient.send("/app/messages/chat",{},
+            // stompClient.send("/app/chat/messages",{},
             //     JSON.stringify({
             //         reqUserId: currentUser.id,
             //         chatId: finalChatData.id,
@@ -177,6 +177,8 @@ function ChatDetails({ chatData, closeChatDetails }) {
             }
         }
         setTextMessage("");
+        setShowEmoji(false);
+        setShowContentShare(false);
     };
 
     const onMessageRecieve = (response) => {
@@ -197,6 +199,19 @@ function ChatDetails({ chatData, closeChatDetails }) {
 
     const closeContactInfo=()=>{
         setShowContactInfo(false);
+        handleClose();
+    }
+
+    const handleDeleteChat=()=>{
+        
+        dispatch(deleteChat(chats, finalChatData.id));
+        closeChatDetails(false);     
+    }
+
+    const deleteAllMessagesOfChat=()=>{
+        
+        dispatch(deleteALLMessagesByChatId(chats, finalChatData.id)); 
+        messageStore.messages=[];
         handleClose();
     }
 
@@ -279,10 +294,10 @@ function ChatDetails({ chatData, closeChatDetails }) {
                                             {/* <MenuItem onClick={handleClose}>
                                                 Disappearing messages
                                             </MenuItem> */}
-                                            <MenuItem onClick={handleClose}>
+                                            <MenuItem onClick={deleteAllMessagesOfChat}>
                                                 Clear chat
                                             </MenuItem>
-                                            <MenuItem onClick={handleClose}>
+                                            <MenuItem onClick={handleDeleteChat}>
                                                 Delete chat
                                             </MenuItem>
                                             {/* <MenuItem >

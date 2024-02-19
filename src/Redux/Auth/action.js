@@ -3,6 +3,8 @@ import { BASE_API_URL } from "../../config/api";
 import { LOGIN, LOGOUT, REGISTER, REQ_USER, SEARCH_USER, UPDATE_USER } from "./actionType";
 
 export const register = (userData) => async (dispatch) => {
+
+    console.log(userData);
    
     const response = await axios.post(`${BASE_API_URL}/api/user/register`,userData,{ withCredentials: true });
     

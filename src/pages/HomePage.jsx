@@ -25,6 +25,7 @@ import axios from "axios";
 import SearchMessages from "../components/SearchMessages";
 
 function HomePage() {
+    
     const { isAuthenticated, currentUser } = useSelector(
         (state) => state.userStore
     );

@@ -1,6 +1,7 @@
 import axios from "axios";
 import { BASE_API_URL } from "../../config/api";
-import { CREATE_CHAT, CREATE_GROUP, GET_USERS_CHAT, UPDATE_MESSAGES_IN_CHAT } from "./actionType";
+import { CREATE_CHAT, CREATE_GROUP, DELETE_ALL_MESSAGES, DELETE_CHAT, GET_USERS_CHAT, UPDATE_MESSAGES_IN_CHAT } from "./actionType";
+
 
 export const createChat = (participantId) => async(dispatch) => {
     console.log();
@@ -17,7 +18,6 @@ export const createChat = (participantId) => async(dispatch) => {
         console.error(error);
     }
 };
-
 
 export const createGroupChat = (chatData) => async(dispatch) => {
    
@@ -43,10 +43,6 @@ export const getUsersChat = () => async(dispatch) => {
 };
 
 export const updateMessageInChat = (chats, chatId, newMessage)=> {
-
-    console.log(chats);
-    console.log(chatId);
-    console.log(newMessage);
    
     const filteredChat = chats.filter(chat=>chat.id===chatId)[0];
     const newChats = chats.filter(chat=>chat.id!==chatId);
@@ -57,6 +53,40 @@ export const updateMessageInChat = (chats, chatId, newMessage)=> {
 
     return {type:UPDATE_MESSAGES_IN_CHAT, payload:chats}
 
+};
+
+export const deleteChat = (chats, chatId)=> async(dispatch)=>{
+
+    try {
+        const response = await axios.delete(`${BASE_API_URL}/api/chat/${chatId}/delete`, { withCredentials: true } );
+        console.log(response.data);
+
+        const filteredChats = chats.filter(chat=>chat.id!==chatId);
+
+        dispatch({type:DELETE_CHAT, payload:filteredChats});
+
+    } catch (error) {
+        console.log(error);
+    }
+};
+
+export const deleteALLMessagesByChatId = (chats, chatId)=> async(dispatch)=>{
+
+    try {
+        const response = await axios.delete(`${BASE_API_URL}/api/message/delete-all/chat/${chatId}`, { withCredentials: true } );
+        console.log(response.data);
+
+        const filteredChat = chats.filter(chat=>chat.id===chatId)[0];
+        const newChats = chats.filter(chat=>chat.id!==chatId);
+        filteredChat.messages=[];
+
+        chats=[...newChats, filteredChat]
+
+        dispatch({type:DELETE_ALL_MESSAGES, payload:chats});
+
+    } catch (error) {
+        console.log(error);
+    }
 };
 
 
