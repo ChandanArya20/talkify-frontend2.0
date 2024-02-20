@@ -1,6 +1,7 @@
 import { BiDotsVerticalRounded } from "react-icons/bi";
 import {
     IoIosSearch,
+    IoIosShareAlt,
     IoMdArrowBack,
     IoMdPerson,
     IoMdPhotos,
@@ -8,11 +9,11 @@ import {
 import { GrEmoji } from "react-icons/gr";
 import { HiMicrophone } from "react-icons/hi2";
 import { useEffect, useRef, useState } from "react";
-import { IoDocumentText, IoSend } from "react-icons/io5";
+import { IoClose, IoDocumentText, IoSend } from "react-icons/io5";
 import MessageCard from "./MessageCard";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { addNewMessage, setAllMessages } from "../Redux/Message/action";
+import { addNewMessage, deleteSelectedMessages, setAllMessages } from "../Redux/Message/action";
 import DefaultUser from "../assets/default-user.png";
 import DefaultGroup from "../assets/default-group.png";
 import sockjs from "sockjs-client/dist/sockjs";
@@ -22,8 +23,8 @@ import { deleteALLMessagesByChatId, deleteChat, updateMessageInChat } from "../R
 import data from "@emoji-mart/data";
 import Picker from "@emoji-mart/react";
 import { AiOutlineClose } from "react-icons/ai";
-import { Menu, MenuItem } from "@mui/material";
-import { MdCameraAlt } from "react-icons/md";
+import { Checkbox, Menu, MenuItem } from "@mui/material";
+import { MdCameraAlt, MdDelete, MdOutlineStar } from "react-icons/md";
 import { BsPlusLg } from "react-icons/bs";
 import ContactInfo from "./ContactInfo";
 import SearchMessages from "./SearchMessages";
@@ -49,6 +50,13 @@ function ChatDetails({ chatData, closeChatDetails }) {
     const [showContentShare, setShowContentShare] = useState(false);
     const [showContactInfo, setShowContactInfo] = useState(false);
     const [showSearchMessages, setShowSearchMessages] = useState(false);
+    const label = { inputProps: { 'aria-label': 'Checkbox demo' } };
+    const [selectedMessages, setSelectedMessages] = useState([]);
+    const [showCheckbox, setShowCheckbox] = useState(false);
+
+    useEffect(()=>{
+        console.log(selectedMessages);
+    },[selectedMessages])
 
     const addEmoji = (emoji) => {
         setTextMessage((prevValue) => prevValue + emoji.native);
@@ -114,8 +122,8 @@ function ChatDetails({ chatData, closeChatDetails }) {
         setStompClient(stmClient);
 
         // Attach the authentication token to the WebSocket headers
-        // const authToken = "0f6f9cde-c100-4684-b2fd-d79cd31e396a" // Implement a function to retrieve the authentication token
-        // const headers = { Authorization: authToken };
+        const authToken = "0f6f9cde-c100-4684-b2fd-d79cd31e396a" // Implement a function to retrieve the authentication token
+        const headers = { Authorization: authToken };
 
         stmClient.connect({ name: "Chandan" }, onConnect, onError);
 
@@ -215,6 +223,41 @@ function ChatDetails({ chatData, closeChatDetails }) {
         handleClose();
     }
 
+    const handleSelectMessageClick=()=>{
+        setShowCheckbox(true);
+        handleClose();
+    }
+
+    const handleSelectMessage=(message)=>{
+
+        setSelectedMessages(prev => {
+
+            if (prev.includes(message)) {
+                // Message is already selected, remove it
+                return prev.filter(msg => msg.id !== message.id);
+            } else {
+                // Message is not in the selected list, add it
+                return [...prev, message];
+            }
+        });
+    }
+
+    const handleCloseMessagesSelected=()=>{
+        setShowCheckbox(false);
+        setSelectedMessages([]);
+    }
+
+    const handleDeleteSelectedMessages=()=>{
+
+        if(selectedMessages.length < 0){
+            return;
+        }
+
+        dispatch(deleteSelectedMessages(messageList, selectedMessages));
+        setShowCheckbox(false);
+    }
+
+
     return (
         <div>
             {showContactInfo && <ContactInfo closeContactInfo={closeContactInfo} chatUser={chatUser}/>}
@@ -280,7 +323,7 @@ function ChatDetails({ chatData, closeChatDetails }) {
                                             <MenuItem onClick={()=>setShowContactInfo(true)}>
                                                 Contact info
                                             </MenuItem>
-                                            <MenuItem onClick={handleClose}>
+                                            <MenuItem onClick={handleSelectMessageClick}>
                                                 Select messages
                                             </MenuItem>
                                             <MenuItem
@@ -312,18 +355,25 @@ function ChatDetails({ chatData, closeChatDetails }) {
 
                         {/* Middle content */}
                         <div className="flex-1 bg-[#111B21] overflow-y-scroll">
-                            <div className="flex flex-col space-y-1 p-3 md:p-10 ">
-                                {messageList.map((message) => (
-                                    <MessageCard
-                                        key={message.id}
-                                        isReqUserMsg={
-                                            message.createdBy.id ===
-                                            currentUser.id
-                                        }
-                                        textMessage={message.textMessage}
-                                        creationTime={message.creationTime}
-                                    />
-                                ))}
+                            <div className="flex flex-col space-y-2 p-3 md:p-10 ">
+                                {messageList.map((message) => {
+
+                                    const isReqUserMsg=message.createdBy.id === currentUser.id
+                                        
+                                    return (
+                                    <div key={message.id} className={`${isReqUserMsg ? 'self-end' : 'self-start'}`}>
+                                        <div className="flex">
+                                            { showCheckbox && <Checkbox {...label} style={{ color: 'gray' }} size="small" onClick={()=>handleSelectMessage(message)}/> }
+                                            <MessageCard
+                                                key={message.id}
+                                                isReqUserMsg={isReqUserMsg}
+                                                textMessage={message.textMessage}
+                                                creationTime={message.creationTime}
+                                            />
+                                        </div>
+                                    </div>)
+                                })
+                                }
                             </div>
                         </div>
 
@@ -414,6 +464,20 @@ function ChatDetails({ chatData, closeChatDetails }) {
                                 )}
                             </div>
                         </div>
+                        {
+                            showCheckbox &&
+                            <div className=" bg-[#0E181E] w-full h-14 flex items-center justify-between absolute bottom-0 z-200 px-5">
+                            <div className="flex space-x-5">
+                                <IoClose  className="text-gray-400 text-2xl cursor-pointer" onClick={handleCloseMessagesSelected}/>
+                                <p className="text-gray-300">{`${selectedMessages.length} selected`}</p>
+                            </div> 
+                            <div className="flex space-x-8">
+                                <MdOutlineStar className={` text-2xl ${selectedMessages.length>0 ? 'cursor-pointer text-gray-400' : 'text-gray-700'} `}/>
+                                <MdDelete className={`text-2xl ${selectedMessages.length>0 ? 'cursor-pointer text-gray-400' : 'text-gray-700'} }`} onClick={handleDeleteSelectedMessages}/>
+                                <IoIosShareAlt className={`text-2xl ${selectedMessages.length>0 ? 'cursor-pointer text-gray-400' : 'text-gray-700'} `}/>
+                            </div>
+                        </div>
+                        }
                     </div>
                 )
             }

@@ -1,4 +1,4 @@
-import { ADD_NEW_MESSAGE, CREATE_NEW_MESSAGE, SET_ALL_MESSAGES } from "./actionType";
+import { ADD_NEW_MESSAGE, CREATE_NEW_MESSAGE, DELETE_SELECTED_MESSAGE, SET_ALL_MESSAGES } from "./actionType";
 
 const initialState = {
     messages:[],
@@ -18,6 +18,9 @@ export const messageReducer = (state = initialState, { type, payload }) => {
 
         case ADD_NEW_MESSAGE:
             return { messages: [...payload.messages, payload.newMessage], newMessage: payload.newMessage };
+
+        case DELETE_SELECTED_MESSAGE:
+            return { messages: payload };
 
         default:
             return state;
