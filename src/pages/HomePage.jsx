@@ -119,6 +119,7 @@ function HomePage() {
     };
 
     useEffect(() => {
+        console.log(chats);
         rearrangeChats();
     }, [chats]);
 

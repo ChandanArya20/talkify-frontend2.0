@@ -1,6 +1,6 @@
 import axios from "axios";
 import { BASE_API_URL } from "../../config/api";
-import { CREATE_CHAT, CREATE_GROUP, DELETE_ALL_MESSAGES, DELETE_CHAT, GET_USERS_CHAT, UPDATE_MESSAGES_IN_CHAT } from "./actionType";
+import { CREATE_CHAT, CREATE_GROUP, DELETE_ALL_MESSAGES, DELETE_CHAT, DELETE_SELECTED_MESSAGES_IN_CHAT, GET_USERS_CHAT, UPDATE_MESSAGES_IN_CHAT } from "./actionType";
 
 
 export const createChat = (participantId) => async(dispatch) => {
@@ -83,6 +83,30 @@ export const deleteALLMessagesByChatId = (chats, chatId)=> async(dispatch)=>{
         chats=[...newChats, filteredChat]
 
         dispatch({type:DELETE_ALL_MESSAGES, payload:chats});
+
+    } catch (error) {
+        console.log(error);
+    }
+};
+
+export const deleteSelecetdMessagesByChatId = (chats, selectedMessages, chatId)=> async(dispatch)=>{
+    console.log(chats);
+    console.log(selectedMessages);
+    const messageIds = selectedMessages.map(message=>message.id);
+    console.log(messageIds);
+    try {
+        const response = await axios.delete(`${BASE_API_URL}/api/message/delete/chat/${chatId}`, { data: messageIds, withCredentials: true } );
+        console.log(response.data);
+
+        const filteredChat = chats.filter(chat=>chat.id===chatId)[0];
+        const remainingChats = chats.filter(chat=>chat.id!==chatId);
+
+        const messages = filteredChat.messages.filter(msg=>!selectedMessages.includes(msg));
+        filteredChat.messages=[...messages];
+
+        chats=[...remainingChats, filteredChat]
+
+        dispatch({type:DELETE_SELECTED_MESSAGES_IN_CHAT, payload:chats});
 
     } catch (error) {
         console.log(error);

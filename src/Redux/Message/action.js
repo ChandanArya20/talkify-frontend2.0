@@ -1,4 +1,4 @@
-import { ADD_NEW_MESSAGE, CREATE_NEW_MESSAGE, DELETE_SELECTED_MESSAGE, SET_ALL_MESSAGES } from "./actionType";
+import { ADD_NEW_MESSAGE, CREATE_NEW_MESSAGE, DELETE_SELECTED_MESSAGES, SET_ALL_MESSAGES } from "./actionType";
 
 // export const createNewMessage = (messages, messageData) => async(dispatch) => {
 
@@ -16,14 +16,11 @@ import { ADD_NEW_MESSAGE, CREATE_NEW_MESSAGE, DELETE_SELECTED_MESSAGE, SET_ALL_M
 
 export const setAllMessages = (messages) => {
    
-    console.log(messages);
     return({type:SET_ALL_MESSAGES, payload:messages})
-    
 };
 
 export const addNewMessage = (messages, newMessage) =>  {
-    console.log(messages);
-    console.log(newMessage);
+   
     return { type: ADD_NEW_MESSAGE, payload: {messages,newMessage} };
 };
 
@@ -46,7 +43,7 @@ export const deleteSelectedMessages=(messages, selectedMessages)=>async(dispatch
     console.log(selectedMessages);
     messages = messages.filter(msg=>!selectedMessages.includes(msg));
     console.log(messages);
-    dispatch({type:DELETE_SELECTED_MESSAGE, payload:messages})
+    dispatch({type:DELETE_SELECTED_MESSAGES, payload:messages})
 }
 
 

@@ -19,7 +19,7 @@ import DefaultGroup from "../assets/default-group.png";
 import sockjs from "sockjs-client/dist/sockjs";
 import Stomp from "stompjs";
 import { BASE_API_URL } from "../config/api";
-import { deleteALLMessagesByChatId, deleteChat, updateMessageInChat } from "../Redux/Chat/action";
+import { deleteALLMessagesByChatId, deleteChat, deleteSelecetdMessagesByChatId, updateMessageInChat } from "../Redux/Chat/action";
 import data from "@emoji-mart/data";
 import Picker from "@emoji-mart/react";
 import { AiOutlineClose } from "react-icons/ai";
@@ -253,10 +253,10 @@ function ChatDetails({ chatData, closeChatDetails }) {
             return;
         }
 
-        dispatch(deleteSelectedMessages(messageList, selectedMessages));
         setShowCheckbox(false);
+        dispatch(deleteSelectedMessages(messageList, selectedMessages));
+        dispatch(deleteSelecetdMessagesByChatId(chats, selectedMessages, finalChatData.id));
     }
-
 
     return (
         <div>
@@ -358,7 +358,7 @@ function ChatDetails({ chatData, closeChatDetails }) {
                             <div className="flex flex-col space-y-2 p-3 md:p-10 ">
                                 {messageList.map((message) => {
 
-                                    const isReqUserMsg=message.createdBy.id === currentUser.id
+                                    const isReqUserMsg=message.createdBy.id === currentUser.id;
                                         
                                     return (
                                     <div key={message.id} className={`${isReqUserMsg ? 'self-end' : 'self-start'}`}>
@@ -372,8 +372,7 @@ function ChatDetails({ chatData, closeChatDetails }) {
                                             />
                                         </div>
                                     </div>)
-                                })
-                                }
+                                })}
                             </div>
                         </div>
 
