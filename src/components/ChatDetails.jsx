@@ -260,7 +260,7 @@ function ChatDetails({ chatData, closeChatDetails }) {
 
     return (
         <div>
-            {showContactInfo && <ContactInfo closeContactInfo={closeContactInfo} chatUser={chatUser}/>}
+            {showContactInfo && <ContactInfo closeContactInfo={closeContactInfo} chatUser={chatUser} CurrentChatId={finalChatData.id} closeChatDetails={closeChatDetails}/>}
             {showSearchMessages && <SearchMessages closeSearchMessages={()=>setShowSearchMessages(false)}/>}
             {
                 !showContactInfo && !showSearchMessages && (
@@ -323,14 +323,20 @@ function ChatDetails({ chatData, closeChatDetails }) {
                                             <MenuItem onClick={()=>setShowContactInfo(true)}>
                                                 Contact info
                                             </MenuItem>
-                                            <MenuItem onClick={handleSelectMessageClick}>
-                                                Select messages
-                                            </MenuItem>
-                                            <MenuItem
-                                                onClick={closeChatDetails}
-                                            >
-                                                Close chat
-                                            </MenuItem>
+                                            {
+                                                !showCheckbox &&
+                                                <MenuItem onClick={handleSelectMessageClick}>
+                                                    Select messages
+                                                </MenuItem>
+                                            }
+                                            {
+                                                window.innerWidth > 640 &&  // fonly show for desktop width
+                                                <MenuItem
+                                                    onClick={closeChatDetails}
+                                                >
+                                                    Close chat
+                                                </MenuItem>
+                                            }
                                             <MenuItem onClick={handleClose}>
                                                 Mute notifications
                                             </MenuItem>
@@ -363,7 +369,7 @@ function ChatDetails({ chatData, closeChatDetails }) {
                                     return (
                                     <div key={message.id} className={`${isReqUserMsg ? 'self-end' : 'self-start'}`}>
                                         <div className="flex">
-                                            { showCheckbox && <Checkbox {...label} style={{ color: 'gray' }} size="small" onClick={()=>handleSelectMessage(message)}/> }
+                                            { showCheckbox && <Checkbox {...label} style={{ color: 'green' }} size="small" onClick={()=>handleSelectMessage(message)}/> }
                                             <MessageCard
                                                 key={message.id}
                                                 isReqUserMsg={isReqUserMsg}

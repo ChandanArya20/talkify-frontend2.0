@@ -1,11 +1,11 @@
 import { PiCircleDashedBold } from "react-icons/pi";
 import { RiChatNewLine } from "react-icons/ri";
-import { MdOutlineChat } from "react-icons/md";
+import { MdDelete, MdOutlineChat, MdOutlineStar } from "react-icons/md";
 import { BiDotsVerticalRounded } from "react-icons/bi";
 import { RiWechat2Line } from "react-icons/ri";
 import { FaPeopleGroup } from "react-icons/fa6";
-import { IoIosSearch, IoMdArrowBack } from "react-icons/io";
-import { IoFilter } from "react-icons/io5";
+import { IoIosSearch, IoIosShareAlt, IoMdArrowBack } from "react-icons/io";
+import { IoClose, IoFilter } from "react-icons/io5";
 import DefaultUser from "../assets/default-user.png";
 import ChatCard from "../components/ChatCard";
 import { useEffect, useState } from "react";
@@ -13,7 +13,7 @@ import ChatDetails from "../components/ChatDetails";
 import Profile from "../components/Profile";
 import { useNavigate } from "react-router-dom";
 import Status from "../components/Status";
-import { Menu, MenuItem } from "@mui/material";
+import { Checkbox, Menu, MenuItem } from "@mui/material";
 import applogo from "../assets/applogo.png";
 import CreateGroup from "../components/CreateGroup";
 import AddNewUser from "../components/AddNewUser";
@@ -48,8 +48,10 @@ function HomePage() {
     const { chats, createdChat, createdGroup } = useSelector(
         (store) => store.chatStore
     );
+    const [selectedChats, setSelectedChats] = useState([]);
     const [filteredChats, setFilteredChats] = useState([]);
-
+    const label = { inputProps: { 'aria-label': 'Checkbox demo' } };
+    const [showCheckbox, setShowCheckbox] = useState(false);
     const [anchorEl, setAnchorEl] = useState(null);
     const open = Boolean(anchorEl);
     // Function to handle opening the dropdown menu
@@ -59,6 +61,17 @@ function HomePage() {
     // Function to handle closing the dropdown menu
     const handleClose = () => {
         setAnchorEl(null);
+    };
+
+    const [anchorE2, setAnchorE2] = useState(null);
+    const open2 = Boolean(anchorE2);
+    // Function to handle opening the dropdown menu
+    const handleClick2 = (event) => {
+        setAnchorE2(event.currentTarget);
+    };
+    // Function to handle closing the dropdown menu
+    const handleClose2 = () => {
+        setAnchorE2(null);
     };
 
     useEffect(() => {
@@ -227,10 +240,34 @@ function HomePage() {
         setSelectedChat(null);
     };
 
+    const handleSelectChat=(chat)=>{
+
+        setSelectedChats(prev => {
+
+            if (prev.includes(chat)) {
+                // Message is already selected, remove it
+                return prev.filter(chatItem => chatItem.id !== chat.id);
+            } else {
+                // Message is not in the selected list, add it
+                return [...prev, chat];
+            }
+        });
+    }
+    
+    const handleSelectChatClick=()=>{
+        setShowCheckbox(true);
+        handleClose();
+    }
+
+    const handleCloseChatSelected=()=>{
+        setShowCheckbox(false);
+        setSelectedChats([]);
+    }
+
     return (
         <div className="w-full h-screen bg-[#222E35] flex overflow-hidden">
             {/* Left Section */}
-            <div className="w-[100%] md:w-[40%] bg-[#111B21]">
+            <div className="w-[100%] md:w-[40%] bg-[#111B21] relative">
                 {isProfile && <Profile closeOpenProfile={closeOpenProfile} />}
                 {isStatus && <Status closeOpenStatus={closeOpenStatus} />}
                 {isGroup && (
@@ -269,7 +306,7 @@ function HomePage() {
                                         className="cursor-pointer"
                                         onClick={() => setIsStatus(true)}
                                     />
-                                    <RiWechat2Line className="cursor-pointer" />
+                                    {/* <RiWechat2Line className="cursor-pointer" /> */}
                                     <RiChatNewLine
                                         className="cursor-pointer"
                                         onClick={() => setIsAddNewUser(true)}
@@ -300,9 +337,12 @@ function HomePage() {
                                             <MenuItem onClick={handleClose}>
                                                 Starred messages
                                             </MenuItem>
-                                            <MenuItem onClick={handleClose}>
-                                                Select Chats
-                                            </MenuItem>
+                                            {
+                                                !showCheckbox &&
+                                                <MenuItem onClick={handleSelectChatClick}>
+                                                    Select Chats
+                                                </MenuItem>
+                                            }
                                             <MenuItem onClick={handleClose}>
                                                 Settings
                                             </MenuItem>
@@ -363,25 +403,64 @@ function HomePage() {
                         </div>
                         {/* Chat Cards */}
                         <div className="w-full h-[83vh] ml-3 mt-2 overflow-y-scroll pb-5 pr-4">
-                            {filteredChats.map((item) => (
+                            {filteredChats.map((chat) => (
                                 <div
-                                    key={item.id}
-                                    onClick={() => handleCurrentChatClick(item)}
+                                    className="flex"
+                                    key={chat.id}
                                 >
-                                    <ChatCard
-                                        {...item}
-                                        selectedChatId={selectedChat?.id}
-                                    />
+                                    { showCheckbox && <Checkbox {...label} style={{ color: 'green' }} size="small" onClick={()=>handleSelectChat(chat)}/> }
+                                    <div className="flex-1" onClick={() => handleCurrentChatClick(chat)}>
+                                        <ChatCard
+                                            {...chat}
+                                            selectedChatId={selectedChat?.id}
+                                        />
+                                    </div>
                                 </div>
                             ))}
                         </div>
                     </>
                 )}
+
+                {
+                    showCheckbox &&
+                    <div className=" bg-[#1F2B32] w-full h-14 flex items-center justify-between absolute top-14 z-200 px-5">
+                        <div className="flex space-x-5">
+                            <IoClose  className="text-gray-400 text-2xl cursor-pointer" onClick={handleCloseChatSelected} />
+                            <p className="text-gray-300">{`${selectedChats.length} selected`}</p>
+                        </div> 
+                        {
+                            selectedChats.length > 0 &&
+                            <div>
+                                <div className="text-gray-400 text-xl rotate-90">
+                                    <BiDotsVerticalRounded className="cursor-pointer" onClick={handleClick2}/>
+                                </div>
+                            <Menu
+                                id="basic-menu"
+                                anchorEl={anchorE2}
+                                open={open2}
+                                onClose={handleClose2}
+                                MenuListProps={{
+                                    "aria-labelledby":
+                                        "basic-button",
+                                }}
+                            >
+                                <MenuItem onClick={handleClose2}>
+                                    Mark as unread
+                                </MenuItem>
+                                <MenuItem onClick={handleClose2}>
+                                    Mute notifications
+                                </MenuItem>
+                            </Menu>
+                        </div>
+                           
+                        }
+                    </div>
+                }
             </div>
 
             {/* Right Section */}
             <div className="hidden md:flex md:w-[60%] border-l-2 border-slate-800">
-                {currentChat && !isSearchClicked ? (
+                {currentChat ? (
                     <ChatDetails
                         chatData={selectedChat}
                         closeChatDetails={closeChatDetails}

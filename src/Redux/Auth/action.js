@@ -1,6 +1,6 @@
 import axios from "axios";
 import { BASE_API_URL } from "../../config/api";
-import { LOGIN, LOGOUT, REGISTER, REQ_USER, SEARCH_USER, UPDATE_USER } from "./actionType";
+import { LOGIN, LOGOUT, REGISTER, REQ_USER, SEARCH_USER, SEARCH_USERID, UPDATE_USER } from "./actionType";
 
 export const register = (userData) => async (dispatch) => {
 
@@ -70,6 +70,19 @@ export const SearchUser = (query) => async (dispatch) => {
     }
 };
 
+export const SearchUserid = (query) => async (dispatch) => {
+    try {
+        const response = await axios.get(`${BASE_API_URL}/api/user/search-users?query=${query}`,
+        { withCredentials: true }
+        );
+        const resData = response.data;
+        console.log("search user ", resData);
+        dispatch({ type: SEARCH_USERID, payload: resData });
+    } catch (error) {
+        console.log(error);
+    }
+};
+
 export const updateUser = (userData) => async (dispatch) => {
     try {
         const response = await axios.post(`${BASE_API_URL}/api/user/update`, userData, 
@@ -82,4 +95,13 @@ export const updateUser = (userData) => async (dispatch) => {
     } catch (error) {
         console.log(error);
     }
+};
+
+export const loginAfterPasswordUpdate = (userData) => async(dispatch) => {
+    
+    localStorage.setItem("user", JSON.stringify(userData));
+    localStorage.setItem("isLoggedin", 'true');
+    console.log("User logged in ", userData);
+  
+    dispatch({ type: LOGIN, payload: userData });
 };

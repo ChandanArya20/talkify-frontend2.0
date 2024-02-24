@@ -12,12 +12,14 @@ import DefaultUser from '../assets/default-user.png'
 import { MdBlock, MdOutlineClose } from "react-icons/md";
 import { IoIosNotifications, IoMdLock } from "react-icons/io";
 import { Switch } from "@mui/material";
+import { deleteChat } from "../Redux/Chat/action";
 
-const ContactInfo = ({ closeContactInfo, chatUser}) => {
+const ContactInfo = ({ closeContactInfo, chatUser, CurrentChatId, closeChatDetails}) => {
     const { currentUser } = useSelector((state) => state.userStore);
     const [isPenClicked, setIsPenClicked] = useState(false);
     const [isAboutPenClicked, setIsAboutPenClicked] = useState(false);
     const [profileImage, setProfileImage] = useState(currentUser?.profileImage);
+    const { chats } = useSelector((state) => state.chatStore);
     const [loading, setLoading] = useState(false);
     const [name, setName] = useState(currentUser?.name);
     const [about, setAbout] = useState(currentUser?.about);
@@ -53,6 +55,11 @@ const ContactInfo = ({ closeContactInfo, chatUser}) => {
 
         dispatch(updateUser({ id: currentUser.id, profileImage: imageURL }));
     };
+
+    const handleDeleteChat=()=>{
+        dispatch(deleteChat(chats, CurrentChatId));
+        closeChatDetails(); 
+    }
 
     return (
         <div className='className="w-full md:w-[60%] h-screen md:h-screen flex flex-col fixed bg-[#0C1317] '>
@@ -165,8 +172,8 @@ const ContactInfo = ({ closeContactInfo, chatUser}) => {
                         <BsHandThumbsDownFill/>
                         <p>{`Report ${chatUser.name}`}</p>
                     </div>
-                    <div className="flex text-lg space-x-5 items-center text-red-500 p-3 hover:bg-gray-800 cursor-pointer">
-                        <MdDelete/>
+                    <div onClick={handleDeleteChat} className="flex text-lg space-x-5 items-center text-red-500 p-3 hover:bg-gray-800 cursor-pointer">
+                        <MdDelete />
                         <p>Delete chat</p>
                     </div>
                 </div>

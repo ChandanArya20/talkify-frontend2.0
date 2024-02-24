@@ -22,6 +22,9 @@ export const userReducer = (state = initialState, { type, payload }) => {
         case SEARCH_USER:
             return {...state,searchedUsers:payload};
 
+        case SEARCH_USER:
+            return {...state,searchedUserid:payload};
+
         case LOGIN:
             return { ...state, currentUser:payload, isAuthenticated: true };
 
