@@ -239,6 +239,7 @@ function HomePage() {
         setCurrentChat(false);
         setSelectedChat(null);
     };
+    console.log(closeChatDetails);
 
     const handleSelectChat=(chat)=>{
 

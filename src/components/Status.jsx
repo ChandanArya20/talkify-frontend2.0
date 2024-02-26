@@ -5,17 +5,14 @@ import MyStatusCard from "./MyStatusCard";
 import { BsLockFill } from "react-icons/bs";
 import statusData from "../assets/statusData";
 import StatusViewer from "./StatusViewer";
-import loginuser from "../assets/loginuser.jpg";
 import { useSelector } from "react-redux";
+import DefaultUser from '../assets/default-user.png'
 
 const Status = ({ closeOpenStatus }) => {
     
     const [status, setStatus] = useState(statusData);
-    // State to manage the visibility of the StatusViewer modal
     const [isViewerOpen, setIsViewerOpen] = useState(false);
-    // State to store the selected status for viewing
     const [selectedStatus, setSelectedStatus] = useState(null);
-
     const {currentUser} = useSelector(state=>state.userStore);
 
     // Function to open the StatusViewer modal
@@ -31,7 +28,7 @@ const Status = ({ closeOpenStatus }) => {
 
     // Sample item for MyStatusCard
     const item = {
-        statusImages: loginuser,
+        statusImages: DefaultUser,
         statusTimeStamp: "no updates",
     };
 

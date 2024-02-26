@@ -55,7 +55,7 @@ const AddNewUser = ({ closeAddNewUserSection }) => {
                 <input
                     type="text"
                     className="bg-transparent focus:outline-none text-white text-sm w-full"
-                    placeholder="Search name or number"
+                    placeholder="Search userid or name"
                     autoFocus={isSearchClicked}
                     onChange={(e) => {
                         setQuery(e.target.value);
@@ -67,7 +67,7 @@ const AddNewUser = ({ closeAddNewUserSection }) => {
 
             <div className="flex-1 overflow-y-scroll">
                 <div>
-                    <p className="text-base text-[#00a884ab] p-8">CONTACTS ON WHATSAPP</p>
+                    <p className="text-base text-[#00a884ab] p-8">SEARCHED RESULTS</p>
                 </div>
 
                 {/* Display available chat users */}

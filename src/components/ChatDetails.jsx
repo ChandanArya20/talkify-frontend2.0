@@ -30,6 +30,7 @@ import ContactInfo from "./ContactInfo";
 import SearchMessages from "./SearchMessages";
 
 function ChatDetails({ chatData, closeChatDetails }) {
+
     const navigate = useNavigate();
     const location = useLocation();
     const dispatch = useDispatch();
@@ -213,7 +214,7 @@ function ChatDetails({ chatData, closeChatDetails }) {
     const handleDeleteChat=()=>{
         
         dispatch(deleteChat(chats, finalChatData.id));
-        closeChatDetails(false);     
+        closeChatDetails();     
     }
 
     const deleteAllMessagesOfChat=()=>{
@@ -331,9 +332,7 @@ function ChatDetails({ chatData, closeChatDetails }) {
                                             }
                                             {
                                                 window.innerWidth > 640 &&  // fonly show for desktop width
-                                                <MenuItem
-                                                    onClick={closeChatDetails}
-                                                >
+                                                <MenuItem onClick={closeChatDetails}>
                                                     Close chat
                                                 </MenuItem>
                                             }

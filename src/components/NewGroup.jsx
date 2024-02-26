@@ -9,12 +9,16 @@ import axios from 'axios';
 import { useDispatch } from 'react-redux';
 import { ClipLoader } from 'react-spinners';
 import { createGroupChat } from '../Redux/Chat/action';
+import data from "@emoji-mart/data";
+import Picker from "@emoji-mart/react";
+import { toast } from "react-toastify";
 
 const NewGroup = ({closeNewGroup, closeOpenCreateGroup, groupMembersId}) => {
 
     const navigate=useNavigate();
     const [groupSubject, setGroupSubject]=useState('');
     const [groupImage, setGroupImage]=useState(null);
+    const [showEmoji, setShowEmoji] = useState(false);
     const [loading, setLoading]=useState(false);
     const dispatch = useDispatch();
 
@@ -40,13 +44,21 @@ const NewGroup = ({closeNewGroup, closeOpenCreateGroup, groupMembersId}) => {
         closeOpenCreateGroup();
     }
 
-    console.log(groupMembersId);
+    const addEmoji = (emoji) => {
+        setGroupSubject((prevValue) => prevValue + emoji.native);
+    };
+
+    const handleCloseEmoji=(e)=>{
+        if(showEmoji){
+            setShowEmoji(false);
+        }
+    }
 
     return (
-        <div className='flex flex-col justify-between w-full h-full'>
+        <div className='flex flex-col justify-between w-full h-full' onClick={handleCloseEmoji}>
 
             {/* profile header */}
-            <div className="w-full md:w-[40%] h-28 bg-[#222e35da] fixed top-0 z-50">
+            <div className="w-full md:w-[40%] h-14 md:h-28 bg-[#222e35da] fixed top-0 z-50">
                 <div className="w-full h-full flex flex-col justify-end">
                     <div className="flex space-x-5 items-center text-xl font-medium text-gray-200 ml-6 mb-4">
                         <IoMdArrowBack className="cursor-pointer" onClick={closeNewGroup}/>
@@ -91,7 +103,10 @@ const NewGroup = ({closeNewGroup, closeOpenCreateGroup, groupMembersId}) => {
                             }}
                         />
                         <div className="flex space-x-2">
-                            <FaRegFaceSmile className="text-gray-400 cursor-pointer text-xl" />
+                            <FaRegFaceSmile 
+                                className="text-gray-400 cursor-pointer text-xl" 
+                                onClick={()=>setShowEmoji(pre=>!pre)}
+                            />
                         </div>
                     </div>
                     
@@ -118,6 +133,14 @@ const NewGroup = ({closeNewGroup, closeOpenCreateGroup, groupMembersId}) => {
                 }
 
             </div>
+            {showEmoji && (
+                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                    <Picker
+                        data={data}
+                        onEmojiSelect={addEmoji}
+                    />
+                </div>
+            )}
         </div>
     )
 }

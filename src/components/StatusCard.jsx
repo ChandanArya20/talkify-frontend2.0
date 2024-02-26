@@ -19,7 +19,7 @@ function StatusCard({ userName, statusImages, statusTimeStamp }) {
                     </div>
                     <div className="flex items-center space-x-1">
                         <p className="text-sm text-gray-400">
-                            {statusTimeStamp}
+                            {statusTimeStamp} am
                         </p>
                     </div>
                 </div>
