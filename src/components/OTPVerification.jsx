@@ -14,7 +14,7 @@ const OTPVerification = ({ email, gorForCreatePassword }) => {
     useState(() => {
         const id = setTimeout(() => {
             setShowResendOTP(true);
-        }, 10000);
+        }, 15000);
 
         return () => clearTimeout(id);
     }, [email]);
@@ -70,7 +70,7 @@ const OTPVerification = ({ email, gorForCreatePassword }) => {
                 <h1 className="text-lg font-medium text-center mb-1 dark:text-white">
                     Enter OTP
                 </h1>
-                <p className="text-gray-300 text-sm text-center mb-6">
+                <p className="text-gray-500 dark:text-gray-300 text-sm text-center mb-6">
                     <span>OTP has been sent to {email}</span>
                 </p>
                 <input

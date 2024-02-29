@@ -62,7 +62,7 @@ const CreatePassword = ({ email }) => {
                 </h1>
                 <input
                     className="w-full bg-[#EEEEEE] dark:bg-slate-600  dark:text-white px-3 py-2 my-1.5 outline-none text-sm"
-                    type="password"
+                    type="text"
                     placeholder="Create new password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}

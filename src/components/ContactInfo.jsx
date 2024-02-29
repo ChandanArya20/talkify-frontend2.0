@@ -26,6 +26,8 @@ const ContactInfo = ({ closeContactInfo, chatUser, CurrentChatId, closeChatDetai
     const dispatch = useDispatch();
     const label = { inputProps: { 'aria-label': 'Switch demo' } };
 
+    console.log(chatUser);
+
     const handleUpdateName = () => {
         setIsPenClicked(false);
         console.log(name);
@@ -97,7 +99,7 @@ const ContactInfo = ({ closeContactInfo, chatUser, CurrentChatId, closeChatDetai
                     </div>
                     <div className="p-3 flex flex-col justify-center items-center">
                         <p className="text-gray-300 font-medium text-xl">{chatUser.name}</p>
-                        <p className="text-gray-500 text-lg">{chatUser.email}</p>
+                        <p className="text-gray-500 text-lg">{chatUser.userid}</p>
                     </div>
                 </div>
 
