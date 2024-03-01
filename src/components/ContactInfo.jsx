@@ -64,7 +64,7 @@ const ContactInfo = ({ closeContactInfo, chatUser, CurrentChatId, closeChatDetai
     }
 
     return (
-        <div className='className="w-full md:w-[60%] h-screen md:h-screen flex flex-col fixed bg-[#0C1317] '>
+        <div className="w-full md:w-[60%] h-screen md:h-screen flex flex-col fixed bg-[#0C1317] ">
             <div className="bg-[#202C33]">
                 {/* Header */}
                 <div className="w-full h-14 flex items-center">
