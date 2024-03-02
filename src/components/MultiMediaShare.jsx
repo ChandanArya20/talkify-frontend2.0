@@ -8,22 +8,24 @@ import { BsPlusLg } from "react-icons/bs"
 import DefaultFile from "../assets/defaultFileIcon.png"
 
 const MultiMediaShare = ({ selectedFiles, closeMediaShare }) => {
-
     const [mediaFiles, setMediaFiles] = useState([])
     const [message, setMessage] = useState("")
     const [showEmoji, setShowEmoji] = useState(false)
     const [selectedMedia, setSelectedMedia] = useState(null)
 
-    useEffect(()=>{
+    // Check if the device is small (mobile)
+    const isSmallDevice = window.innerWidth < 640
+
+    useEffect(() => {
         setMediaFiles([...selectedFiles])
-    },[])
+    }, [])
 
     useEffect(() => {
         setSelectedMedia(mediaFiles[mediaFiles.length - 1])
     }, [mediaFiles])
 
     const sendMessage = () => {
-        console.log("Sent");
+        console.log("Sent")
     }
 
     const addEmoji = (emoji) => {
@@ -32,8 +34,10 @@ const MultiMediaShare = ({ selectedFiles, closeMediaShare }) => {
 
     return (
         <div className="w-full md:w-[60%] h-screen md:h-screen flex flex-col fixed bg-[#101A20] ">
-            {/* Header */}
-            <div className="w-full h-14 flex bg-[#1F2B32]"></div>
+            {!isSmallDevice && (
+                <div className="w-full h-14 flex bg-[#1F2B32]"></div>
+            )}
+
             {/* Header */}
             <div className="w-full h-14 flex items-center">
                 <div className="flex space-x-7 items-center">
@@ -46,8 +50,9 @@ const MultiMediaShare = ({ selectedFiles, closeMediaShare }) => {
                     </div>
                 </div>
             </div>
+
             {/* media section */}
-            <div className=" h-[40vh] mt-5 flex justify-center items-center ">
+            <div className=" h-[40vh] mt-5 flex justify-center items-center p-4">
                 {selectedMedia?.type?.startsWith("image") ? (
                     <img
                         className="h-full"
@@ -68,14 +73,16 @@ const MultiMediaShare = ({ selectedFiles, closeMediaShare }) => {
                             src={DefaultFile}
                             alt="Selected Media"
                         />
-                        <p className="text-2xl text-gray-400 ">No Preview Available</p>
+                        <p className="text-2xl text-gray-400 ">
+                            No Preview Available
+                        </p>
                         <p className="text-sm text-gray-400 text-center">
                             {selectedMedia?.type}
                         </p>
                     </div>
                 )}
             </div>
-            <div className="w-[80%] mx-auto mt-10 h-12 rounded-lg flex justify-items-start items-center space-x-8 bg-[#2B3B45]">
+            <div className="w-[93%] md:w-[80%] mx-auto mt-10 h-12 rounded-lg flex justify-items-start items-center space-x-8 bg-[#2B3B45]">
                 <input
                     type="text"
                     className="bg-transparent focus:outline-none text-white text-base w-full ml-7"
@@ -100,7 +107,7 @@ const MultiMediaShare = ({ selectedFiles, closeMediaShare }) => {
             </div>
             <div className="w-[95%] mx-auto flex-1 justify-center items-center mt-3 border-t-2 border-gray-800">
                 <div className="w-full h-full flex">
-                    <div className="w-[90%] h-full flex space-x-2 justify-center items-center ">
+                    <div className="w-[80%] md:w-[90%] h-full flex space-x-2 justify-center items-center ">
                         {mediaFiles.map((media, index) => (
                             <div
                                 className={`w-14 h-14 bg-slate-700 cursor-pointer overflow-hidden border-2 rounded-md ${
@@ -111,7 +118,7 @@ const MultiMediaShare = ({ selectedFiles, closeMediaShare }) => {
                                 key={index}
                                 onClick={() => setSelectedMedia(media)}
                             >
-                                { media?.type?.startsWith("image") ? (
+                                {media?.type?.startsWith("image") ? (
                                     <img
                                         className="h-full"
                                         src={URL.createObjectURL(media)}
@@ -152,8 +159,8 @@ const MultiMediaShare = ({ selectedFiles, closeMediaShare }) => {
                             }
                         />
                     </div>
-                    <div className="w-[10%] h-full flex justify-end items-center">
-                        <div className="w-14 h-14 rounded-full bg-[#00A884] flex justify-center items-center cursor-pointer">
+                    <div className="w-[20%] md:w-[10%] h-full flex justify-end items-center">
+                        <div className="w-14 h-14 md:w-14 md:h-14 rounded-full bg-[#00A884] flex justify-center items-center cursor-pointer">
                             <IoSend
                                 className="cursor-pointer text-white text-2xl"
                                 onClick={sendMessage}
@@ -163,8 +170,12 @@ const MultiMediaShare = ({ selectedFiles, closeMediaShare }) => {
                 </div>
             </div>
             {showEmoji && (
-                <div className="absolute right-[20%]">
-                    <Picker data={data} onEmojiSelect={addEmoji} />
+                <div className="absolute md:right-[20%] md:top-[10%]">
+                    <Picker
+                        data={data}
+                        onEmojiSelect={addEmoji}
+                        perLine={isSmallDevice ? 7 : 9}
+                    />
                 </div>
             )}
         </div>

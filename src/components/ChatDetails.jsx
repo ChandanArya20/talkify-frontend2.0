@@ -65,6 +65,8 @@ function ChatDetails({ chatData, closeChatDetails }) {
     const [selectedMessages, setSelectedMessages] = useState([])
     const [showCheckbox, setShowCheckbox] = useState(false)
     const [selectedFiles, setSelectedFiles] = useState(null)
+     // Check if the device is small (mobile)
+    const isSmallDevice = window.innerWidth < 640
 
     useEffect(() => {
         console.log(selectedMessages)
@@ -118,7 +120,7 @@ function ChatDetails({ chatData, closeChatDetails }) {
     }, [finalChatData.id])
 
     useEffect(() => {
-        setMessageList(messageStore.messages)
+        setMessageList(messageStore.messages) 
         latestMessagesRef.current = messageStore.messages
     }, [messageStore.messages])
 
@@ -401,7 +403,7 @@ function ChatDetails({ chatData, closeChatDetails }) {
                     </div>
 
                     {/* Middle content */}
-                    <div className="flex-1 bg-[#11211c] overflow-y-scroll">
+                    <div className="flex-1 bg-[#111B21] overflow-y-scroll">
                         <div className="flex flex-col space-y-2 p-3 md:p-10 ">
                             {messageList.map((message) => {
                                 const isReqUserMsg =
@@ -553,6 +555,7 @@ function ChatDetails({ chatData, closeChatDetails }) {
                                     <Picker
                                         data={data}
                                         onEmojiSelect={addEmoji}
+                                        perLine={isSmallDevice ? 7 : 9}
                                     />
                                 </div>
                             )}
