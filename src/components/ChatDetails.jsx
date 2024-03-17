@@ -15,6 +15,7 @@ import { useLocation, useNavigate } from "react-router-dom"
 import { useDispatch, useSelector } from "react-redux"
 import {
     addNewMessage,
+    createNewMessage,
     deleteSelectedMessages,
     setAllMessages,
 } from "../Redux/Message/action"
@@ -38,6 +39,7 @@ import { BsPlusLg } from "react-icons/bs"
 import ContactInfo from "./ContactInfo"
 import SearchMessages from "./SearchMessages"
 import MultiMediaShare from "./MultiMediaShare"
+import { toast } from "react-toastify"
 
 function ChatDetails({ chatData, closeChatDetails }) {
     const navigate = useNavigate()
@@ -64,9 +66,22 @@ function ChatDetails({ chatData, closeChatDetails }) {
     const label = { inputProps: { "aria-label": "Checkbox demo" } }
     const [selectedMessages, setSelectedMessages] = useState([])
     const [showCheckbox, setShowCheckbox] = useState(false)
-    const [selectedFiles, setSelectedFiles] = useState(null)
-     // Check if the device is small (mobile)
+    const [selectedFiles, setSelectedFiles] = useState([])
+    // Check if the device is small (mobile)
     const isSmallDevice = window.innerWidth < 640
+
+    const chatContainerRef = useRef(null)
+
+    useEffect(() => {
+        scrollToBottom()
+    }, [messageList])
+
+    const scrollToBottom = () => {
+        if (chatContainerRef.current) {
+            chatContainerRef.current.scrollTop =
+                chatContainerRef.current.scrollHeight
+        }
+    }
 
     useEffect(() => {
         console.log(selectedMessages)
@@ -120,7 +135,7 @@ function ChatDetails({ chatData, closeChatDetails }) {
     }, [finalChatData.id])
 
     useEffect(() => {
-        setMessageList(messageStore.messages) 
+        setMessageList(messageStore.messages)
         latestMessagesRef.current = messageStore.messages
     }, [messageStore.messages])
 
@@ -130,20 +145,26 @@ function ChatDetails({ chatData, closeChatDetails }) {
     }, [messageList])
 
     useEffect(() => {
-        // Create a new Stomp client and connect to the WebSocket
-        const socket = new sockjs(BASE_API_URL + "/websocket")
-        const stmClient = Stomp.over(socket)
-        setStompClient(stmClient)
-
-        // Attach the authentication token to the WebSocket headers
-        const authToken = "0f6f9cde-c100-4684-b2fd-d79cd31e396a" // Implement a function to retrieve the authentication token
-        const headers = { Authorization: authToken }
-
-        stmClient.connect({ name: "Chandan" }, onConnect, onError)
-
-        return () => {
-            stmClient.disconnect()
+        try {
+            // Create a new Stomp client and connect to the WebSocket
+            const socket = new sockjs(BASE_API_URL + "/websocket")
+            const stmClient = Stomp.over(socket)
+            setStompClient(stmClient)
+    
+            // Attach the authentication token to the WebSocket headers
+            const authToken = "0f6f9cde-c100-4684-b2fd-d79cd31e396a" // Implement a function to retrieve the authentication token
+            const headers = { Authorization: authToken }
+    
+            stmClient.connect({ name: "Chandan" }, onConnect, onError)
+    
+            return () => {
+                stmClient.disconnect()
+            }
+            
+        } catch (error) {
+            console.log(error);
         }
+
     }, [])
 
     const onConnect = (response) => {
@@ -152,6 +173,25 @@ function ChatDetails({ chatData, closeChatDetails }) {
 
     const onError = (error) => {
         console.log(error)
+    }
+
+    const handleSendMessage = () => {
+        if (stompClient && isConnect) {
+            if (textMessage.trim().length > 0) {
+                stompClient.send(
+                    "/app/message/send",
+                    {},
+                    JSON.stringify({
+                        reqUserId: currentUser.id,
+                        chatId: finalChatData.id,
+                        textMessage: textMessage,
+                    })
+                )
+            }
+        }
+        setTextMessage("")
+        setShowEmoji(false)
+        setShowContentShare(false)
     }
 
     useEffect(() => {
@@ -183,25 +223,6 @@ function ChatDetails({ chatData, closeChatDetails }) {
             }
         }
     }, [stompClient, isConnect, finalChatData.id])
-
-    const handleSendMessage = () => {
-        if (stompClient && isConnect) {
-            if (textMessage.trim().length > 0) {
-                stompClient.send(
-                    "/app/message/send",
-                    {},
-                    JSON.stringify({
-                        userId: currentUser.id,
-                        chatId: finalChatData.id,
-                        content: textMessage,
-                    })
-                )
-            }
-        }
-        setTextMessage("")
-        setShowEmoji(false)
-        setShowContentShare(false)
-    }
 
     const onMessageRecieve = (response) => {
         const newMessage = JSON.parse(response.body)
@@ -278,6 +299,32 @@ function ChatDetails({ chatData, closeChatDetails }) {
         setShowContentShare(false)
     }
 
+    const handleFileInputChange = (e) => {
+       
+        const files = [...e.target.files];
+
+        // Filter files larger than 50MB
+        const filteredFiles = files.filter((file) => file.size <= 50 * 1024 * 1024);
+
+        const largerSizeMedia = files.length-filteredFiles.length
+
+        if( largerSizeMedia > 0){
+
+            if(largerSizeMedia==1){
+                toast.error("1 media you tried adding is larger than 50MB limit ")
+            } else{
+                toast.error(`${largerSizeMedia} media you tried adding are larger than 50MB limit `)
+            }
+            setShowContentShare(false);
+        }
+
+        if(filteredFiles.length > 0){
+            
+            setSelectedFiles((prevFiles) => [...prevFiles, ...filteredFiles]);
+            setShowMediaShare(true)
+        }
+    };
+
     return (
         <div>
             {showContactInfo && (
@@ -296,6 +343,7 @@ function ChatDetails({ chatData, closeChatDetails }) {
             {showMediaShare && (
                 <MultiMediaShare
                     selectedFiles={selectedFiles}
+                    chatId={finalChatData.id}
                     closeMediaShare={closeMediaShare}
                 />
             )}
@@ -403,7 +451,10 @@ function ChatDetails({ chatData, closeChatDetails }) {
                     </div>
 
                     {/* Middle content */}
-                    <div className="flex-1 bg-[#111B21] overflow-y-scroll">
+                    <div
+                        className="flex-1 bg-[#111B21] overflow-y-scroll"
+                        ref={chatContainerRef}
+                    >
                         <div className="flex flex-col space-y-2 p-3 md:p-10 ">
                             {messageList.map((message) => {
                                 const isReqUserMsg =
@@ -434,12 +485,7 @@ function ChatDetails({ chatData, closeChatDetails }) {
                                             <MessageCard
                                                 key={message.id}
                                                 isReqUserMsg={isReqUserMsg}
-                                                textMessage={
-                                                    message.textMessage
-                                                }
-                                                creationTime={
-                                                    message.creationTime
-                                                }
+                                                message={message}
                                             />
                                         </div>
                                     </div>
@@ -475,7 +521,7 @@ function ChatDetails({ chatData, closeChatDetails }) {
                                 />
                                 {showContentShare && (
                                     <div className="flex flex-col p-3 pl-2 rounded-lg  absolute bg-[#233138] bottom-16   text-base text-gray-300 z-100">
-                                        <label htmlFor="imageInput">
+                                        <label htmlFor="documentInput">
                                             <div className="flex place-items-center space-x-3 rounded-lg cursor-pointer hover:bg-[#182229] py-2 pl-1 pr-10">
                                                 <IoDocumentText className="text-xl text-[#7F66FF]" />
                                                 <p className="text-center">
@@ -486,29 +532,37 @@ function ChatDetails({ chatData, closeChatDetails }) {
                                         <input
                                             type="file"
                                             multiple
-                                            id="imageInput"
+                                            id="documentInput"
                                             className="w-full h-full rounded-full object-cover hidden"
-                                            onChange={(e) => {
-                                                setSelectedFiles(e.target.files)
-                                                setShowMediaShare(true)
-                                            }}
+                                            onChange={handleFileInputChange}
                                         />
                                         <label htmlFor="imageInput">
                                             <div className="flex place-items-center space-x-3 rounded-lg cursor-pointer hover:bg-[#182229] py-2 pl-1 pr-10">
                                                 <IoMdPhotos className="text-xl text-[#007BFC]" />
-                                                <p>Photos & Videos</p>
+                                                <p>Photos</p>
                                             </div>
                                         </label>
                                         <input
                                             type="file"
-                                            accept="image/*, video/*"
+                                            accept="image/*"
                                             multiple
                                             id="imageInput"
                                             className="w-full h-full rounded-full object-cover hidden"
-                                            onChange={(e) => {
-                                                setSelectedFiles(e.target.files)
-                                                setShowMediaShare(true)
-                                            }}
+                                            onChange={handleFileInputChange}
+                                        />
+                                        <label htmlFor="videoInput">
+                                            <div className="flex place-items-center space-x-3 rounded-lg cursor-pointer hover:bg-[#182229] py-2 pl-1 pr-10">
+                                                <IoMdPhotos className="text-xl text-yellow-400" />
+                                                <p>Videos</p>
+                                            </div>
+                                        </label>
+                                        <input
+                                            type="file"
+                                            accept="video/*"
+                                            multiple
+                                            id="videoInput"
+                                            className="w-full h-full rounded-full object-cover hidden"
+                                            onChange={handleFileInputChange}
                                         />
                                         <div className="flex place-items-center space-x-3 rounded-lg cursor-pointer hover:bg-[#182229] py-2 pl-1 pr-10">
                                             <MdCameraAlt className="text-xl text-[#FF2E74]" />

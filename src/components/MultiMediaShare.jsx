@@ -6,12 +6,18 @@ import Picker from "@emoji-mart/react"
 import { IoSend } from "react-icons/io5"
 import { BsPlusLg } from "react-icons/bs"
 import DefaultFile from "../assets/defaultFileIcon.png"
+import { useDispatch } from "react-redux"
+import { createNewMessage } from "../Redux/Message/action"
+import { toast } from "react-toastify"
+import { PulseLoader } from "react-spinners"
 
-const MultiMediaShare = ({ selectedFiles, closeMediaShare }) => {
+const MultiMediaShare = ({ selectedFiles, chatId, closeMediaShare }) => {
     const [mediaFiles, setMediaFiles] = useState([])
     const [message, setMessage] = useState("")
     const [showEmoji, setShowEmoji] = useState(false)
     const [selectedMedia, setSelectedMedia] = useState(null)
+    const [loading, setLoading] = useState(false)
+    const dispatch = useDispatch()
 
     // Check if the device is small (mobile)
     const isSmallDevice = window.innerWidth < 640
@@ -24,16 +30,79 @@ const MultiMediaShare = ({ selectedFiles, closeMediaShare }) => {
         setSelectedMedia(mediaFiles[mediaFiles.length - 1])
     }, [mediaFiles])
 
-    const sendMessage = () => {
-        console.log("Sent")
+    const sendMessage = async () => {
+        setLoading(true)
+
+        for (const media of mediaFiles) {
+            const formData = new FormData()
+            let msgRequestData = null
+
+            if (media === selectedMedia) {
+                msgRequestData = {
+                    chatId: chatId,
+                    noteMessage: message,
+                }
+            } else {
+                msgRequestData = {
+                    chatId: chatId,
+                }
+            }
+
+            // Append the message request data as a JSON string
+            formData.append("msgRequest", JSON.stringify(msgRequestData))
+            formData.append("mediaFile", media)
+
+            await dispatch(createNewMessage(formData))
+        }
+
+        // Reset message and media files after sending
+        setMessage("")
+        setMediaFiles([])
+        setSelectedMedia(null)
+        closeMediaShare()
+
+        setLoading(false)
     }
 
     const addEmoji = (emoji) => {
         setMessage((prevValue) => prevValue + emoji.native)
     }
 
+    const handleFileInputChange = (e) => {
+        const files = [...e.target.files]
+
+        // Filter files larger than 50MB
+        const filteredFiles = files.filter(
+            (file) => file.size <= 50 * 1024 * 1024
+        )
+
+        const largerSizeMedia = files.length - filteredFiles.length
+
+        if (largerSizeMedia > 0) {
+            if (largerSizeMedia == 1) {
+                toast.error(
+                    "1 media you tried adding is larger than 50MB limit "
+                )
+            } else {
+                toast.error(
+                    `${largerSizeMedia} media you tried adding are larger than 50MB limit `
+                )
+            }
+        }
+
+        setMediaFiles((prevFiles) => [...prevFiles, ...filteredFiles])
+    }
+
     return (
         <div className="w-full md:w-[60%] h-screen md:h-screen flex flex-col fixed bg-[#101A20] ">
+            {loading && (
+                <div className="absolute w-full h-full flex justify-center z-1000">
+                    <div className="w-36 h-12 mt-[5rem] flex flex-col items-center justify-center bg-white rounded-lg">
+                        <PulseLoader color="#36d7b7" size={12} />
+                        <p>Sharing...</p>
+                    </div>
+                </div>
+            )}
             {!isSmallDevice && (
                 <div className="w-full h-14 flex bg-[#1F2B32]"></div>
             )}
@@ -151,12 +220,7 @@ const MultiMediaShare = ({ selectedFiles, closeMediaShare }) => {
                             multiple
                             id="imageInput"
                             className="w-full h-full rounded-full object-cover hidden"
-                            onChange={(e) =>
-                                setMediaFiles([
-                                    ...mediaFiles,
-                                    ...e.target.files,
-                                ])
-                            }
+                            onChange={handleFileInputChange}
                         />
                     </div>
                     <div className="w-[20%] md:w-[10%] h-full flex justify-end items-center">

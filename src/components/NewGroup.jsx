@@ -48,14 +48,8 @@ const NewGroup = ({closeNewGroup, closeOpenCreateGroup, groupMembersId}) => {
         setGroupSubject((prevValue) => prevValue + emoji.native);
     };
 
-    const handleCloseEmoji=(e)=>{
-        if(showEmoji){
-            setShowEmoji(false);
-        }
-    }
-
     return (
-        <div className='flex flex-col justify-between w-full h-full' onClick={handleCloseEmoji}>
+        <div className='flex flex-col justify-between w-full h-full'>
 
             {/* profile header */}
             <div className="w-full md:w-[40%] h-14 md:h-28 bg-[#222e35da] fixed top-0 z-50">
@@ -104,7 +98,7 @@ const NewGroup = ({closeNewGroup, closeOpenCreateGroup, groupMembersId}) => {
                         />
                         <div className="flex space-x-2">
                             <FaRegFaceSmile 
-                                className="text-gray-400 cursor-pointer text-xl" 
+                                className={`cursor-pointer text-xl ${showEmoji ? "text-[#00A884]" : "text-gray-400" }` }
                                 onClick={()=>setShowEmoji(pre=>!pre)}
                             />
                         </div>
@@ -134,10 +128,12 @@ const NewGroup = ({closeNewGroup, closeOpenCreateGroup, groupMembersId}) => {
 
             </div>
             {showEmoji && (
-                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                <div className="absolute top-1/2 md:top-[60%] md:left-[60%] left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-200000">
                     <Picker
                         data={data}
                         onEmojiSelect={addEmoji}
+                        emojiSize={18}
+                        perLine={6}
                     />
                 </div>
             )}

@@ -11,7 +11,7 @@ export const messageReducer = (state = initialState, { type, payload }) => {
     switch (type) {
 
         case CREATE_NEW_MESSAGE:
-            return { ...state, messages: [...payload.messages, payload.sentMessage], sentMessage: payload.sentMessage };
+            return { ...state, messages: [...messages, payload], sentMessage: payload };
 
         case SET_ALL_MESSAGES:
             return { ...state, messages: [...payload] };
