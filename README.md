@@ -91,9 +91,9 @@ npm run dev
 ```
 **For backend refer** :
 
-Note : You can access live server for connecting to this frontend as well, that time You don't need to start backend on your local machine you can make changes in enviroment file and replace base URL with live URL. for more info, visit:
+  Note : You can access live server for connecting to this frontend as well, that time You don't need to start backend on your local machine you can make     changes in enviroment file and replace base URL with live URL. for more info, visit:
 
-Backend Github Repository : https://github.com/ChandanArya20/TalkifyBackend2.0.git
+  Backend Github Repository : https://github.com/ChandanArya20/TalkifyBackend2.0.git
 
 
 4. Access the application through your web browser.
