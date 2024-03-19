@@ -23,6 +23,7 @@ Live Link : https://talkifychat.netlify.app/
 ## Table of Contents
 - [Feature](#feature)
 - [Technologies Used](#technologies-used)
+- [Prerequisites](#prerequisites)
 - [Installation](#installation)
 - [Usage](#usage)
 - [Future Enhancements](#future-enhancements)
@@ -58,6 +59,14 @@ Our project leverages the following technologies:
 
 ---
 
+### Prerequisites
+
+Before you begin, ensure you have met the following requirements:
+
+- Node.js 18 or higher installed.
+- You can use VS Code as IDE
+
+
 ## Installation
 
 To install and run our Takify frontend application locally, follow these steps:
@@ -82,10 +91,9 @@ npm run dev
 ```
 **For backend refer** :
 
+Note : You can access live server for connecting to this frontend as well, that time You don't need to start backend on your local machine you can make changes in enviroment file and replace base URL with live URL. for more info, visit:
+
 Backend Github Repository : https://github.com/ChandanArya20/TalkifyBackend2.0.git
-
-
-Note : You can access live server as well, that time You don't need to start backend on your local machine you can make changes in enviroment file and replace base URL with live URL. 
 
 
 4. Access the application through your web browser.
