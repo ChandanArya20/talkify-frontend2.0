@@ -42,36 +42,44 @@ import MultiMediaShare from "./MultiMediaShare"
 import { toast } from "react-toastify"
 
 function ChatDetails({ chatData, closeChatDetails }) {
+    
+    // Hooks for navigation, location, and dispatch
     const navigate = useNavigate()
     const location = useLocation()
     const dispatch = useDispatch()
+
     const [textMessage, setTextMessage] = useState("")
+    const [messageList, setMessageList] = useState([])
+
     const { currentUser } = useSelector((state) => state.userStore)
     const messageStore = useSelector((state) => state.messageStore)
     const { chats } = useSelector((state) => state.chatStore)
-    const [messageList, setMessageList] = useState([])
+
     const finalChatData = location.state || chatData
     const { chatName, chatImage, isGroup, members } = finalChatData
+
     const chatUser = members?.filter(
         (member) => member.id !== currentUser.id
     )[0]
+
     const [stompClient, setStompClient] = useState()
     const [isConnect, setIsConnect] = useState(false)
-    const latestMessagesRef = useRef(messageStore.messages)
     const [showEmoji, setShowEmoji] = useState(false)
     const [showContentShare, setShowContentShare] = useState(false)
     const [showContactInfo, setShowContactInfo] = useState(false)
     const [showSearchMessages, setShowSearchMessages] = useState(false)
     const [showMediaShare, setShowMediaShare] = useState(false)
-    const label = { inputProps: { "aria-label": "Checkbox demo" } }
-    const [selectedMessages, setSelectedMessages] = useState([])
     const [showCheckbox, setShowCheckbox] = useState(false)
-    const [selectedFiles, setSelectedFiles] = useState([])
-    // Check if the device is small (mobile)
-    const isSmallDevice = window.innerWidth < 640
 
+    const latestMessagesRef = useRef(messageStore.messages)
     const chatContainerRef = useRef(null)
 
+    const label = { inputProps: { "aria-label": "Checkbox demo" } }
+    const [selectedMessages, setSelectedMessages] = useState([])
+    const [selectedFiles, setSelectedFiles] = useState([])
+    const isSmallDevice = window.innerWidth < 640
+
+    // Effect to scroll to the bottom when messageList updates
     useEffect(() => {
         scrollToBottom()
     }, [messageList])
@@ -83,40 +91,46 @@ function ChatDetails({ chatData, closeChatDetails }) {
         }
     }
 
+    // Effect to log selectedMessages
     useEffect(() => {
         console.log(selectedMessages)
     }, [selectedMessages])
 
+    // Function to add an emoji to the text message
     const addEmoji = (emoji) => {
         setTextMessage((prevValue) => prevValue + emoji.native)
     }
 
+    // Function to handle emoji click
     const handleEmojiClick = () => {
         setShowContentShare(false)
         setShowEmoji((pre) => !pre)
     }
 
+    // Function to handle content share click
     const handleContentShareClick = () => {
         setShowEmoji(false)
         setShowContentShare((pre) => !pre)
     }
 
+    // Effect to close content share when showEmoji changes
     useEffect(() => {
         setShowContentShare(false)
     }, [showEmoji])
 
+    // State and effect for anchorEl for menu
     const [anchorEl, setAnchorEl] = useState(null)
     const open = Boolean(anchorEl)
 
-    // Function to handle opening the dropdown menu
     const handleClick = (event) => {
         setAnchorEl(event.currentTarget)
     }
-    // Function to handle closing the dropdown menu
+
     const handleClose = () => {
         setAnchorEl(null)
     }
 
+    // Effect to reset states when chat changes
     useEffect(() => {
         setShowEmoji(false)
         setShowContentShare(false)
@@ -126,19 +140,23 @@ function ChatDetails({ chatData, closeChatDetails }) {
         handleClose()
     }, [finalChatData.id])
 
+    // Effect to log finalChatData
     useEffect(() => {
         console.log(finalChatData)
     }, [finalChatData.id])
 
+    // Effect to set all messages of the finalChatData
     useEffect(() => {
         dispatch(setAllMessages(finalChatData.messages))
     }, [finalChatData.id])
 
+    // Effect to set messageList and update latestMessagesRef
     useEffect(() => {
         setMessageList(messageStore.messages)
         latestMessagesRef.current = messageStore.messages
     }, [messageStore.messages])
 
+    // Effect to log messageList and messageStore.messages
     useEffect(() => {
         console.log(messageStore.messages)
         console.log(messageList)
@@ -150,27 +168,27 @@ function ChatDetails({ chatData, closeChatDetails }) {
             const socket = new sockjs(BASE_API_URL + "/websocket")
             const stmClient = Stomp.over(socket)
             setStompClient(stmClient)
-    
+
             // Attach the authentication token to the WebSocket headers
             const authToken = "0f6f9cde-c100-4684-b2fd-d79cd31e396a" // Implement a function to retrieve the authentication token
             const headers = { Authorization: authToken }
-    
-            stmClient.connect({ name: "Chandan" }, onConnect, onError)
-    
+
+            stmClient.connect(headers, onConnect, onError)
+
             return () => {
                 stmClient.disconnect()
             }
-            
         } catch (error) {
-            console.log(error);
+            console.log(error)
         }
-
     }, [])
 
+    // Callback function for connection success
     const onConnect = (response) => {
         setIsConnect(true)
     }
 
+    // Callback function for connection error
     const onError = (error) => {
         console.log(error)
     }
@@ -198,8 +216,6 @@ function ChatDetails({ chatData, closeChatDetails }) {
         let subscription
 
         if (stompClient && isConnect) {
-            // Establish subscription only if the stompClient or isConnect changes
-
             // subscription = stompClient.subscribe("/topic/messages" + finalChatData.id.toString(),
             //     onChatMessagesRecieve);
 
@@ -224,9 +240,10 @@ function ChatDetails({ chatData, closeChatDetails }) {
         }
     }, [stompClient, isConnect, finalChatData.id])
 
+    // Callback function for receiving messages
     const onMessageRecieve = (response) => {
         const newMessage = JSON.parse(response.body)
-        console.log("Recieved Message : ", newMessage)
+        console.log("Received Message: ", newMessage)
         const latestMessages = latestMessagesRef.current
 
         dispatch(addNewMessage(latestMessages, newMessage))
@@ -240,44 +257,49 @@ function ChatDetails({ chatData, closeChatDetails }) {
     //     dispatch(setAllMessages(messages));
     // };
 
+    // Function to close contact info
     const closeContactInfo = () => {
         setShowContactInfo(false)
         handleClose()
     }
 
+    // Function to handle chat deletion
     const handleDeleteChat = () => {
         dispatch(deleteChat(chats, finalChatData.id))
         closeChatDetails()
     }
 
+    // Function to delete all messages of the chat
     const deleteAllMessagesOfChat = () => {
         dispatch(deleteALLMessagesByChatId(chats, finalChatData.id))
         messageStore.messages = []
         handleClose()
     }
 
+    // Function to handle select message click
     const handleSelectMessageClick = () => {
         setShowCheckbox(true)
         handleClose()
     }
 
+    // Function to handle message selection
     const handleSelectMessage = (message) => {
         setSelectedMessages((prev) => {
             if (prev.includes(message)) {
-                // Message is already selected, remove it
                 return prev.filter((msg) => msg.id !== message.id)
             } else {
-                // Message is not in the selected list, add it
                 return [...prev, message]
             }
         })
     }
 
+    // Function to close messages selected
     const handleCloseMessagesSelected = () => {
         setShowCheckbox(false)
         setSelectedMessages([])
     }
 
+    // Function to delete selected messages
     const handleDeleteSelectedMessages = () => {
         if (selectedMessages.length < 0) {
             return
@@ -294,39 +316,44 @@ function ChatDetails({ chatData, closeChatDetails }) {
         )
     }
 
+    // Function to close media share
     const closeMediaShare = () => {
         setShowMediaShare(false)
         setShowContentShare(false)
     }
 
     const handleFileInputChange = (e) => {
-       
-        const files = [...e.target.files];
+        const files = [...e.target.files]
 
         // Filter files larger than 50MB
-        const filteredFiles = files.filter((file) => file.size <= 50 * 1024 * 1024);
+        const filteredFiles = files.filter(
+            (file) => file.size <= 50 * 1024 * 1024
+        )
 
-        const largerSizeMedia = files.length-filteredFiles.length
+        const largerSizeMedia = files.length - filteredFiles.length
 
-        if( largerSizeMedia > 0){
-
-            if(largerSizeMedia==1){
-                toast.error("1 media you tried adding is larger than 50MB limit ")
-            } else{
-                toast.error(`${largerSizeMedia} media you tried adding are larger than 50MB limit `)
+        if (largerSizeMedia > 0) {
+            if (largerSizeMedia == 1) {
+                toast.error(
+                    "1 media you tried adding is larger than 50MB limit "
+                )
+            } else {
+                toast.error(
+                    `${largerSizeMedia} media you tried adding are larger than 50MB limit `
+                )
             }
-            setShowContentShare(false);
+            setShowContentShare(false)
         }
 
-        if(filteredFiles.length > 0){
-            
-            setSelectedFiles((prevFiles) => [...prevFiles, ...filteredFiles]);
+        if (filteredFiles.length > 0) {
+            setSelectedFiles((prevFiles) => [...prevFiles, ...filteredFiles])
             setShowMediaShare(true)
         }
-    };
+    }
 
     return (
         <div>
+            {/* Render contact information component if showContactInfo is true */}
             {showContactInfo && (
                 <ContactInfo
                     closeContactInfo={closeContactInfo}
@@ -335,11 +362,15 @@ function ChatDetails({ chatData, closeChatDetails }) {
                     closeChatDetails={closeChatDetails}
                 />
             )}
+
+            {/* Render search messages component if showSearchMessages is true */}
             {showSearchMessages && (
                 <SearchMessages
                     closeSearchMessages={() => setShowSearchMessages(false)}
                 />
             )}
+
+            {/* Render media sharing component if showMediaShare is true */}
             {showMediaShare && (
                 <MultiMediaShare
                     selectedFiles={selectedFiles}
@@ -347,18 +378,22 @@ function ChatDetails({ chatData, closeChatDetails }) {
                     closeMediaShare={closeMediaShare}
                 />
             )}
+
+            {/* Render main chat UI if none of the above components are rendered */}
             {!showContactInfo && !showSearchMessages && !showMediaShare && (
                 <div className="w-full md:w-[60%] h-screen md:h-screen flex flex-col justify-between fixed">
                     <div className="bg-[#1F2B32]">
                         {/* Header */}
                         <div className="w-[95%] h-14 flex items-center justify-between mx-auto">
                             <div className="flex space-x-3 items-center">
+                                {/* Render back button for mobile devices */}
                                 {window.innerWidth < 640 && (
                                     <IoMdArrowBack
                                         className="cursor-pointer text-2xl text-gray-400"
                                         onClick={() => navigate(-1)}
                                     />
                                 )}
+
                                 {/* User avatar */}
                                 <div className="w-10 h-10 rounded-full bg-white cursor-pointer">
                                     <img
@@ -373,6 +408,7 @@ function ChatDetails({ chatData, closeChatDetails }) {
                                         onClick={() => setShowContactInfo(true)}
                                     />
                                 </div>
+
                                 {/* User details */}
                                 <div className="">
                                     <p className="text-white font-medium text-base">
@@ -383,6 +419,7 @@ function ChatDetails({ chatData, closeChatDetails }) {
                                     </p>
                                 </div>
                             </div>
+
                             {/* Search and more options icons */}
                             <div className="flex space-x-8 text-2xl my-auto text-gray-400">
                                 <IoIosSearch
@@ -394,6 +431,7 @@ function ChatDetails({ chatData, closeChatDetails }) {
                                         className="cursor-pointer"
                                         onClick={handleClick}
                                     />
+                                    {/* Dropdown menu */}
                                     <Menu
                                         id="basic-menu"
                                         anchorEl={anchorEl}
@@ -403,6 +441,7 @@ function ChatDetails({ chatData, closeChatDetails }) {
                                             "aria-labelledby": "basic-button",
                                         }}
                                     >
+                                        {/* Menu items */}
                                         <MenuItem
                                             onClick={() =>
                                                 setShowContactInfo(true)
@@ -419,7 +458,7 @@ function ChatDetails({ chatData, closeChatDetails }) {
                                                 Select messages
                                             </MenuItem>
                                         )}
-                                        {window.innerWidth > 640 && ( // fonly show for desktop width
+                                        {window.innerWidth > 640 && (
                                             <MenuItem
                                                 onClick={closeChatDetails}
                                             >
@@ -429,9 +468,6 @@ function ChatDetails({ chatData, closeChatDetails }) {
                                         <MenuItem onClick={handleClose}>
                                             Mute notifications
                                         </MenuItem>
-                                        {/* <MenuItem onClick={handleClose}>
-                                                Disappearing messages
-                                            </MenuItem> */}
                                         <MenuItem
                                             onClick={deleteAllMessagesOfChat}
                                         >
@@ -440,9 +476,6 @@ function ChatDetails({ chatData, closeChatDetails }) {
                                         <MenuItem onClick={handleDeleteChat}>
                                             Delete chat
                                         </MenuItem>
-                                        {/* <MenuItem >
-                                                Report
-                                            </MenuItem> */}
                                         <MenuItem>Block</MenuItem>
                                     </Menu>
                                 </div>
@@ -450,12 +483,13 @@ function ChatDetails({ chatData, closeChatDetails }) {
                         </div>
                     </div>
 
-                    {/* Middle content */}
+                    {/* Middle content: Message display */}
                     <div
                         className="flex-1 bg-[#111B21] overflow-y-scroll"
                         ref={chatContainerRef}
                     >
                         <div className="flex flex-col space-y-2 p-3 md:p-10 ">
+                            {/* Render each message */}
                             {messageList.map((message) => {
                                 const isReqUserMsg =
                                     message.createdBy.id === currentUser.id
@@ -470,6 +504,7 @@ function ChatDetails({ chatData, closeChatDetails }) {
                                         }`}
                                     >
                                         <div className="flex">
+                                            {/* Checkbox for message selection */}
                                             {showCheckbox && (
                                                 <Checkbox
                                                     {...label}
@@ -482,6 +517,7 @@ function ChatDetails({ chatData, closeChatDetails }) {
                                                     }
                                                 />
                                             )}
+                                            {/* Render message card */}
                                             <MessageCard
                                                 key={message.id}
                                                 isReqUserMsg={isReqUserMsg}

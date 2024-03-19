@@ -1,85 +1,84 @@
-import React, { useEffect, useState } from "react";
-import { stories } from "../assets/Stories";
-import { IoMdArrowBack, IoMdArrowForward } from "react-icons/io";
+import React, { useEffect, useState } from "react"
+import { stories } from "../assets/Stories"
+import { IoMdArrowBack, IoMdArrowForward } from "react-icons/io"
 import {
     MdOutlineArrowBackIos,
     MdOutlineArrowForwardIos,
     MdOutlineClose,
-} from "react-icons/md";
-import { FaRegFaceSmile, FaPlus } from "react-icons/fa6";
-import { IoSend } from "react-icons/io5";
-import ProgressBar from "./ProgressBar";
-import StatusCard from "./StatusCard";
-import { useNavigate } from "react-router-dom";
-import DefaultUser from '../assets/default-user.png'
-import data from "@emoji-mart/data";
-import Picker from "@emoji-mart/react";
-import { toast } from "react-toastify";
+} from "react-icons/md"
+import { FaRegFaceSmile, FaPlus } from "react-icons/fa6"
+import { IoSend } from "react-icons/io5"
+import ProgressBar from "./ProgressBar"
+import StatusCard from "./StatusCard"
+import { useNavigate } from "react-router-dom"
+import DefaultUser from "../assets/default-user.png"
+import data from "@emoji-mart/data"
+import Picker from "@emoji-mart/react"
+import { toast } from "react-toastify"
 
 const StatusViewer = ({ userName, status, closeStatusViewer }) => {
-
-    const [currentStoriesIndex, setCurrentStoriesIndex] = useState(0);
+    const [currentStoriesIndex, setCurrentStoriesIndex] = useState(0)
     // State to manage the active index for progress bar
-    const [activeIndex, setActiveIndex] = useState(0);
-    const [replyMessage, setReplyMessage] = useState("");
-    const [showEmoji, setShowEmoji] = useState(false);
-    const navigate = useNavigate();
+    const [activeIndex, setActiveIndex] = useState(0)
+    const [replyMessage, setReplyMessage] = useState("")
+    const [showEmoji, setShowEmoji] = useState(false)
+    const navigate = useNavigate()
 
     // Check if the device is small (mobile)
-    const isSmallDevice = window.innerWidth < 640;
+    const isSmallDevice = window.innerWidth < 640
 
     // Function to handle advancing to the next story
     const handleNextStory = () => {
         if (currentStoriesIndex < stories.length - 1) {
-            setCurrentStoriesIndex(currentStoriesIndex + 1);
-            setActiveIndex(activeIndex + 1);
+            setCurrentStoriesIndex(currentStoriesIndex + 1)
+            setActiveIndex(activeIndex + 1)
         } else {
-            setCurrentStoriesIndex(0);
-            setActiveIndex(0);
+            setCurrentStoriesIndex(0)
+            setActiveIndex(0)
         }
-    };
+    }
 
     // Function to handle going back to the previous story
     const handleBackStory = () => {
         if (currentStoriesIndex > 0) {
-            setCurrentStoriesIndex(currentStoriesIndex - 1);
-            setActiveIndex(activeIndex - 1);
+            setCurrentStoriesIndex(currentStoriesIndex - 1)
+            setActiveIndex(activeIndex - 1)
         } else {
-            setCurrentStoriesIndex(0);
-            setActiveIndex(0);
+            setCurrentStoriesIndex(0)
+            setActiveIndex(0)
         }
-    };
+    }
 
     // Auto-advance to the next story every 3 seconds
     useEffect(() => {
         const intervalId = setInterval(() => {
-            handleNextStory();
-        }, 3000);
+            handleNextStory()
+        }, 3000)
 
         // Cleanup: Clear the interval when the component unmounts
-        return () => clearInterval(intervalId);
-    }, [currentStoriesIndex]);
+        return () => clearInterval(intervalId)
+    }, [currentStoriesIndex])
 
     // Function to handle sending a reply message
     const handleReplyMessage = () => {
-        setReplyMessage('');
-        setShowEmoji(false);
+        setReplyMessage("")
+        setShowEmoji(false)
         toast.success("Replied successfully...", {
-            position:"top-right",
-            theme:'dark'
+            position: "top-right",
+            theme: "dark",
         })
-    };
+    }
 
     const addEmoji = (emoji) => {
-        setReplyMessage((prevValue) => prevValue + emoji.native);
-    };
+        setReplyMessage((prevValue) => prevValue + emoji.native)
+    }
 
     // Sample item for StatusCard
     const item = {
         userName: userName,
-        statusImages:DefaultUser,
+        statusImages: DefaultUser,
         statusTimeStamp: "8h ago",
-    };
+    }
 
     return (
         <div className="w-full h-screen bg-[#222E35] overflow-hidden fixed z-50">
@@ -161,10 +160,11 @@ const StatusViewer = ({ userName, status, closeStatusViewer }) => {
                     <div className="w-full h-12 flex items-center justify-between mx-auto">
                         {/* Smile and Plus icons */}
                         <div className="flex space-x-6 text-2xl my-auto text-gray-400">
-                            <FaRegFaceSmile 
-                                className={`cursor-pointer ${showEmoji&& "text-[#00A884]"}`}
-                                onClick={()=>setShowEmoji(pre=>!pre)}
-
+                            <FaRegFaceSmile
+                                className={`cursor-pointer ${
+                                    showEmoji && "text-[#00A884]"
+                                }`}
+                                onClick={() => setShowEmoji((pre) => !pre)}
                             />
                         </div>
                         {/* Input for text message */}
@@ -179,8 +179,8 @@ const StatusViewer = ({ userName, status, closeStatusViewer }) => {
                                 }
                                 onKeyDown={(e) => {
                                     if (e.key === "Enter") {
-                                        handleReplyMessage();
-                                        setReplyMessage("");
+                                        handleReplyMessage()
+                                        setReplyMessage("")
                                     }
                                 }}
                             />
@@ -197,14 +197,11 @@ const StatusViewer = ({ userName, status, closeStatusViewer }) => {
             </div>
             {showEmoji && (
                 <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-                    <Picker
-                        data={data}
-                        onEmojiSelect={addEmoji}
-                    />
+                    <Picker data={data} onEmojiSelect={addEmoji} />
                 </div>
             )}
         </div>
-    );
-};
+    )
+}
 
-export default StatusViewer;
+export default StatusViewer

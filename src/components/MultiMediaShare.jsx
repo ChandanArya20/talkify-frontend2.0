@@ -12,6 +12,7 @@ import { toast } from "react-toastify"
 import { PulseLoader } from "react-spinners"
 
 const MultiMediaShare = ({ selectedFiles, chatId, closeMediaShare }) => {
+    
     const [mediaFiles, setMediaFiles] = useState([])
     const [message, setMessage] = useState("")
     const [showEmoji, setShowEmoji] = useState(false)
@@ -79,13 +80,13 @@ const MultiMediaShare = ({ selectedFiles, chatId, closeMediaShare }) => {
         const largerSizeMedia = files.length - filteredFiles.length
 
         if (largerSizeMedia > 0) {
-            if (largerSizeMedia == 1) {
+            if (largerSizeMedia === 1) {
                 toast.error(
-                    "1 media you tried adding is larger than 50MB limit "
+                    "1 media you tried adding is larger than 50MB limit"
                 )
             } else {
                 toast.error(
-                    `${largerSizeMedia} media you tried adding are larger than 50MB limit `
+                    `${largerSizeMedia} media you tried adding are larger than 50MB limit`
                 )
             }
         }

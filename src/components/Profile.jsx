@@ -10,6 +10,7 @@ import { ClipLoader } from "react-spinners"
 import DefaultUser from "../assets/default-user.png"
 
 const Profile = ({ closeOpenProfile }) => {
+    // State variables
     const { currentUser } = useSelector((state) => state.userStore)
     const [isPenClicked, setIsPenClicked] = useState(false)
     const [isUseridPenClicked, setIsUseridPenClicked] = useState(false)
@@ -21,22 +22,25 @@ const Profile = ({ closeOpenProfile }) => {
     const [about, setAbout] = useState(currentUser?.about)
     const dispatch = useDispatch()
 
+    // Function to handle updating the name
     const handleUpdateName = () => {
         setIsPenClicked(false)
-        console.log(name)
         dispatch(updateUser({ id: currentUser.id, name: name }))
     }
 
+    // Function to handle updating the userid
     const handleUpdateUserid = () => {
         setIsUseridPenClicked(false)
+        dispatch(updateUser({ id: currentUser.id, userid: userid }))
     }
 
+    // Function to handle updating the about section
     const handleUpdateAbout = () => {
         setIsAboutPenClicked(false)
-        console.log(about)
         dispatch(updateUser({ id: currentUser.id, about: about }))
     }
 
+    // Function to handle changing profile image
     const handleProfileImageChange = async (imageFile) => {
         const data = new FormData()
         data.append("file", imageFile)
@@ -44,13 +48,11 @@ const Profile = ({ closeOpenProfile }) => {
         data.append("cloud_name", "ddj5asxve")
 
         setLoading(true)
-        const response = await axios.post(
-            "https://api.cloudinary.com/v1_1/ddj5asxve/image/upload",
+        const response = await axios.post("https://api.cloudinary.com/v1_1/ddj5asxve/image/upload",
             data
         )
         const imageURL = response.data.url
         setProfileImage(imageURL)
-        console.log(imageURL)
         setLoading(false)
 
         dispatch(updateUser({ id: currentUser.id, profileImage: imageURL }))
@@ -58,7 +60,7 @@ const Profile = ({ closeOpenProfile }) => {
 
     return (
         <div>
-            {/* profile header */}
+            {/* Profile header */}
             <div className="w-full md:w-[40%] h-14 md:h-28 bg-[#222e35da] fixed top-0 z-50">
                 <div className="w-full md:w-[40%] h-full flex flex-col justify-center md:justify-end">
                     <div className="flex space-x-5 items-center text-xl font-medium text-gray-300 ml-2 md:ml-6 md:mb-4">
@@ -71,9 +73,9 @@ const Profile = ({ closeOpenProfile }) => {
                 </div>
             </div>
 
-            {/* main section  */}
+            {/* Main section */}
             <div className="mt-28 overflow-y-scroll space-y-5 h-[80vh]">
-                {/* image section */}
+                {/* Image section */}
                 <div className="h-60 flex items-center justify-center relative ">
                     {loading && (
                         <ClipLoader color="#2d0442" className="absolute" />
@@ -98,7 +100,7 @@ const Profile = ({ closeOpenProfile }) => {
                     </div>
                 </div>
 
-                {/* name section  */}
+                {/* Name section */}
                 <div className="h-30 flex flex-col px-5 md:px-8">
                     <div>
                         <p className="text-sm font-medium text-[#005C4B]">
@@ -136,13 +138,13 @@ const Profile = ({ closeOpenProfile }) => {
                     )}
                     <div>
                         <p className="text-gray-500 text-sm">
-                            This is not your username or pin, This anme will be
-                            visisble to your chat participant{" "}
+                            This is not your username or pin, This name will be
+                            visible to your chat participants
                         </p>
                     </div>
                 </div>
 
-                {/* userid section  */}
+                {/* Userid section */}
                 <div className="h-30 flex flex-col px-5 md:px-8">
                     <div>
                         <p className="text-sm font-medium text-[#005C4B]">
@@ -180,7 +182,7 @@ const Profile = ({ closeOpenProfile }) => {
                     )}
                 </div>
 
-                {/* about section  */}
+                {/* About section */}
                 <div className="h-30 flex flex-col px-5 md:px-8 pb-5">
                     <div>
                         <p className="text-sm font-medium text-[#005C4B]">
@@ -190,7 +192,7 @@ const Profile = ({ closeOpenProfile }) => {
                     {!isAboutPenClicked ? (
                         <div className="flex justify-between items-center">
                             <p className="py-3 text-gray-300">
-                                {about || "Hi I am using Talkify!"}
+                                {about || "Hi, I am using Talkify!"}
                             </p>
                             <FaPen
                                 className="cursor-pointer text-gray-400"

@@ -1,73 +1,81 @@
-import React, { useEffect, useState } from "react";
-import loginImage from "../assets/login-image.png";
-import Signup from "../components/Signup";
-import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
-import { login } from "../Redux/Auth/action";
-import axios from "axios";
-import { toast } from "react-toastify";
-import ForgotPassword from "../components/ForgotPassword";
-import OTPVerification from "../components/OTPVerification";
-import CreatePassword from "../components/CreatePassword";
+import React, { useEffect, useState } from "react"
+import loginImage from "../assets/login-image.png"
+import Signup from "../components/Signup"
+import { useDispatch, useSelector } from "react-redux"
+import { useNavigate } from "react-router-dom"
+import { login } from "../Redux/Auth/action"
+import axios from "axios"
+import { toast } from "react-toastify"
+import ForgotPassword from "../components/ForgotPassword"
+import OTPVerification from "../components/OTPVerification"
+import CreatePassword from "../components/CreatePassword"
 
 const Singin = () => {
-    const { isAuthenticated } = useSelector((state) => state.userStore);
-    const navigate = useNavigate();
-    const dispatch = useDispatch();
+    // Redux state selectors
+    const { isAuthenticated } = useSelector((state) => state.userStore)
+    const navigate = useNavigate()
+    const dispatch = useDispatch()
 
-    useEffect(() => {
-        isAuthenticated && navigate("/");
-    }, [isAuthenticated]);
-
+    // Local state variables
     const [userData, setUserData] = useState({
         email: "",
         password: "",
-    });
+    })
+    const [loading, setLoading] = useState(false)
+    const [showSignup, setShowSignup] = useState(false)
+    const [showForgetPassword, setShowForgetPassword] = useState(false)
+    const [showOTPVerification, setShowOTPVerification] = useState(false)
+    const [showCreatePassword, setShowCreatePassword] = useState(false)
 
-    const [loading, setLoading] = useState(false);
-    const [showSignup, setShowSignup] = useState(false);
-    const [showForgetPassword, setShowForgetPassword] = useState(false);
-    const [showOTPVerification, setShowOTPVerification] = useState(false);
-    const [showCreatePassword, setShowCreatePassword] = useState(false);
+    // Redirect to home if already authenticated
+    useEffect(() => {
+        isAuthenticated && navigate("/")
+    }, [isAuthenticated])
 
+    // Update email in local state
     const setEmail = (email) => {
-        setUserData({ ...userData, email: email });
-    };
+        setUserData({ ...userData, email: email })
+    }
 
+    // Handle login submission
     const handleLogin = async (e) => {
-        e.preventDefault();
+        e.preventDefault()
         try {
-            await dispatch(login(userData));
+            await dispatch(login(userData))
         } catch (error) {
             if (axios.isAxiosError(error)) {
                 if (error.response?.status === 404) {
-                    toast.error("Account not found with this email");
+                    toast.error("Account not found with this email")
                 } else if (error.response?.status === 401) {
-                    toast.error("Invalid Password");
+                    toast.error("Invalid Password")
                 } else {
-                    console.log(error.response?.data);
-                    console.log(error);
+                    console.log(error.response?.data)
+                    console.log(error)
                 }
             }
         }
-    };
-
-    const closeSignup = () => {
-        setShowSignup(false);
-    };
-
-    const closeForgotPassword = () => {
-        setShowForgetPassword(false);
-    };
-
-    const goForVerification=()=>{
-        setShowOTPVerification(true);
-        setShowForgetPassword(false);
     }
 
-    const gorForCreatePassword=()=>{
-        setShowOTPVerification(false);
-        setShowCreatePassword(true);
+    // Close signup modal
+    const closeSignup = () => {
+        setShowSignup(false)
+    }
+
+    // Close forgot password modal
+    const closeForgotPassword = () => {
+        setShowForgetPassword(false)
+    }
+
+    // Go to OTP verification
+    const goForVerification = () => {
+        setShowOTPVerification(true)
+        setShowForgetPassword(false)
+    }
+
+    // Go to create password after OTP verification
+    const goForCreatePassword = () => {
+        setShowOTPVerification(false)
+        setShowCreatePassword(true)
     }
 
     return (
@@ -76,6 +84,7 @@ const Singin = () => {
                 className="w-full h-full md:w-[650px] lg:w-[700px] md:h-auto flex items-center bg-white dark:bg-slate-700 rounded-md py-10"
                 style={{ boxShadow: "0 0 35px rgba(0, 0, 0, 0.2)" }}
             >
+                {/* Left Section - Image */}
                 <div className="w-[50%] h-full items-center justify-center py-3 pl-3 hidden md:flex">
                     <img
                         src={loginImage}
@@ -84,31 +93,32 @@ const Singin = () => {
                     />
                 </div>
 
+                {/* Right Section - Signin form, Signup, Forgot Password, OTP Verification, Create Password */}
                 {showSignup && <Signup closeSignup={closeSignup} />}
                 {showForgetPassword && (
                     <ForgotPassword
-                        closeForgotPassword={()=>setShowForgetPassword(false)}
+                        closeForgotPassword={closeForgotPassword}
                         email={userData.email}
                         setEmail={setEmail}
                         goForVerification={goForVerification}
                     />
                 )}
-                {showOTPVerification && 
+                {showOTPVerification && (
                     <OTPVerification
-                        gorForCreatePassword={gorForCreatePassword}
+                        goForCreatePassword={goForCreatePassword}
                         email={userData.email}
                         goForVerification={goForVerification}
                     />
-                }
-                {showCreatePassword && 
-                    <CreatePassword
-                        email={userData.email}
-                    />
-                }
+                )}
+                {showCreatePassword && (
+                    <CreatePassword email={userData.email} />
+                )}
 
-                {!showSignup && !showForgetPassword && !showOTPVerification && !showCreatePassword && (
-                    <>
-                        {/* Sign form */}
+                {!showSignup &&
+                    !showForgetPassword &&
+                    !showOTPVerification &&
+                    !showCreatePassword && (
+                        // Signin form
                         <div className="w-full md:w-[50%] px-5 md:px-8">
                             <form onSubmit={handleLogin}>
                                 <h1 className="font-bold text-3xl text-center mb-8 dark:text-white">
@@ -141,8 +151,8 @@ const Singin = () => {
                                 <p
                                     className="forget-password text-right text-sm cursor-pointer text-[#52aeec]"
                                     onClick={() => {
-                                        setShowForgetPassword(true);
-                                        setShowSignup(false);
+                                        setShowForgetPassword(true)
+                                        setShowSignup(false)
                                     }}
                                 >
                                     Forgot your password?
@@ -169,11 +179,10 @@ const Singin = () => {
                                 </span>
                             </p>
                         </div>
-                    </>
-                )}
+                    )}
             </div>
         </div>
-    );
-};
+    )
+}
 
-export default Singin;
+export default Singin

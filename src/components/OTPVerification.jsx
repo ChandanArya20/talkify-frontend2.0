@@ -1,66 +1,66 @@
-import React, { useState } from "react";
-import { toast } from "react-toastify";
-import { useNavigate } from "react-router-dom";
-import { BASE_API_URL } from "../config/api";
-import { ClipLoader } from "react-spinners";
-import axios from "axios";
+import React, { useState } from "react"
+import { toast } from "react-toastify"
+import { BASE_API_URL } from "../config/api"
+import { ClipLoader } from "react-spinners"
+import axios from "axios"
 
 const OTPVerification = ({ email, gorForCreatePassword }) => {
     // State variables
-    const [loading, setLoading] = useState(false);
-    const [OTP, setOTP] = useState("");
-    const [showResendOTP, setShowResendOTP] = useState(false);
+    const [loading, setLoading] = useState(false)
+    const [OTP, setOTP] = useState("")
+    const [showResendOTP, setShowResendOTP] = useState(false)
 
+    // useEffect to show resend OTP option after 15 seconds
     useState(() => {
         const id = setTimeout(() => {
-            setShowResendOTP(true);
-        }, 15000);
+            setShowResendOTP(true)
+        }, 15000)
 
-        return () => clearTimeout(id);
-    }, [email]);
+        return () => clearTimeout(id)
+    }, [email])
 
     // Function to handle OTP verification
     const verifyOTP = async (e) => {
-        e.preventDefault();
-        setLoading(true);
+        e.preventDefault()
+        setLoading(true)
 
         try {
             const response = await axios.get(
                 `${BASE_API_URL}/api/user/verify-otp?email=${email}&otp=${OTP}`,
                 { withCredentials: true }
-            );
+            )
 
             // If OTP is verified
-            console.log("OTP verified");
-            gorForCreatePassword();
+            console.log("OTP verified")
+            gorForCreatePassword()
         } catch (error) {
-            console.log(error);
+            console.log(error)
 
             if (axios.isAxiosError(error)) {
                 // Handle specific Axios error cases if needed
                 if (error.response.status === 404) {
-                    toast.error("Account not found for this " + email);
+                    toast.error("Account not found for this " + email)
                 } else if (error.response.status === 400) {
-                    toast.error("OTP verification failed...");
+                    toast.error("OTP verification failed...")
                 } else {
-                    toast.error("Something went wrong...");
+                    toast.error("Something went wrong...")
                 }
             }
         } finally {
             // Stop loading state
-            setLoading(false);
+            setLoading(false)
         }
-    };
+    }
 
-    // Function to handle OTP
+    // Function to handle sending OTP
     const sendOTP = async (e) => {
-        
         e.preventDefault()
         try {
-            const response = await axios.get(`${BASE_API_URL}/api/user/send-otp?email=${email}`);
-
+            const response = await axios.get(
+                `${BASE_API_URL}/api/user/send-otp?email=${email}`
+            )
         } catch (error) {
-            console.error(error);
+            console.error(error)
         }
     }
 
@@ -87,7 +87,7 @@ const OTPVerification = ({ email, gorForCreatePassword }) => {
                             className="px-4 py-2 rounded-full border-[1px] border-green-400"
                             onClick={sendOTP}
                         >
-                        <p className="text-sm text-green-400">Resend OTP</p>
+                            <p className="text-sm text-green-400">Resend OTP</p>
                         </button>
                     )}
                     <button
@@ -105,7 +105,7 @@ const OTPVerification = ({ email, gorForCreatePassword }) => {
                 </div>
             </form>
         </div>
-    );
-};
+    )
+}
 
-export default OTPVerification;
+export default OTPVerification

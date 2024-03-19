@@ -1,267 +1,259 @@
-import { PiCircleDashedBold } from "react-icons/pi";
-import { RiChatNewLine } from "react-icons/ri";
-import { MdDelete, MdOutlineChat, MdOutlineStar } from "react-icons/md";
-import { BiDotsVerticalRounded } from "react-icons/bi";
-import { RiWechat2Line } from "react-icons/ri";
-import { FaPeopleGroup } from "react-icons/fa6";
-import { IoIosSearch, IoIosShareAlt, IoMdArrowBack } from "react-icons/io";
-import { IoClose, IoFilter } from "react-icons/io5";
-import DefaultUser from "../assets/default-user.png";
-import ChatCard from "../components/ChatCard";
-import { useEffect, useState } from "react";
-import ChatDetails from "../components/ChatDetails";
-import Profile from "../components/Profile";
-import { useNavigate } from "react-router-dom";
-import Status from "../components/Status";
-import { Checkbox, Menu, MenuItem } from "@mui/material";
-import applogo from "../assets/applogo.png";
-import CreateGroup from "../components/CreateGroup";
-import AddNewUser from "../components/AddNewUser";
-import HomePageImage from "../assets/login-image.png";
-import { useDispatch, useSelector } from "react-redux";
-import { logout } from "../Redux/Auth/action";
-import { getUsersChat } from "../Redux/Chat/action";
-import axios from "axios";
-import SearchMessages from "../components/SearchMessages";
+import { PiCircleDashedBold } from "react-icons/pi"
+import { RiChatNewLine } from "react-icons/ri"
+import { BiDotsVerticalRounded } from "react-icons/bi"
+import { FaPeopleGroup } from "react-icons/fa6"
+import { IoIosSearch, IoMdArrowBack } from "react-icons/io"
+import { IoClose, IoFilter } from "react-icons/io5"
+import DefaultUser from "../assets/default-user.png"
+import ChatCard from "../components/ChatCard"
+import { useEffect, useState } from "react"
+import ChatDetails from "../components/ChatDetails"
+import Profile from "../components/Profile"
+import { useNavigate } from "react-router-dom"
+import Status from "../components/Status"
+import { Checkbox, Menu, MenuItem } from "@mui/material"
+import applogo from "../assets/applogo.png"
+import CreateGroup from "../components/CreateGroup"
+import AddNewUser from "../components/AddNewUser"
+import HomePageImage from "../assets/login-image.png"
+import { useDispatch, useSelector } from "react-redux"
+import { logout } from "../Redux/Auth/action"
+import { getUsersChat } from "../Redux/Chat/action"
+import axios from "axios"
 
 function HomePage() {
-    
     const { isAuthenticated, currentUser } = useSelector(
         (state) => state.userStore
-    );
-    const navigate = useNavigate();
+    )
+    const navigate = useNavigate()
 
     useEffect(() => {
-        !isAuthenticated && navigate("/signing");
-    }, [isAuthenticated]);
+        !isAuthenticated && navigate("/signing")
+    }, [isAuthenticated])
 
-    const [query, setQuery] = useState("");
-    const [isFilterClicked, setIsFilterClicked] = useState(false);
-    const [currentChat, setCurrentChat] = useState(false);
-    const [selectedChat, setSelectedChat] = useState(null);
-    const [isProfile, setIsProfile] = useState(false);
-    const [isStatus, setIsStatus] = useState(false);
-    const [isGroup, setIsGroup] = useState(false);
-    const [isAddNewUser, setIsAddNewUser] = useState(false);
-    const [isSearchClicked, setIsSearchClicked] = useState(false);
-    const dispatch = useDispatch();
+    const [query, setQuery] = useState("")
+    const [isFilterClicked, setIsFilterClicked] = useState(false)
+    const [currentChat, setCurrentChat] = useState(false)
+    const [selectedChat, setSelectedChat] = useState(null)
+    const [isProfile, setIsProfile] = useState(false)
+    const [isStatus, setIsStatus] = useState(false)
+    const [isGroup, setIsGroup] = useState(false)
+    const [isAddNewUser, setIsAddNewUser] = useState(false)
+    const [isSearchClicked, setIsSearchClicked] = useState(false)
+    const dispatch = useDispatch()
     const { chats, createdChat, createdGroup } = useSelector(
         (store) => store.chatStore
-    );
-    const [selectedChats, setSelectedChats] = useState([]);
-    const [filteredChats, setFilteredChats] = useState([]);
-    const label = { inputProps: { 'aria-label': 'Checkbox demo' } };
-    const [showCheckbox, setShowCheckbox] = useState(false);
-    const [anchorEl, setAnchorEl] = useState(null);
-    const open = Boolean(anchorEl);
+    )
+    const [selectedChats, setSelectedChats] = useState([])
+    const [filteredChats, setFilteredChats] = useState([])
+    const label = { inputProps: { "aria-label": "Checkbox demo" } }
+    const [showCheckbox, setShowCheckbox] = useState(false)
+    const [anchorEl, setAnchorEl] = useState(null)
+    const open = Boolean(anchorEl)
+
     // Function to handle opening the dropdown menu
     const handleClick = (event) => {
-        setAnchorEl(event.currentTarget);
-    };
+        setAnchorEl(event.currentTarget)
+    }
+
     // Function to handle closing the dropdown menu
     const handleClose = () => {
-        setAnchorEl(null);
-    };
+        setAnchorEl(null)
+    }
 
-    const [anchorE2, setAnchorE2] = useState(null);
-    const open2 = Boolean(anchorE2);
+    const [anchorE2, setAnchorE2] = useState(null)
+    const open2 = Boolean(anchorE2)
     // Function to handle opening the dropdown menu
     const handleClick2 = (event) => {
-        setAnchorE2(event.currentTarget);
-    };
+        setAnchorE2(event.currentTarget)
+    }
     // Function to handle closing the dropdown menu
     const handleClose2 = () => {
-        setAnchorE2(null);
-    };
+        setAnchorE2(null)
+    }
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                await dispatch(getUsersChat());
+                await dispatch(getUsersChat())
             } catch (error) {
-                console.log(error);
+                console.log(error)
                 if (axios.isAxiosError(error)) {
                     if (error?.response.status === 400) {
-                        dispatch(logout());
+                        dispatch(logout())
                     }
                 }
             }
-        };
+        }
 
-        fetchData(); // Call the function immediately
-    }, [createdChat, createdGroup]);
+        fetchData() // Call the function immediately
+    }, [createdChat, createdGroup])
 
     const rearrangeChats = () => {
         // Iterate through chats to identify chats with new messages
-        const chatsWithNewMessages = [];
-        const chatsWithoutNewMessages = [];
+        const chatsWithNewMessages = []
+        const chatsWithoutNewMessages = []
 
         for (let chat of chats) {
             if (chat.messages.length === 0) {
-                chatsWithoutNewMessages.push(chat);
-                continue;
+                chatsWithoutNewMessages.push(chat)
+                continue
             }
-            const lastMessage = chat.messages[chat.messages.length - 1];
+            const lastMessage = chat.messages[chat.messages.length - 1]
             const isLastMessageFromCurrentUser =
-                lastMessage && lastMessage.createdBy.id === currentUser.id;
+                lastMessage && lastMessage.createdBy.id === currentUser.id
 
             if (!isLastMessageFromCurrentUser) {
-                chatsWithNewMessages.push(chat);
+                chatsWithNewMessages.push(chat)
             } else {
-                chatsWithoutNewMessages.push(chat);
+                chatsWithoutNewMessages.push(chat)
             }
         }
 
         // Further separate chatsWithoutNewMessages into two arrays based on empty messages
         const chatsWithEmptyMessages = chatsWithoutNewMessages.filter(
             (chat) => !chat.messages.length
-        );
+        )
         const chatsWithoutEmptyMessages = chatsWithoutNewMessages.filter(
             (chat) => chat.messages.length
-        );
+        )
 
         // Combine the arrays, putting chats with new messages first and those without empty messages first
         const rearrangedChats = [
             ...chatsWithNewMessages,
             ...chatsWithoutEmptyMessages,
             ...chatsWithEmptyMessages,
-        ];
+        ]
 
         // Update filteredChats with the rearranged array
-        setFilteredChats(rearrangedChats);
-    };
+        setFilteredChats(rearrangedChats)
+    }
 
     useEffect(() => {
-        console.log(chats);
-        rearrangeChats();
-    }, [chats]);
+        console.log(chats)
+        rearrangeChats()
+    }, [chats])
 
     useEffect(() => {
-        console.log(filteredChats);
-    }, [filteredChats]);
+        console.log(filteredChats)
+    }, [filteredChats])
 
     // Function to filter chats based on the search query
     const handleSearch = (query) => {
         const filteredChats = chats.filter((chat) => {
             if (chat.isGroup) {
-                return chat.chatName
-                    .toLowerCase()
-                    .includes(query.toLowerCase());
+                return chat.chatName.toLowerCase().includes(query.toLowerCase())
             } else {
                 const chatUser = chat.members.filter(
                     (member) => member.id !== currentUser.id
-                )[0];
-                return chatUser.name
-                    .toLowerCase()
-                    .includes(query.toLowerCase());
+                )[0]
+                return chatUser.name.toLowerCase().includes(query.toLowerCase())
             }
-        });
-        setFilteredChats(filteredChats);
-    };
+        })
+        setFilteredChats(filteredChats)
+    }
 
     // Function to handle clicking the filter button
     const handleFilterClick = () => {
-        setIsFilterClicked(!isFilterClicked);
-    };
+        setIsFilterClicked(!isFilterClicked)
+    }
 
     useEffect(() => {
         if (isFilterClicked) {
-            const chatsWithNewMessages = [];
+            const chatsWithNewMessages = []
 
             for (let chat of chats) {
                 if (chat.messages.length === 0) {
-                    continue;
+                    continue
                 }
-                const lastMessage = chat.messages[chat.messages.length - 1];
+                const lastMessage = chat.messages[chat.messages.length - 1]
                 const isLastMessageFromCurrentUser =
-                    lastMessage && lastMessage.createdBy.id === currentUser.id;
+                    lastMessage && lastMessage.createdBy.id === currentUser.id
 
                 if (!isLastMessageFromCurrentUser) {
-                    chatsWithNewMessages.push(chat);
+                    chatsWithNewMessages.push(chat)
                 }
             }
-            console.log(chatsWithNewMessages);
-            setFilteredChats(chatsWithNewMessages);
+            console.log(chatsWithNewMessages)
+            setFilteredChats(chatsWithNewMessages)
         } else {
-            rearrangeChats();
+            rearrangeChats()
         }
-    }, [isFilterClicked]);
+    }, [isFilterClicked])
 
     // Function to handle clicking on the current chat
     const handleCurrentChatClick = (chat) => {
         if (selectedChat?.id == chat.id) {
-            return;
+            return
         }
-        setSelectedChat(chat);
+        setSelectedChat(chat)
         // Navigate to chat details on small devices, otherwise set the current chat
         if (window.innerWidth < 640) {
-            navigate("/chat-details", { state: chat });
+            navigate("/chat-details", { state: chat })
         } else {
-            setCurrentChat(true);
+            setCurrentChat(true)
         }
-    };
+    }
 
     // Function to handle clicking on the user's profile
     const handleProfileClick = () => {
-        setIsProfile(true);
-    };
+        setIsProfile(true)
+    }
 
     // Function to close the user's profile
     const closeOpenProfile = () => {
-        setIsProfile(false);
-    };
+        setIsProfile(false)
+    }
 
     // Function to close and open the status section
     const closeOpenStatus = () => {
-        setIsStatus(false);
-    };
+        setIsStatus(false)
+    }
 
     // Function to close and open the create group section
     const closeOpenCreateGroup = () => {
-        setIsGroup(false);
-    };
+        setIsGroup(false)
+    }
 
     // Function to handle creating a group
     const handleCreateGroup = () => {
-        setIsGroup(true);
-        handleClose();
-    };
+        setIsGroup(true)
+        handleClose()
+    }
 
     const closeAddNewUserSection = () => {
-        setIsAddNewUser(false);
-    };
+        setIsAddNewUser(false)
+    }
 
     const handleLogout = () => {
-        dispatch(logout());
-    };
+        dispatch(logout())
+    }
 
     const closeChatDetails = () => {
-        setCurrentChat(false);
-        setSelectedChat(null);
-    };
+        setCurrentChat(false)
+        setSelectedChat(null)
+    }
 
-    const handleSelectChat=(chat)=>{
-
-        setSelectedChats(prev => {
-
+    const handleSelectChat = (chat) => {
+        setSelectedChats((prev) => {
             if (prev.includes(chat)) {
                 // Message is already selected, remove it
-                return prev.filter(chatItem => chatItem.id !== chat.id);
+                return prev.filter((chatItem) => chatItem.id !== chat.id)
             } else {
                 // Message is not in the selected list, add it
-                return [...prev, chat];
+                return [...prev, chat]
             }
-        });
-    }
-    
-    const handleSelectChatClick=()=>{
-        setShowCheckbox(true);
-        handleClose();
+        })
     }
 
-    const handleCloseChatSelected=()=>{
-        setShowCheckbox(false);
-        setSelectedChats([]);
+    const handleSelectChatClick = () => {
+        setShowCheckbox(true)
+        handleClose()
+    }
+
+    const handleCloseChatSelected = () => {
+        setShowCheckbox(false)
+        setSelectedChats([])
     }
 
     return (
@@ -337,12 +329,15 @@ function HomePage() {
                                             <MenuItem onClick={handleClose}>
                                                 Starred messages
                                             </MenuItem>
-                                            {
-                                                !showCheckbox &&
-                                                <MenuItem onClick={handleSelectChatClick}>
+                                            {!showCheckbox && (
+                                                <MenuItem
+                                                    onClick={
+                                                        handleSelectChatClick
+                                                    }
+                                                >
                                                     Select Chats
                                                 </MenuItem>
-                                            }
+                                            )}
                                             <MenuItem onClick={handleClose}>
                                                 Settings
                                             </MenuItem>
@@ -380,8 +375,8 @@ function HomePage() {
                                     placeholder="Search or start new chat"
                                     autoFocus={isSearchClicked}
                                     onChange={(e) => {
-                                        setQuery(e.target.value);
-                                        handleSearch(e.target.value);
+                                        setQuery(e.target.value)
+                                        handleSearch(e.target.value)
                                     }}
                                     onClick={() => setIsSearchClicked(true)}
                                 />
@@ -404,12 +399,23 @@ function HomePage() {
                         {/* Chat Cards */}
                         <div className="w-full h-[83vh] ml-3 mt-2 overflow-y-scroll pb-5 pr-4">
                             {filteredChats.map((chat) => (
-                                <div
-                                    className="flex"
-                                    key={chat.id}
-                                >
-                                    { showCheckbox && <Checkbox {...label} style={{ color: 'green' }} size="small" onClick={()=>handleSelectChat(chat)}/> }
-                                    <div className="flex-1" onClick={() => handleCurrentChatClick(chat)}>
+                                <div className="flex" key={chat.id}>
+                                    {showCheckbox && (
+                                        <Checkbox
+                                            {...label}
+                                            style={{ color: "green" }}
+                                            size="small"
+                                            onClick={() =>
+                                                handleSelectChat(chat)
+                                            }
+                                        />
+                                    )}
+                                    <div
+                                        className="flex-1"
+                                        onClick={() =>
+                                            handleCurrentChatClick(chat)
+                                        }
+                                    >
                                         <ChatCard
                                             {...chat}
                                             selectedChatId={selectedChat?.id}
@@ -421,41 +427,43 @@ function HomePage() {
                     </>
                 )}
 
-                {
-                    showCheckbox &&
+                {showCheckbox && (
                     <div className=" bg-[#1F2B32] w-full h-14 flex items-center justify-between absolute top-14 z-200 px-5">
                         <div className="flex space-x-5">
-                            <IoClose  className="text-gray-400 text-2xl cursor-pointer" onClick={handleCloseChatSelected} />
+                            <IoClose
+                                className="text-gray-400 text-2xl cursor-pointer"
+                                onClick={handleCloseChatSelected}
+                            />
                             <p className="text-gray-300">{`${selectedChats.length} selected`}</p>
-                        </div> 
-                        {
-                            selectedChats.length > 0 &&
+                        </div>
+                        {selectedChats.length > 0 && (
                             <div>
                                 <div className="text-gray-400 text-xl rotate-90">
-                                    <BiDotsVerticalRounded className="cursor-pointer" onClick={handleClick2}/>
+                                    <BiDotsVerticalRounded
+                                        className="cursor-pointer"
+                                        onClick={handleClick2}
+                                    />
                                 </div>
-                            <Menu
-                                id="basic-menu"
-                                anchorEl={anchorE2}
-                                open={open2}
-                                onClose={handleClose2}
-                                MenuListProps={{
-                                    "aria-labelledby":
-                                        "basic-button",
-                                }}
-                            >
-                                <MenuItem onClick={handleClose2}>
-                                    Mark as unread
-                                </MenuItem>
-                                <MenuItem onClick={handleClose2}>
-                                    Mute notifications
-                                </MenuItem>
-                            </Menu>
-                        </div>
-                           
-                        }
+                                <Menu
+                                    id="basic-menu"
+                                    anchorEl={anchorE2}
+                                    open={open2}
+                                    onClose={handleClose2}
+                                    MenuListProps={{
+                                        "aria-labelledby": "basic-button",
+                                    }}
+                                >
+                                    <MenuItem onClick={handleClose2}>
+                                        Mark as unread
+                                    </MenuItem>
+                                    <MenuItem onClick={handleClose2}>
+                                        Mute notifications
+                                    </MenuItem>
+                                </Menu>
+                            </div>
+                        )}
                     </div>
-                }
+                )}
             </div>
 
             {/* Right Section */}
@@ -498,7 +506,7 @@ function HomePage() {
                 )}
             </div>
         </div>
-    );
+    )
 }
 
-export default HomePage;
+export default HomePage

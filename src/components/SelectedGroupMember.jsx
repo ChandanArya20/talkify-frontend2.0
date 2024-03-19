@@ -1,9 +1,8 @@
-import React from "react";
-import { IoCloseOutline } from "react-icons/io5";
-import DefaultUser from '../assets/default-user.png'
+import React from "react"
+import { IoCloseOutline } from "react-icons/io5"
+import DefaultUser from "../assets/default-user.png"
 
 const SelectedGroupMember = ({ handleRemoveMember, user }) => {
-
     return (
         <>
             <div className="flex items-center justify-center rounded-full">
@@ -26,7 +25,7 @@ const SelectedGroupMember = ({ handleRemoveMember, user }) => {
                 </div>
             </div>
         </>
-    );
-};
+    )
+}
 
-export default SelectedGroupMember;
+export default SelectedGroupMember

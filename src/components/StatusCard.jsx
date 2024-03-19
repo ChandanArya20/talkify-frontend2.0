@@ -1,4 +1,4 @@
-import DefaultUser from '../assets/default-user.png'
+import DefaultUser from "../assets/default-user.png"
 
 function StatusCard({ userName, statusImages, statusTimeStamp }) {
     return (
@@ -25,7 +25,7 @@ function StatusCard({ userName, statusImages, statusTimeStamp }) {
                 </div>
             </div>
         </div>
-    );
+    )
 }
 
-export default StatusCard;
+export default StatusCard
