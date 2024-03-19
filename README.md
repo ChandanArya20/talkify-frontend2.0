@@ -6,15 +6,13 @@ Welcome to the README for our Takify frontend application! Takify is a real-time
 Live Link : https://talkifychat.netlify.app/
 
 ## Screenshots
+
 <img width="919" alt="image" src="https://github.com/ChandanArya20/talkify-frontend2.0/assets/85821143/3a3b2273-cacc-45b4-ba56-c58ce1c6ebb9">
 
 
 
-![booksbazaar netlify app_](https://github.com/ChandanArya20/e-commerce-bookstore/assets/85821143/78cf2a09-5fbb-4de6-b376-fc1234270796)
-
-
-
 <img width="960" alt="image" src="https://github.com/ChandanArya20/talkify-frontend2.0/assets/85821143/65215c3d-04e3-4f40-a9b6-c0c73405915d">
+
 
 
 <img width="959" alt="image" src="https://github.com/ChandanArya20/talkify-frontend2.0/assets/85821143/b03d3bc5-56c0-4830-b381-906d47c47308">
