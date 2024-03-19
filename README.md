@@ -24,7 +24,6 @@ Live Link : https://talkifychat.netlify.app/
 - [Feature](#feature)
 - [Technologies Used](#technologies-used)
 - [Installation](#installation)
-- [Getting Started](#getting-started)
 - [Usage](#usage)
 - [Future Enhancements](#future-enhancements)
 - [Contributing](#contributing)
@@ -35,30 +34,22 @@ Live Link : https://talkifychat.netlify.app/
 
 ## Feature
 
-Our eCommerce Bookstore project is a comprehensive platform as react project that offers a delightful shopping experience for users while providing efficient tools for sellers and administrators. Here's a quick overview of what this project does:
+Our Takify frontend application provides the following features:
 
-- **Authentication System**: We provide a secure and user-friendly authentication system that allows Users, Sellers, and Administrators to easily log in and sign up.
+- **Real-time Chat:** Facilitates real-time communication among users, enabling seamless messaging.
 
-- **Book Recommendation System**: Our home page features an intelligent Book Recommendation System that attracts users by suggesting books tailored to their interests.
+- **Search and Filter:** Powerful user search system, enabling efficient and accurate discovery of chat users.
 
-- **Search and Filter System**: We have implemented a robust search and filter system to make it convenient for users to find the books they are looking for quickly.
-
-- **Shopping Cart**: Users can add books to their shopping carts, and our system facilitates seamless order processing.
-
-- **Order Management System**: Users can track and manage their orders, ensuring a smooth and transparent order management process.
-
-- **Seller Management System**: Sellers have the tools they need to list and manage their books, as well as handle orders from users.
-
-- **Admin System**: We've designed an efficient Admin System to manage user and seller data effectively.
-
-- **Technologies Used**: We utilized React and Spring Boot, among other technologies, to implement features like Infinite Scrolling and many more.
+- **Multimedia Sharing:** Enables effecient multimedia sharing very easly.
+  
+- **Various Feature:** various features, such as read receipts, message history and group system.
 
 
 ## Technologies Used
 
 Our project leverages the following technologies:
 
-- **Frontend**: React
+- **Frontend**: React, Tailwind, Vite, WebSocket
 
 - **Backend**: Spring Boot
 
@@ -69,72 +60,54 @@ Our project leverages the following technologies:
 
 ## Installation
 
-Please follow these steps to install and run our eCommerce Bookstore project locally:
+To install and run our Takify frontend application locally, follow these steps:
 
 **Instructions**
 
 1. Clone the repository to your local machine:
 
 ```bash
-git clone https://github.com/ChandanArya20/e-commerce-bookstore.git
+git clone https://github.com/ChandanArya20/talkify-frontend2.0.git
 ```
-2. (a) Run this project to your local machine if backend is on your local machine:
+2. Install dependencies:
+   
+```bash
+npm install
+```
+
+3. Start the development server:
 
 ```bash
-npm run start:dev
+npm run dev
 ```
-**Instructions to start backend locally** :
+**For backend refer** :
 
-Backend Github Repository-Eclipse : https://github.com/ChandanArya20/E-Commerece-bookbazaarApp.git
-
-
-Backend Github Repository-In IntelliJ IDEA : https://github.com/ChandanArya20/e_commerce_bookstore-Springboot.git
-
-Note : You can access live server as well, that time You don't need to start backend on your local machine
+Backend Github Repository : https://github.com/ChandanArya20/TalkifyBackend2.0.git
 
 
-2. (b) Run this project if you want to access live server:
+Note : You can access live server as well, that time You don't need to start backend on your local machine you can make changes in enviroment file and replace base URL with live URL. 
 
-```bash
-npm run start:prod
-```
 
-3. Access the application through your web browser.
+4. Access the application through your web browser.
 
-## Getting Started
-Here are some basic steps to get started with our eCommerce Bookstore project:
-
-User Registration/Login: Users can register or log in to their accounts.
-
-Browse Books: Users can explore a wide range of books and use the search and filter features to find specific titles.
-
-Add to Cart: Add books to the shopping cart for easy checkout.
-
-Checkout: Review your cart, provide shipping details, and complete the order.
-
-Order Management: Users can track and manage their orders in their account.
-
-Seller Management: Sellers can log in, list books, and manage orders from users.
-
-Admin Dashboard: Administrators can access the admin dashboard to manage user and seller data.
 
 ## Usage
-Our eCommerce Bookstore project is designed to be user-friendly, but for more detailed usage instructions, please refer to our User Manual.
+Our Takify frontend application is designed to be intuitive and user-friendly. Simply navigate through the interface to access various features such as chat, user profile, and settings.
 
 ## Future Enhancements
-- Wishlist Feature
-- Review and Rating System
-- Discount system
+- User Online/Offline Status
+- Message read receipts (like sent, recieved or seen) 
+- Audio/Video call facilities
 
 ## Contributing
-We welcome contributions to make our eCommerce Bookstore project even better! If you would like to contribute, please follow our Contribution Guidelines.
+We welcome contributions to make our Takify frontend application even better! If you would like to contribute, please follow our Contribution Guidelines.
 
 ## License
-This project is licensed under the public License - use the project for your on purpose.
+This project is licensed under the MIT License - feel free to use it for your own purposes.
 
-Thank you for using our eCommerce Bookstore project! If you have any questions or encounter any issues, please don't hesitate to contact us. You can find contact info in developer section.
+Thank you for using our Takify frontend application! If you have any questions or encounter any issues, please don't hesitate to contact us. You can find contact information in the developer section below.
 
-Happy Reading and Shopping!
+Happy Chatting!
 
 ## Developer 
 - **Chandan Kumar**
