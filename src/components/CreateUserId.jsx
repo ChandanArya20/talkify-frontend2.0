@@ -56,17 +56,16 @@ const CreateUserId = ({ user, closeCreateUserId }) => {
     // Function to handle signup
     const handleSignup = async (e) => {
         e.preventDefault()
-        console.log("handleSignup")
         try {
             // Dispatch action to register user
             await dispatch(register({ ...user, userid, profileImage }))
         } catch (error) {
+            console.log(error)
             if (axios.isAxiosError(error)) {
                 if (error.response?.status === 409) {
                     toast.error(error.response.data)
                 } else {
                     console.log(error.response?.data)
-                    console.log(error)
                 }
             }
         }

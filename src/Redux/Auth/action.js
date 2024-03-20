@@ -4,38 +4,34 @@ import { LOGIN, LOGOUT, REGISTER, REQ_USER, SEARCH_USER, SEARCH_USERID, UPDATE_U
 
 // Action to register a new user
 export const register = (userData) => async (dispatch) => {
-    try {
-        const response = await axios.post(`${BASE_API_URL}/api/user/register`, userData, 
-        { withCredentials: true });
-        const resData = response.data;
-        
-        // Store user data in local storage and update state
-        localStorage.setItem("user", JSON.stringify(resData));
-        localStorage.setItem("isLoggedin", 'true');
-        console.log("User registered ", resData);
+   
+    const response = await axios.post(`${BASE_API_URL}/api/user/register`, userData, 
+    { withCredentials: true });
+    const resData = response.data;
 
-        dispatch({ type: REGISTER, payload: resData });
-    } catch (error) {
-        console.log(error);
-    }
+    // Store user data in local storage and update state
+    localStorage.setItem("user", JSON.stringify(resData));
+    localStorage.setItem("isLoggedin", 'true');
+    console.log("User registered ", resData);
+
+    dispatch({ type: REGISTER, payload: resData });
+   
 };
 
 // Action to log in a user
 export const login = (userData) => async(dispatch) => {
-    try {
-        const response = await axios.post(`${BASE_API_URL}/api/user/login`, userData, 
-        { withCredentials: true });
-        const resData = response.data;
-        
-        // Store user data in local storage and update state
-        localStorage.setItem("user", JSON.stringify(resData));
-        localStorage.setItem("isLoggedin", 'true');
-        console.log("User logged in ", resData);
+    
+    const response = await axios.post(`${BASE_API_URL}/api/user/login`, userData, 
+    { withCredentials: true });
+    const resData = response.data;
+    
+    // Store user data in local storage and update state
+    localStorage.setItem("user", JSON.stringify(resData));
+    localStorage.setItem("isLoggedin", 'true');
+    console.log("User logged in ", resData);
 
-        dispatch({ type: LOGIN, payload: resData });
-    } catch (error) {
-        console.log(error);
-    }
+    dispatch({ type: LOGIN, payload: resData });
+
 };
 
 // Action to log out a user

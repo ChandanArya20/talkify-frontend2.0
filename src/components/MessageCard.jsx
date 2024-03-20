@@ -54,7 +54,7 @@ export const MessageCard = ({ isReqUserMsg, message }) => {
                     onClick={downloadContent}
                 >
                     <div
-                        className={`w-[70%] md:max-w-80 p-1 rounded-md flex flex-col space-y-1 ${
+                        className={`w-[70%] md:w-64 p-1 rounded-md flex flex-col space-y-1 ${
                             isReqUserMsg ? "bg-[#005C4B]" : "bg-[#202C33]"
                         }`}
                     >
@@ -174,11 +174,7 @@ export const MessageCard = ({ isReqUserMsg, message }) => {
                                         <p className="text-gray-400 text-sm">
                                             {message.messageType.split("/")[1]}{" "}
                                             .{" "}
-                                            {(
-                                                message.fileSize /
-                                                (1024 * 1024)
-                                            ).toFixed(2)}{" "}
-                                            MB
+                                            {(message.fileSize / (1024 * 1024)).toFixed(2)}{" "}MB
                                         </p>
                                     </div>
                                 </div>
