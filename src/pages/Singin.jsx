@@ -57,7 +57,9 @@ const Singin = () => {
             await dispatch(login(userData))
         } catch (error) {
             if (axios.isAxiosError(error)) {
-                if (error.response?.status === 404) {
+                if(!error.response){
+                    toast.error("Server is down, try again later...")
+                } else if (error.response?.status === 404) {
                     toast.error("Account not found with this email")
                 } else if (error.response?.status === 401) {
                     toast.error("Invalid Password")

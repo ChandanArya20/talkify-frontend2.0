@@ -381,7 +381,7 @@ function ChatDetails({ chatData, closeChatDetails }) {
 
             {/* Render main chat UI if none of the above components are rendered */}
             {!showContactInfo && !showSearchMessages && !showMediaShare && (
-                <div className="w-full md:w-[60%] h-screen md:h-screen flex flex-col justify-between fixed">
+                <div className="w-full md:w-[60%] h-[100dvh] flex flex-col justify-between fixed">
                     <div className="bg-[#1F2B32]">
                         {/* Header */}
                         <div className="w-[95%] h-14 flex items-center justify-between mx-auto">

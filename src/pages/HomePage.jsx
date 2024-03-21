@@ -20,6 +20,7 @@ import { useDispatch, useSelector } from "react-redux"
 import { logout } from "../Redux/Auth/action"
 import { getUsersChat } from "../Redux/Chat/action"
 import axios from "axios"
+import { toast } from "react-toastify"
 
 function HomePage() {
     const { isAuthenticated, currentUser } = useSelector(
@@ -79,7 +80,9 @@ function HomePage() {
             } catch (error) {
                 console.log(error)
                 if (axios.isAxiosError(error)) {
-                    if (error?.response.status === 400) {
+                    if(!error.response){
+                        toast.error("Server is down, try again later...")
+                    } else if (error?.response?.status === 400) {
                         dispatch(logout())
                     }
                 }

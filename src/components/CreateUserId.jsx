@@ -62,7 +62,9 @@ const CreateUserId = ({ user, closeCreateUserId }) => {
         } catch (error) {
             console.log(error)
             if (axios.isAxiosError(error)) {
-                if (error.response?.status === 409) {
+                if(!error.response){
+                    toast.error("Server is down, try again later...")
+                } else if (error.response?.status === 409) {
                     toast.error(error.response.data)
                 } else {
                     console.log(error.response?.data)
