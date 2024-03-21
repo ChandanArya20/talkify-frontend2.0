@@ -21,6 +21,7 @@ import { logout } from "../Redux/Auth/action"
 import { getUsersChat } from "../Redux/Chat/action"
 import axios from "axios"
 import { toast } from "react-toastify"
+import ChatCardSkeleton from "../components/ChatCardSkeleton"
 
 function HomePage() {
     const { isAuthenticated, currentUser } = useSelector(
@@ -41,6 +42,7 @@ function HomePage() {
     const [isGroup, setIsGroup] = useState(false)
     const [isAddNewUser, setIsAddNewUser] = useState(false)
     const [isSearchClicked, setIsSearchClicked] = useState(false)
+    const [isAllChatsArrived, setIsAllChatsArrived] = useState(false)
     const dispatch = useDispatch()
     const { chats, createdChat, createdGroup } = useSelector(
         (store) => store.chatStore
@@ -77,10 +79,11 @@ function HomePage() {
         const fetchData = async () => {
             try {
                 await dispatch(getUsersChat())
+                setIsAllChatsArrived(true)
             } catch (error) {
                 console.log(error)
                 if (axios.isAxiosError(error)) {
-                    if(!error.response){
+                    if (!error.response) {
                         toast.error("Server is down, try again later...")
                     } else if (error?.response?.status === 400) {
                         dispatch(logout())
@@ -401,31 +404,42 @@ function HomePage() {
                         </div>
                         {/* Chat Cards */}
                         <div className="w-full h-[83vh] ml-3 mt-2 overflow-y-scroll pb-5 pr-4">
-                            {filteredChats.map((chat) => (
-                                <div className="flex" key={chat.id}>
-                                    {showCheckbox && (
-                                        <Checkbox
-                                            {...label}
-                                            style={{ color: "green" }}
-                                            size="small"
-                                            onClick={() =>
-                                                handleSelectChat(chat)
-                                            }
-                                        />
-                                    )}
-                                    <div
-                                        className="flex-1"
-                                        onClick={() =>
-                                            handleCurrentChatClick(chat)
-                                        }
-                                    >
-                                        <ChatCard
-                                            {...chat}
-                                            selectedChatId={selectedChat?.id}
-                                        />
-                                    </div>
+                            {!isAllChatsArrived ? (
+                                <div
+                                    className="flex-1"
+                                    onClick={() => handleCurrentChatClick(chat)}
+                                >
+                                { [1,2,3,4,5,6].map((item)=><ChatCardSkeleton key={item}/>) }
                                 </div>
-                            ))}
+                            ) : (
+                                filteredChats.map((chat) => (
+                                    <div className="flex" key={chat.id}>
+                                        {showCheckbox && (
+                                            <Checkbox
+                                                {...label}
+                                                style={{ color: "green" }}
+                                                size="small"
+                                                onClick={() =>
+                                                    handleSelectChat(chat)
+                                                }
+                                            />
+                                        )}
+                                        <div
+                                            className="flex-1"
+                                            onClick={() =>
+                                                handleCurrentChatClick(chat)
+                                            }
+                                        >
+                                            <ChatCard
+                                                {...chat}
+                                                selectedChatId={
+                                                    selectedChat?.id
+                                                }
+                                            />
+                                        </div>
+                                    </div>
+                                ))
+                            )}
                         </div>
                     </>
                 )}

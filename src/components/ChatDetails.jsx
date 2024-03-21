@@ -357,6 +357,7 @@ function ChatDetails({ chatData, closeChatDetails }) {
             {showContactInfo && (
                 <ContactInfo
                     closeContactInfo={closeContactInfo}
+                    chat={finalChatData}
                     chatUser={chatUser}
                     CurrentChatId={finalChatData.id}
                     closeChatDetails={closeChatDetails}
@@ -415,7 +416,9 @@ function ChatDetails({ chatData, closeChatDetails }) {
                                         {isGroup ? chatName : chatUser.name}
                                     </p>
                                     <p className="text-gray-400 text-sm">
-                                        last seen
+                                        {
+                                            finalChatData.isGroup ? `${finalChatData.members.length} members` : "last seen"
+                                        }
                                     </p>
                                 </div>
                             </div>
@@ -447,7 +450,8 @@ function ChatDetails({ chatData, closeChatDetails }) {
                                                 setShowContactInfo(true)
                                             }
                                         >
-                                            Contact info
+                                        {finalChatData.isGroup ? "Group info" : "Contact info"}
+                                            
                                         </MenuItem>
                                         {!showCheckbox && (
                                             <MenuItem

@@ -28,7 +28,7 @@ const Singin = () => {
 
         const setTimeoutId = setTimeout(() => {
             toast.info("Just click on 'SIGN IN' for testing purpose")
-        }, 2000);
+        }, 1000);
 
         return () => clearTimeout(setTimeoutId)
         
@@ -94,7 +94,7 @@ const Singin = () => {
     }
 
     return (
-        <div className="w-full h-screen flex justify-center items-center bg-slate-100 dark:bg-slate-800 ">
+        <div className="w-full h-[100dvh] flex justify-center items-center bg-slate-100 dark:bg-slate-800 ">
             <div
                 className="w-full h-full md:w-[650px] lg:w-[700px] md:h-auto flex items-center bg-white dark:bg-slate-700 rounded-md py-10"
                 style={{ boxShadow: "0 0 35px rgba(0, 0, 0, 0.2)" }}
