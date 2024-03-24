@@ -17,6 +17,7 @@ import {
     addNewMessage,
     createNewMessage,
     deleteSelectedMessages,
+    fetchNewMessagesFromServer,
     setAllMessages,
 } from "../Redux/Message/action"
 import DefaultUser from "../assets/default-user.png"
@@ -42,7 +43,6 @@ import MultiMediaShare from "./MultiMediaShare"
 import { toast } from "react-toastify"
 
 function ChatDetails({ chatData, closeChatDetails }) {
-    
     // Hooks for navigation, location, and dispatch
     const navigate = useNavigate()
     const location = useLocation()
@@ -70,6 +70,7 @@ function ChatDetails({ chatData, closeChatDetails }) {
     const [showSearchMessages, setShowSearchMessages] = useState(false)
     const [showMediaShare, setShowMediaShare] = useState(false)
     const [showCheckbox, setShowCheckbox] = useState(false)
+    const [isLoadingMore, setIsLoadingMore] = useState(false)
 
     const latestMessagesRef = useRef(messageStore.messages)
     const chatContainerRef = useRef(null)
@@ -77,6 +78,8 @@ function ChatDetails({ chatData, closeChatDetails }) {
     const label = { inputProps: { "aria-label": "Checkbox demo" } }
     const [selectedMessages, setSelectedMessages] = useState([])
     const [selectedFiles, setSelectedFiles] = useState([])
+    const [page, setPage] = useState(0)
+    const [previousPage, setPreviousPage] = useState(1)
     const isSmallDevice = window.innerWidth < 640
 
     // Effect to scroll to the bottom when messageList updates
@@ -86,8 +89,7 @@ function ChatDetails({ chatData, closeChatDetails }) {
 
     const scrollToBottom = () => {
         if (chatContainerRef.current) {
-            chatContainerRef.current.scrollTop =
-                chatContainerRef.current.scrollHeight
+            chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight
         }
     }
 
@@ -95,6 +97,36 @@ function ChatDetails({ chatData, closeChatDetails }) {
     useEffect(() => {
         console.log(selectedMessages)
     }, [selectedMessages])
+
+    const handleScroll = () => {
+        console.log("Ram");
+        if (!isLoadingMore &&
+            window.innerHeight + document.documentElement.scrollTop + 1 >=
+                document.documentElement.scrollHeight
+        ) {
+            console.log("Lakshman");
+            setPage((pre) => pre + 1)
+        }
+    }
+
+    useEffect(() => {    
+
+        chatContainerRef.current.addEventListener("scroll", handleScroll)
+        return () => {
+            chatContainerRef.current.removeEventListener("scroll", handleScroll)
+        }
+
+    }, [isLoadingMore])
+
+    useEffect(() => {
+        console.log(page)
+        if (!page === 5) {
+            console.log("Sita");
+            setPreviousPage(pre=>pre+1)
+            dispatch(fetchNewMessagesFromServer(finalChatData.id, previousPage+1, 30))
+            setIsLoadingMore(true)
+        }
+    }, [page])
 
     // Function to add an emoji to the text message
     const addEmoji = (emoji) => {
@@ -416,9 +448,9 @@ function ChatDetails({ chatData, closeChatDetails }) {
                                         {isGroup ? chatName : chatUser.name}
                                     </p>
                                     <p className="text-gray-400 text-sm">
-                                        {
-                                            finalChatData.isGroup ? `${finalChatData.members.length} members` : "last seen"
-                                        }
+                                        {finalChatData.isGroup
+                                            ? `${finalChatData.members.length} members`
+                                            : "last seen"}
                                     </p>
                                 </div>
                             </div>
@@ -450,8 +482,9 @@ function ChatDetails({ chatData, closeChatDetails }) {
                                                 setShowContactInfo(true)
                                             }
                                         >
-                                        {finalChatData.isGroup ? "Group info" : "Contact info"}
-                                            
+                                            {finalChatData.isGroup
+                                                ? "Group info"
+                                                : "Chat info"}
                                         </MenuItem>
                                         {!showCheckbox && (
                                             <MenuItem
@@ -492,7 +525,8 @@ function ChatDetails({ chatData, closeChatDetails }) {
                         className="flex-1 bg-[#111B21] overflow-y-scroll"
                         ref={chatContainerRef}
                     >
-                        <div className="flex flex-col space-y-2 p-3 md:p-10 ">
+                        <div
+                            className="flex flex-col space-y-2 p-3 md:p-10 ">
                             {/* Render each message */}
                             {messageList.map((message) => {
                                 const isReqUserMsg =

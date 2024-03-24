@@ -72,7 +72,7 @@ const ContactInfo = ({
                                 onClick={closeContactInfo}
                             />
                         </div>
-                        <p className="text-gray-200 text-base">Contact info</p>
+                        <p className="text-gray-200 text-base">Chat info</p>
                     </div>
                 </div>
             </div>
