@@ -15,14 +15,13 @@ import { useLocation, useNavigate } from "react-router-dom"
 import { useDispatch, useSelector } from "react-redux"
 import {
     addNewMessage,
-    createNewMessage,
     deleteSelectedMessages,
-    fetchNewMessagesFromServer,
     setAllMessages,
+    setNextPageMessagesFromServer,
 } from "../Redux/Message/action"
 import DefaultUser from "../assets/default-user.png"
 import DefaultGroup from "../assets/default-group.png"
-import sockjs from "sockjs-client/dist/sockjs"
+import sockjs, { log } from "sockjs-client/dist/sockjs"
 import Stomp from "stompjs"
 import { BASE_API_URL } from "../config/api"
 import {
@@ -41,6 +40,7 @@ import ContactInfo from "./ContactInfo"
 import SearchMessages from "./SearchMessages"
 import MultiMediaShare from "./MultiMediaShare"
 import { toast } from "react-toastify"
+import axios from "axios"
 
 function ChatDetails({ chatData, closeChatDetails }) {
     // Hooks for navigation, location, and dispatch
@@ -70,7 +70,7 @@ function ChatDetails({ chatData, closeChatDetails }) {
     const [showSearchMessages, setShowSearchMessages] = useState(false)
     const [showMediaShare, setShowMediaShare] = useState(false)
     const [showCheckbox, setShowCheckbox] = useState(false)
-    const [isLoadingMore, setIsLoadingMore] = useState(false)
+    const [isLoadingMore, setIsLoadingMore] = useState(true)
 
     const latestMessagesRef = useRef(messageStore.messages)
     const chatContainerRef = useRef(null)
@@ -78,7 +78,7 @@ function ChatDetails({ chatData, closeChatDetails }) {
     const label = { inputProps: { "aria-label": "Checkbox demo" } }
     const [selectedMessages, setSelectedMessages] = useState([])
     const [selectedFiles, setSelectedFiles] = useState([])
-    const [page, setPage] = useState(0)
+    const [page, setPage] = useState(1)
     const [previousPage, setPreviousPage] = useState(1)
     const isSmallDevice = window.innerWidth < 640
 
@@ -86,6 +86,21 @@ function ChatDetails({ chatData, closeChatDetails }) {
     useEffect(() => {
         scrollToBottom()
     }, [messageList])
+
+    useEffect(()=>{
+        console.log("useEffect-SetTimeout");
+        setTimeout(()=>{ 
+            console.log("SetTimeout");
+            setIsLoadingMore(false)
+        }, 1000) 
+    },[])
+
+    const changePageNumber = ()=>{
+        console.log("changePageNumber");
+        setTimeout(()=>{ 
+            setPage((prevPage) => prevPage + 1);
+        }, 1000)
+    }
 
     const scrollToBottom = () => {
         if (chatContainerRef.current) {
@@ -99,34 +114,75 @@ function ChatDetails({ chatData, closeChatDetails }) {
     }, [selectedMessages])
 
     const handleScroll = () => {
-        console.log("Ram");
-        if (!isLoadingMore &&
-            window.innerHeight + document.documentElement.scrollTop + 1 >=
-                document.documentElement.scrollHeight
-        ) {
-            console.log("Lakshman");
-            setPage((pre) => pre + 1)
+        console.log("handleScroll");
+        console.log(page);
+        console.log(isLoadingMore);
+        const chatContainer = chatContainerRef.current;
+    
+        // Calculate how far the user has scrolled from the bottom
+        const scrollDistanceFromBottom = chatContainer.scrollHeight - chatContainer.clientHeight - chatContainer.scrollTop;
+        console.log(scrollDistanceFromBottom);
+
+        // Calculate 70% of the container height
+        const seventyPercentOfContainerHeight = 0.7 * chatContainer.scrollHeight;
+        console.log(seventyPercentOfContainerHeight);
+    
+        // Check if the user has scrolled 70% from the bottom
+        if (!isLoadingMore && scrollDistanceFromBottom <= seventyPercentOfContainerHeight) {
+            console.log("Condition for changing page");
+            changePageNumber()
+            setIsLoadingMore(true);
         }
     }
+    
 
-    useEffect(() => {    
+    // useEffect(() => {    
 
-        chatContainerRef.current.addEventListener("scroll", handleScroll)
-        return () => {
-            chatContainerRef.current.removeEventListener("scroll", handleScroll)
-        }
+    //     chatContainerRef.current.addEventListener("scroll", handleScroll)
 
-    }, [isLoadingMore])
+    //     return () => {
+    //         chatContainerRef.current.removeEventListener("scroll", handleScroll)
+    //     }
+
+    // }, [isLoadingMore])
 
     useEffect(() => {
-        console.log(page)
-        if (!page === 5) {
-            console.log("Sita");
-            setPreviousPage(pre=>pre+1)
-            dispatch(fetchNewMessagesFromServer(finalChatData.id, previousPage+1, 30))
-            setIsLoadingMore(true)
+        
+        const fetchMessagesFromServer = async()=>{
+            console.log("Ram");
+            let resData=[];
+            try {
+                if (page > 1) {
+
+                    setPreviousPage(pre=>pre+1)
+    
+                    const response = await axios.get(`${BASE_API_URL}/api/message/${finalChatData.id}?page=${previousPage+1}&size=${10}`, 
+                    { withCredentials: true })
+    
+                    resData = response.data
+                    console.log(resData)
+                       
+                    if (resData.length === 0) {
+                        chatContainerRef.current.removeEventListener("scroll", handleScroll)
+                    } else {
+                        dispatch(setNextPageMessagesFromServer(resData))
+                    }
+                }
+            } catch (error) {
+                console.log(error)
+            } finally{
+                if (resData.length > 0) {
+                    setIsLoadingMore(false)
+                }
+            }
         }
+
+        fetchMessagesFromServer()
     }, [page])
+
+    useEffect(()=>{
+        console.log(page);
+    },[page])
 
     // Function to add an emoji to the text message
     const addEmoji = (emoji) => {

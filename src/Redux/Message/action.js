@@ -27,18 +27,9 @@ export const addNewMessage = (messages, newMessage) =>  {
     return { type: ADD_NEW_MESSAGE, payload: {messages,newMessage} };
 };
 
-export const fetchNewMessagesFromServer = (chatId, page, size) => async(dispatch) => {
-   
-    try {
-        const response = await axios.get(`${BASE_API_URL}/api/message/${chatId}?page=${page}&size=${size}`, 
-        { withCredentials: true });
-        const resData = response.data;
-        console.log(resData);
+export const setNextPageMessagesFromServer = (messages) => {
         
-        dispatch({ type: SET_NEW_MESSAGES, payload: resData });
-    } catch (error) {
-        console.log(error);
-    }
+    return { type: SET_NEW_MESSAGES, payload: messages };
 };
 
 export const deleteSelectedMessages=(messages, selectedMessages)=>async(dispatch)=>{

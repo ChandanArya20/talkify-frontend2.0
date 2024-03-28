@@ -409,7 +409,7 @@ function HomePage() {
                                     className="flex-1"
                                     onClick={() => handleCurrentChatClick(chat)}
                                 >
-                                { [1,2,3,4,5,6].map((item)=><ChatCardSkeleton key={item}/>) }
+                                { [1,2,3,4,5,6,7,8,9,10,11,12].map((item)=><ChatCardSkeleton key={item}/>) }
                                 </div>
                             ) : (
                                 filteredChats.map((chat) => (

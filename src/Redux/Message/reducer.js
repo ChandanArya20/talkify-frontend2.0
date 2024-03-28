@@ -14,7 +14,7 @@ export const messageReducer = (state = initialState, { type, payload }) => {
             return { ...state, messages: [...messages, payload], sentMessage: payload };
 
         case SET_NEW_MESSAGES:
-            return { ...state, messages: [...messages, ...payload] };
+            return { ...state, messages: [...state.messages, ...payload] };
 
         case SET_ALL_MESSAGES:
             return { ...state, messages: [...payload] };
@@ -23,7 +23,6 @@ export const messageReducer = (state = initialState, { type, payload }) => {
             return { ...state, messages: [...payload.messages, payload.newMessage], newMessage: payload.newMessage };
 
         case DELETE_SELECTED_MESSAGES:
-            console.log(payload);
             return { ...state, messages: [...payload] };
 
         default:
