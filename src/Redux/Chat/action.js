@@ -1,6 +1,7 @@
 import axios from "axios";
 import { BASE_API_URL } from "../../config/api";
 import { CREATE_CHAT, CREATE_GROUP, DELETE_ALL_MESSAGES, DELETE_CHAT, DELETE_SELECTED_MESSAGES_IN_CHAT, GET_USERS_CHAT, UPDATE_MESSAGES_IN_CHAT } from "./actionType";
+import { getCookie, getCookieValue } from "../../Utils/OTPUtils";
 
 // Action to create a single chat
 export const createChat = (participantId) => async(dispatch) => {
@@ -16,6 +17,8 @@ export const createChat = (participantId) => async(dispatch) => {
         console.error(error);
     }
 };
+
+console.log(getCookie("auth-token"));
 
 // Action to create a group chat
 export const createGroupChat = (chatData) => async(dispatch) => {
@@ -35,7 +38,11 @@ export const createGroupChat = (chatData) => async(dispatch) => {
 // Action to fetch all user chats
 export const getUsersChat = () => async(dispatch) => {
    
-    const response = await axios.get(`${BASE_API_URL}/api/chat/all-chat`, { withCredentials: true });
+    const response = await axios.get(`${BASE_API_URL}/api/chat/all-chat`, { 
+        headers:{
+            Authorization:getCookieValue("auth-token"),
+        }
+    });
     const resData = response.data;
     console.log(resData);
     

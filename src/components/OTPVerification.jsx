@@ -4,7 +4,7 @@ import { BASE_API_URL } from "../config/api"
 import { ClipLoader } from "react-spinners"
 import axios from "axios"
 
-const OTPVerification = ({ email, gorForCreatePassword }) => {
+const OTPVerification = ({ email, goForCreatePassword }) => {
     // State variables
     const [loading, setLoading] = useState(false)
     const [OTP, setOTP] = useState("")
@@ -32,7 +32,7 @@ const OTPVerification = ({ email, gorForCreatePassword }) => {
 
             // If OTP is verified
             console.log("OTP verified")
-            gorForCreatePassword()
+            goForCreatePassword()
         } catch (error) {
             console.log(error)
 

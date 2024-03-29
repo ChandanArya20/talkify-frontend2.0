@@ -22,6 +22,7 @@ import { getUsersChat } from "../Redux/Chat/action"
 import axios from "axios"
 import { toast } from "react-toastify"
 import ChatCardSkeleton from "../components/ChatCardSkeleton"
+import { getCookie } from "../Utils/OTPUtils"
 
 function HomePage() {
     const { isAuthenticated, currentUser } = useSelector(
