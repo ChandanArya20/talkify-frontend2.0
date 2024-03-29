@@ -7,6 +7,7 @@ import {
     SET_NEW_MESSAGES,
 } from "./actionType"
 import { BASE_API_URL } from "../../config/api"
+import { getAuthToken } from "../../Utils/OTPUtils"
 
 export const createNewMessage = (messageData) => async (dispatch) => {
     try {
