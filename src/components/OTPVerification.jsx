@@ -26,13 +26,11 @@ const OTPVerification = ({ email, goForCreatePassword }) => {
 
         try {
             const response = await axios.get(
-                `${BASE_API_URL}/api/user/verify-otp?email=${email}&otp=${OTP}`,
-                { withCredentials: true }
-            )
+                `${BASE_API_URL}/api/user/verify-otp?email=${email}&otp=${OTP}`)
 
             // If OTP is verified
-            console.log("OTP verified")
-            goForCreatePassword()
+            console.log("OTP verified with token "+ response.data)
+            goForCreatePassword(response.data)
         } catch (error) {
             console.log(error)
 
@@ -56,9 +54,8 @@ const OTPVerification = ({ email, goForCreatePassword }) => {
     const sendOTP = async (e) => {
         e.preventDefault()
         try {
-            const response = await axios.get(
-                `${BASE_API_URL}/api/user/send-otp?email=${email}`
-            )
+            toast.info("OTP sent to "+email)
+            const response = await axios.get(`${BASE_API_URL}/api/user/send-otp?email=${email}`)
         } catch (error) {
             console.error(error)
         }

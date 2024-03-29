@@ -39,6 +39,7 @@ const Singin = () => {
     const [showForgetPassword, setShowForgetPassword] = useState(false)
     const [showOTPVerification, setShowOTPVerification] = useState(false)
     const [showCreatePassword, setShowCreatePassword] = useState(false)
+    const [token, setToken] = useState(null);
 
     // Redirect to home if already authenticated
     useEffect(() => {
@@ -88,7 +89,8 @@ const Singin = () => {
     }
 
     // Go to create password after OTP verification
-    const goForCreatePassword = () => {
+    const goForCreatePassword = (token) => {
+        setToken(token)
         setShowOTPVerification(false)
         setShowCreatePassword(true)
     }
@@ -126,7 +128,7 @@ const Singin = () => {
                     />
                 )}
                 {showCreatePassword && (
-                    <CreatePassword email={userData.email} />
+                    <CreatePassword email={userData.email} token={token} />
                 )}
 
                 {!showSignup &&

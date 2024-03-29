@@ -88,7 +88,6 @@ function ChatDetails({ chatData, closeChatDetails }) {
     }, [messageList])
 
     useEffect(()=>{
-        console.log("useEffect-SetTimeout");
         setTimeout(()=>{ 
             console.log("SetTimeout");
             setIsLoadingMore(false)
@@ -149,7 +148,7 @@ function ChatDetails({ chatData, closeChatDetails }) {
     useEffect(() => {
         
         const fetchMessagesFromServer = async()=>{
-            console.log("Ram");
+            
             let resData=[];
             try {
                 if (page > 1) {

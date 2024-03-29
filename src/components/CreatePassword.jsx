@@ -7,7 +7,7 @@ import axios from "axios"
 import { useDispatch } from "react-redux"
 import { loginAfterPasswordUpdate } from "../Redux/Auth/action"
 
-const CreatePassword = ({ email }) => {
+const CreatePassword = ({ email, token}) => {
 
     const [loading, setLoading] = useState(false)
     const [password, setPassword] = useState("")
@@ -34,7 +34,11 @@ const CreatePassword = ({ email }) => {
                     email: email,
                     newPassword: password,
                 },
-                { withCredentials: true }
+                { 
+                    headers:{
+                        Authorization:token
+                    } 
+                }
             )
             console.log(response.data)
 

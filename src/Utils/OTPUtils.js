@@ -1,3 +1,14 @@
+
+export function getAuthToken() {
+    
+    const authToken = localStorage.getItem("authToken")
+    if(authToken){
+        return authToken
+    }else{
+        return null
+    }
+}
+
 // Function to get a specific cookie by name
 export function getCookie(name) {
     // Split the cookies string into an array of individual cookies
