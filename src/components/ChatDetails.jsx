@@ -71,6 +71,7 @@ function ChatDetails({ chatData, closeChatDetails }) {
 
     const latestMessagesRef = useRef(messageStore.messages)
     const chatContainerRef = useRef(null)
+    const textMessageInputRef = useRef(null)
 
     const label = { inputProps: { "aria-label": "Checkbox demo" } }
     const [selectedMessages, setSelectedMessages] = useState([])
@@ -79,6 +80,12 @@ function ChatDetails({ chatData, closeChatDetails }) {
     const [previousPage, setPreviousPage] = useState(1)
     const isSmallDevice = window.innerWidth < 640
 
+    const scrollToBottom = () => {
+        if (chatContainerRef.current) {
+            chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight
+        }
+    }
+    
     // Effect to scroll to the bottom when messageList updates
     useEffect(() => {
         scrollToBottom()
@@ -96,12 +103,6 @@ function ChatDetails({ chatData, closeChatDetails }) {
         setTimeout(()=>{ 
             setPage((prevPage) => prevPage + 1);
         }, 1000)
-    }
-
-    const scrollToBottom = () => {
-        if (chatContainerRef.current) {
-            chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight
-        }
     }
 
     // Effect to log selectedMessages
@@ -284,9 +285,7 @@ function ChatDetails({ chatData, closeChatDetails }) {
     const handleSendMessage = () => {
         if (stompClient && isConnect) {
             if (textMessage.trim().length > 0) {
-                stompClient.send(
-                    "/app/message/send",
-                    {},
+                stompClient.send("/app/message/send", {},
                     JSON.stringify({
                         reqUserId: currentUser.id,
                         chatId: chatData.id,
@@ -620,6 +619,7 @@ function ChatDetails({ chatData, closeChatDetails }) {
                                                 key={message.id}
                                                 isReqUserMsg={isReqUserMsg}
                                                 message={message}
+                                                isGroup={chatData.isGroup}
                                             />
                                         </div>
                                     </div>
@@ -714,7 +714,7 @@ function ChatDetails({ chatData, closeChatDetails }) {
                                 <input
                                     type="text"
                                     className="bg-transparent focus:outline-none text-white text-sm w-full p-4"
-                                    placeholder="Search or start new chat"
+                                    placeholder="Type a new message"
                                     value={textMessage}
                                     autoFocus={activeFocus}
                                     onChange={(e) => {
