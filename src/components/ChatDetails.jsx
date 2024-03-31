@@ -260,8 +260,12 @@ function ChatDetails({ chatData, closeChatDetails }) {
             stmClient.connect(headers, onConnect, onError)
 
             return () => {
-                stmClient.disconnect()
+                // Disconnect only if the connection is established
+                if (stmClient && isConnect) {
+                    stmClient.disconnect()
+                }
             }
+            
         } catch (error) {
             console.log(error)
         }

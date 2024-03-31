@@ -54,7 +54,7 @@ export const MessageCard = ({ isReqUserMsg, message }) => {
                     onClick={downloadContent}
                 >
                     <div
-                        className={`w-[70%] md:w-64 p-1 min-h-48 rounded-md flex flex-col space-y-1 ${
+                        className={`w-64 p-1 rounded-md flex flex-col space-y-1 ${
                             isReqUserMsg ? "bg-[#005C4B]" : "bg-[#202C33]"
                         }`}
                     >
