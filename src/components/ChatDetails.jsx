@@ -11,7 +11,6 @@ import { HiMicrophone } from "react-icons/hi2"
 import { useEffect, useRef, useState } from "react"
 import { IoClose, IoDocumentText, IoSend } from "react-icons/io5"
 import MessageCard from "./MessageCard"
-import { useLocation, useNavigate } from "react-router-dom"
 import { useDispatch, useSelector } from "react-redux"
 import {
     addNewMessage,
@@ -43,9 +42,7 @@ import { toast } from "react-toastify"
 import axios from "axios"
 
 function ChatDetails({ chatData, closeChatDetails }) {
-    // Hooks for navigation, location, and dispatch
-    const navigate = useNavigate()
-    const location = useLocation()
+    // Hooks for navigation, and dispatch
     const dispatch = useDispatch()
 
     const [textMessage, setTextMessage] = useState("")
@@ -55,8 +52,7 @@ function ChatDetails({ chatData, closeChatDetails }) {
     const messageStore = useSelector((state) => state.messageStore)
     const { chats } = useSelector((state) => state.chatStore)
 
-    const finalChatData = location.state || chatData
-    const { chatName, chatImage, isGroup, members } = finalChatData
+    const { chatName, chatImage, isGroup, members } = chatData
 
     const chatUser = members?.filter(
         (member) => member.id !== currentUser.id
@@ -71,6 +67,7 @@ function ChatDetails({ chatData, closeChatDetails }) {
     const [showMediaShare, setShowMediaShare] = useState(false)
     const [showCheckbox, setShowCheckbox] = useState(false)
     const [isLoadingMore, setIsLoadingMore] = useState(true)
+    const [activeFocus, setActiveFocus] = useState(false)
 
     const latestMessagesRef = useRef(messageStore.messages)
     const chatContainerRef = useRef(null)
@@ -155,7 +152,7 @@ function ChatDetails({ chatData, closeChatDetails }) {
 
                     setPreviousPage(pre=>pre+1)
     
-                    const response = await axios.get(`${BASE_API_URL}/api/message/${finalChatData.id}?page=${previousPage+1}&size=${10}`, 
+                    const response = await axios.get(`${BASE_API_URL}/api/message/${chatData.id}?page=${previousPage+1}&size=${10}`, 
                     { withCredentials: true })
     
                     resData = response.data
@@ -225,17 +222,17 @@ function ChatDetails({ chatData, closeChatDetails }) {
         setShowSearchMessages(false)
         setShowMediaShare(false)
         handleClose()
-    }, [finalChatData.id])
+    }, [chatData.id])
 
-    // Effect to log finalChatData
+    // Effect to log chatData
     useEffect(() => {
-        console.log(finalChatData)
-    }, [finalChatData.id])
+        console.log(chatData)
+    }, [chatData.id])
 
-    // Effect to set all messages of the finalChatData
+    // Effect to set all messages of the chatData
     useEffect(() => {
-        dispatch(setAllMessages(finalChatData.messages))
-    }, [finalChatData.id])
+        dispatch(setAllMessages(chatData.messages))
+    }, [chatData.id])
 
     // Effect to set messageList and update latestMessagesRef
     useEffect(() => {
@@ -288,7 +285,7 @@ function ChatDetails({ chatData, closeChatDetails }) {
                     {},
                     JSON.stringify({
                         reqUserId: currentUser.id,
-                        chatId: finalChatData.id,
+                        chatId: chatData.id,
                         textMessage: textMessage,
                     })
                 )
@@ -297,24 +294,25 @@ function ChatDetails({ chatData, closeChatDetails }) {
         setTextMessage("")
         setShowEmoji(false)
         setShowContentShare(false)
+        setActiveFocus(true)
     }
 
     useEffect(() => {
         let subscription
 
         if (stompClient && isConnect) {
-            // subscription = stompClient.subscribe("/topic/messages" + finalChatData.id.toString(),
+            // subscription = stompClient.subscribe("/topic/messages" + chatData.id.toString(),
             //     onChatMessagesRecieve);
 
             // stompClient.send("/app/chat/messages",{},
             //     JSON.stringify({
             //         reqUserId: currentUser.id,
-            //         chatId: finalChatData.id,
+            //         chatId: chatData.id,
             //     })
             // );
 
             subscription = stompClient.subscribe(
-                "/topic/message" + finalChatData.id.toString(),
+                "/topic/message" + chatData.id.toString(),
                 onMessageRecieve
             )
         }
@@ -325,7 +323,7 @@ function ChatDetails({ chatData, closeChatDetails }) {
                 subscription.unsubscribe()
             }
         }
-    }, [stompClient, isConnect, finalChatData.id])
+    }, [stompClient, isConnect, chatData.id])
 
     // Callback function for receiving messages
     const onMessageRecieve = (response) => {
@@ -334,7 +332,7 @@ function ChatDetails({ chatData, closeChatDetails }) {
         const latestMessages = latestMessagesRef.current
 
         dispatch(addNewMessage(latestMessages, newMessage))
-        dispatch(updateMessageInChat(chats, finalChatData.id, newMessage))
+        dispatch(updateMessageInChat(chats, chatData.id, newMessage))
     }
 
     // const onChatMessagesRecieve = (response) => {
@@ -352,13 +350,13 @@ function ChatDetails({ chatData, closeChatDetails }) {
 
     // Function to handle chat deletion
     const handleDeleteChat = () => {
-        dispatch(deleteChat(chats, finalChatData.id))
+        dispatch(deleteChat(chats, chatData.id))
         closeChatDetails()
     }
 
     // Function to delete all messages of the chat
     const deleteAllMessagesOfChat = () => {
-        dispatch(deleteALLMessagesByChatId(chats, finalChatData.id))
+        dispatch(deleteALLMessagesByChatId(chats, chatData.id))
         messageStore.messages = []
         handleClose()
     }
@@ -398,7 +396,7 @@ function ChatDetails({ chatData, closeChatDetails }) {
             deleteSelecetdMessagesByChatId(
                 chats,
                 selectedMessages,
-                finalChatData.id
+                chatData.id
             )
         )
     }
@@ -444,9 +442,9 @@ function ChatDetails({ chatData, closeChatDetails }) {
             {showContactInfo && (
                 <ContactInfo
                     closeContactInfo={closeContactInfo}
-                    chat={finalChatData}
+                    chat={chatData}
                     chatUser={chatUser}
-                    CurrentChatId={finalChatData.id}
+                    CurrentChatId={chatData.id}
                     closeChatDetails={closeChatDetails}
                 />
             )}
@@ -462,7 +460,7 @@ function ChatDetails({ chatData, closeChatDetails }) {
             {showMediaShare && (
                 <MultiMediaShare
                     selectedFiles={selectedFiles}
-                    chatId={finalChatData.id}
+                    chatId={chatData.id}
                     closeMediaShare={closeMediaShare}
                 />
             )}
@@ -478,7 +476,7 @@ function ChatDetails({ chatData, closeChatDetails }) {
                                 {window.innerWidth < 640 && (
                                     <IoMdArrowBack
                                         className="cursor-pointer text-2xl text-gray-400"
-                                        onClick={() => navigate(-1)}
+                                        onClick={closeChatDetails}
                                     />
                                 )}
 
@@ -503,8 +501,8 @@ function ChatDetails({ chatData, closeChatDetails }) {
                                         {isGroup ? chatName : chatUser.name}
                                     </p>
                                     <p className="text-gray-400 text-sm">
-                                        {finalChatData.isGroup
-                                            ? `${finalChatData.members.length} members`
+                                        {chatData.isGroup
+                                            ? `${chatData.members.length} members`
                                             : "last seen"}
                                     </p>
                                 </div>
@@ -537,7 +535,7 @@ function ChatDetails({ chatData, closeChatDetails }) {
                                                 setShowContactInfo(true)
                                             }
                                         >
-                                            {finalChatData.isGroup
+                                            {chatData.isGroup
                                                 ? "Group info"
                                                 : "Chat info"}
                                         </MenuItem>
@@ -550,24 +548,27 @@ function ChatDetails({ chatData, closeChatDetails }) {
                                                 Select messages
                                             </MenuItem>
                                         )}
-                                        {window.innerWidth > 640 && (
-                                            <MenuItem
-                                                onClick={closeChatDetails}
-                                            >
-                                                Close chat
-                                            </MenuItem>
-                                        )}
+                                       
+                                        <MenuItem
+                                            onClick={closeChatDetails}
+                                        >
+                                            Close chat
+                                        </MenuItem>
+                                        
                                         <MenuItem onClick={handleClose}>
                                             Mute notifications
                                         </MenuItem>
+
                                         <MenuItem
                                             onClick={deleteAllMessagesOfChat}
                                         >
                                             Clear chat
                                         </MenuItem>
+
                                         <MenuItem onClick={handleDeleteChat}>
                                             Delete chat
                                         </MenuItem>
+
                                         <MenuItem>Block</MenuItem>
                                     </Menu>
                                 </div>
@@ -711,6 +712,7 @@ function ChatDetails({ chatData, closeChatDetails }) {
                                     className="bg-transparent focus:outline-none text-white text-sm w-full p-4"
                                     placeholder="Search or start new chat"
                                     value={textMessage}
+                                    autoFocus={activeFocus}
                                     onChange={(e) => {
                                         setTextMessage(e.target.value)
                                     }}
@@ -734,7 +736,7 @@ function ChatDetails({ chatData, closeChatDetails }) {
                                 )}
                             </div>
                             {showEmoji && (
-                                <div className="absolute top-20">
+                                <div className="absolute top-32 md:top-20">
                                     <Picker
                                         data={data}
                                         onEmojiSelect={addEmoji}

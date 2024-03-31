@@ -62,7 +62,7 @@ const CreateGroup = ({ closeOpenCreateGroup }) => {
         <>
             {!isNewGroup ? (
                 // If not creating a new group, display group creation interface
-                <div className="flex w-full h-full flex-col justify-between">
+                <div className="flex w-full h-[100dvh] flex-col justify-between">
                     {/* Group header */}
                     <div className="w-full h-14 md:h-28 bg-[#222e35] ">
                         <div className="w-full h-full flex flex-col justify-center md:justify-end">

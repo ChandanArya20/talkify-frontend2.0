@@ -33,7 +33,7 @@ const Status = ({ closeOpenStatus }) => {
     };
 
     return (
-        <div className="flex flex-col">
+        <div className="flex flex-col h-[100dvh]">
             {/* Status header */}
             <div className="w-full md:w-[40%] fixed top-0 z-50">
                 <div className="w-full h-14 md:h-28 bg-[#222e35da] ">
@@ -52,8 +52,8 @@ const Status = ({ closeOpenStatus }) => {
                 </div>
             </div>
 
-            {/* User statuses */}
-            <div className="mt-[140px] md:mt-[200px] w-full overflow-y-auto h-[65vh] ">
+            {/* User status */}
+            <div className="mt-[140px] md:mt-[200px] flex-1 w-full overflow-y-auto h-[65vh] ">
                 <div>
                     <p className="text-base text-[#216b5d] p-8">RECENT</p>
                 </div>

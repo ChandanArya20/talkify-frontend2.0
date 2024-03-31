@@ -54,6 +54,7 @@ function HomePage() {
     const [showCheckbox, setShowCheckbox] = useState(false)
     const [anchorEl, setAnchorEl] = useState(null)
     const open = Boolean(anchorEl)
+    const isSmallDevice = window.innerWidth < 640
 
     // Function to handle opening the dropdown menu
     const handleClick = (event) => {
@@ -194,12 +195,7 @@ function HomePage() {
             return
         }
         setSelectedChat(chat)
-        // Navigate to chat details on small devices, otherwise set the current chat
-        if (window.innerWidth < 640) {
-            navigate("/chat-details", { state: chat })
-        } else {
-            setCurrentChat(true)
-        }
+        setCurrentChat(true)
     }
 
     // Function to handle clicking on the user's profile
@@ -264,266 +260,331 @@ function HomePage() {
     }
 
     return (
-        <div className="w-full h-screen bg-[#222E35] flex overflow-hidden">
-            {/* Left Section */}
-            <div className="w-[100%] md:w-[40%] bg-[#111B21] relative">
-                {isProfile && <Profile closeOpenProfile={closeOpenProfile} />}
-                {isStatus && <Status closeOpenStatus={closeOpenStatus} />}
-                {isGroup && (
-                    <CreateGroup closeOpenCreateGroup={closeOpenCreateGroup} />
-                )}
-                {isAddNewUser && (
-                    <AddNewUser
-                        closeAddNewUserSection={closeAddNewUserSection}
-                    />
-                )}
+        <>
+            {isSmallDevice && currentChat ? (
+                <ChatDetails
+                    chatData={selectedChat}
+                    closeChatDetails={closeChatDetails}
+                />
+            ) : (
+                //Home Page starting
+                <div className="w-full h-screen bg-[#222E35] flex overflow-hidden">
+                    {/* Left Section */}
+                    <div className="w-[100%] md:w-[40%] bg-[#111B21] relative">
+                        {isProfile && (
+                            <Profile closeOpenProfile={closeOpenProfile} />
+                        )}
+                        {isStatus && (
+                            <Status closeOpenStatus={closeOpenStatus} />
+                        )}
+                        {isGroup && (
+                            <CreateGroup
+                                closeOpenCreateGroup={closeOpenCreateGroup}
+                            />
+                        )}
+                        {isAddNewUser && (
+                            <AddNewUser
+                                closeAddNewUserSection={closeAddNewUserSection}
+                            />
+                        )}
 
-                {!isProfile && !isStatus && !isGroup && !isAddNewUser && (
-                    <>
-                        {/* Header */}
-                        <div className="h-14 bg-[#222e35da] flex items-center">
-                            <div className="w-[95%] mx-auto flex justify-between">
-                                <div
-                                    className="w-10 h-10 rounded-full bg-white cursor-pointer"
-                                    onClick={handleProfileClick}
-                                >
-                                    <img
-                                        className=" w-full h-full rounded-full object-cover"
-                                        src={
-                                            currentUser?.profileImage ||
-                                            DefaultUser
-                                        }
-                                        alt=""
+                        {!isProfile &&
+                            !isStatus &&
+                            !isGroup &&
+                            !isAddNewUser && (
+                                <>
+                                    {/* Header */}
+                                    <div className="h-14 bg-[#222e35da] flex items-center">
+                                        <div className="w-[95%] mx-auto flex justify-between">
+                                            <div
+                                                className="w-10 h-10 rounded-full bg-white cursor-pointer"
+                                                onClick={handleProfileClick}
+                                            >
+                                                <img
+                                                    className=" w-full h-full rounded-full object-cover"
+                                                    src={
+                                                        currentUser?.profileImage ||
+                                                        DefaultUser
+                                                    }
+                                                    alt=""
+                                                />
+                                            </div>
+                                            <div className="flex space-x-7 text-2xl my-auto text-gray-400">
+                                                <FaPeopleGroup
+                                                    className="cursor-pointer"
+                                                    onClick={() =>
+                                                        setIsGroup(true)
+                                                    }
+                                                />
+                                                <PiCircleDashedBold
+                                                    className="cursor-pointer"
+                                                    onClick={() =>
+                                                        setIsStatus(true)
+                                                    }
+                                                />
+                                                {/* <RiWechat2Line className="cursor-pointer" /> */}
+                                                <RiChatNewLine
+                                                    className="cursor-pointer"
+                                                    onClick={() =>
+                                                        setIsAddNewUser(true)
+                                                    }
+                                                />
+                                                <div>
+                                                    <BiDotsVerticalRounded
+                                                        className="cursor-pointer"
+                                                        onClick={handleClick}
+                                                    />
+                                                    <Menu
+                                                        id="basic-menu"
+                                                        anchorEl={anchorEl}
+                                                        open={open}
+                                                        onClose={handleClose}
+                                                        MenuListProps={{
+                                                            "aria-labelledby":
+                                                                "basic-button",
+                                                        }}
+                                                    >
+                                                        <MenuItem
+                                                            onClick={
+                                                                handleCreateGroup
+                                                            }
+                                                        >
+                                                            New group
+                                                        </MenuItem>
+                                                        {/* <MenuItem onClick={handleClose}>
+                                                New community
+                                            </MenuItem> */}
+                                                        <MenuItem
+                                                            onClick={
+                                                                handleClose
+                                                            }
+                                                        >
+                                                            Starred messages
+                                                        </MenuItem>
+                                                        {!showCheckbox && (
+                                                            <MenuItem
+                                                                onClick={
+                                                                    handleSelectChatClick
+                                                                }
+                                                            >
+                                                                Select Chats
+                                                            </MenuItem>
+                                                        )}
+                                                        <MenuItem
+                                                            onClick={
+                                                                handleClose
+                                                            }
+                                                        >
+                                                            Settings
+                                                        </MenuItem>
+                                                        <MenuItem
+                                                            onClick={
+                                                                handleLogout
+                                                            }
+                                                        >
+                                                            Log out
+                                                        </MenuItem>
+                                                    </Menu>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {/* Search Bar */}
+                                    <div className="ml-3 mt-2 flex items-center">
+                                        <div className="w-[87%] md:w-[92%] h-9 rounded-lg flex justify-items-start items-center space-x-4 md:space-x-6 bg-[#202C33]">
+                                            <div className="w-12 h-12 ml-1 flex items-center justify-center">
+                                                {!isSearchClicked ? (
+                                                    <IoIosSearch
+                                                        className="text-gray-400 text-xl cursor-pointer"
+                                                        onClick={() =>
+                                                            setIsSearchClicked(
+                                                                true
+                                                            )
+                                                        }
+                                                    />
+                                                ) : (
+                                                    <IoMdArrowBack
+                                                        className="text-[#00A884] text-2xl cursor-pointer"
+                                                        onClick={() =>
+                                                            setIsSearchClicked(
+                                                                false
+                                                            )
+                                                        }
+                                                    />
+                                                )}
+                                            </div>
+                                            <input
+                                                type="text"
+                                                className="bg-transparent focus:outline-none text-white text-sm w-full"
+                                                placeholder="Search or start new chat"
+                                                autoFocus={isSearchClicked}
+                                                onChange={(e) => {
+                                                    setQuery(e.target.value)
+                                                    handleSearch(e.target.value)
+                                                }}
+                                                onClick={() =>
+                                                    setIsSearchClicked(true)
+                                                }
+                                            />
+                                        </div>
+                                        <div
+                                            className={`m-auto w-8 h-8 md:w-6 md:h-6 rounded-full flex items-center justify-center ${
+                                                isFilterClicked
+                                                    ? "bg-[#00A884]"
+                                                    : ""
+                                            }`}
+                                            onClick={handleFilterClick}
+                                        >
+                                            <IoFilter
+                                                className={`text-xl md:text-base cursor-pointer ${
+                                                    isFilterClicked
+                                                        ? "text-white"
+                                                        : "text-gray-400"
+                                                }`}
+                                            />
+                                        </div>
+                                    </div>
+                                    {/* Chat Cards */}
+                                    <div className="w-full h-[83vh] ml-3 mt-2 overflow-y-scroll pb-5 pr-4">
+                                        {!isAllChatsArrived ? (
+                                            <div className="flex-1">
+                                                {[
+                                                    1, 2, 3, 4, 5, 6, 7, 8, 9,
+                                                    10, 11, 12,
+                                                ].map((item) => (
+                                                    <ChatCardSkeleton
+                                                        key={item}
+                                                    />
+                                                ))}
+                                            </div>
+                                        ) : (
+                                            filteredChats.map((chat) => (
+                                                <div
+                                                    className="flex"
+                                                    key={chat.id}
+                                                >
+                                                    {showCheckbox && (
+                                                        <Checkbox
+                                                            {...label}
+                                                            style={{
+                                                                color: "green",
+                                                            }}
+                                                            size="small"
+                                                            onClick={() =>
+                                                                handleSelectChat(
+                                                                    chat
+                                                                )
+                                                            }
+                                                        />
+                                                    )}
+                                                    <div
+                                                        className="flex-1"
+                                                        onClick={() =>
+                                                            handleCurrentChatClick(
+                                                                chat
+                                                            )
+                                                        }
+                                                    >
+                                                        <ChatCard
+                                                            {...chat}
+                                                            selectedChatId={
+                                                                selectedChat?.id
+                                                            }
+                                                        />
+                                                    </div>
+                                                </div>
+                                            ))
+                                        )}
+                                    </div>
+                                </>
+                            )}
+
+                        {showCheckbox && (
+                            <div className=" bg-[#1F2B32] w-full h-14 flex items-center justify-between absolute top-14 z-200 px-5">
+                                <div className="flex space-x-5">
+                                    <IoClose
+                                        className="text-gray-400 text-2xl cursor-pointer"
+                                        onClick={handleCloseChatSelected}
                                     />
+                                    <p className="text-gray-300">{`${selectedChats.length} selected`}</p>
                                 </div>
-                                <div className="flex space-x-7 text-2xl my-auto text-gray-400">
-                                    <FaPeopleGroup
-                                        className="cursor-pointer"
-                                        onClick={() => setIsGroup(true)}
-                                    />
-                                    <PiCircleDashedBold
-                                        className="cursor-pointer"
-                                        onClick={() => setIsStatus(true)}
-                                    />
-                                    {/* <RiWechat2Line className="cursor-pointer" /> */}
-                                    <RiChatNewLine
-                                        className="cursor-pointer"
-                                        onClick={() => setIsAddNewUser(true)}
-                                    />
+                                {selectedChats.length > 0 && (
                                     <div>
-                                        <BiDotsVerticalRounded
-                                            className="cursor-pointer"
-                                            onClick={handleClick}
-                                        />
+                                        <div className="text-gray-400 text-xl rotate-90">
+                                            <BiDotsVerticalRounded
+                                                className="cursor-pointer"
+                                                onClick={handleClick2}
+                                            />
+                                        </div>
                                         <Menu
                                             id="basic-menu"
-                                            anchorEl={anchorEl}
-                                            open={open}
-                                            onClose={handleClose}
+                                            anchorEl={anchorE2}
+                                            open={open2}
+                                            onClose={handleClose2}
                                             MenuListProps={{
                                                 "aria-labelledby":
                                                     "basic-button",
                                             }}
                                         >
-                                            <MenuItem
-                                                onClick={handleCreateGroup}
-                                            >
-                                                New group
+                                            <MenuItem onClick={handleClose2}>
+                                                Mark as unread
                                             </MenuItem>
-                                            {/* <MenuItem onClick={handleClose}>
-                                                New community
-                                            </MenuItem> */}
-                                            <MenuItem onClick={handleClose}>
-                                                Starred messages
-                                            </MenuItem>
-                                            {!showCheckbox && (
-                                                <MenuItem
-                                                    onClick={
-                                                        handleSelectChatClick
-                                                    }
-                                                >
-                                                    Select Chats
-                                                </MenuItem>
-                                            )}
-                                            <MenuItem onClick={handleClose}>
-                                                Settings
-                                            </MenuItem>
-                                            <MenuItem onClick={handleLogout}>
-                                                Log out
+                                            <MenuItem onClick={handleClose2}>
+                                                Mute notifications
                                             </MenuItem>
                                         </Menu>
                                     </div>
-                                </div>
-                            </div>
-                        </div>
-                        {/* Search Bar */}
-                        <div className="ml-3 mt-2 flex items-center">
-                            <div className="w-[87%] md:w-[92%] h-9 rounded-lg flex justify-items-start items-center space-x-4 md:space-x-6 bg-[#202C33]">
-                                <div className="w-12 h-12 ml-1 flex items-center justify-center">
-                                    {!isSearchClicked ? (
-                                        <IoIosSearch
-                                            className="text-gray-400 text-xl cursor-pointer"
-                                            onClick={() =>
-                                                setIsSearchClicked(true)
-                                            }
-                                        />
-                                    ) : (
-                                        <IoMdArrowBack
-                                            className="text-[#00A884] text-2xl cursor-pointer"
-                                            onClick={() =>
-                                                setIsSearchClicked(false)
-                                            }
-                                        />
-                                    )}
-                                </div>
-                                <input
-                                    type="text"
-                                    className="bg-transparent focus:outline-none text-white text-sm w-full"
-                                    placeholder="Search or start new chat"
-                                    autoFocus={isSearchClicked}
-                                    onChange={(e) => {
-                                        setQuery(e.target.value)
-                                        handleSearch(e.target.value)
-                                    }}
-                                    onClick={() => setIsSearchClicked(true)}
-                                />
-                            </div>
-                            <div
-                                className={`m-auto w-8 h-8 md:w-6 md:h-6 rounded-full flex items-center justify-center ${
-                                    isFilterClicked ? "bg-[#00A884]" : ""
-                                }`}
-                                onClick={handleFilterClick}
-                            >
-                                <IoFilter
-                                    className={`text-xl md:text-base cursor-pointer ${
-                                        isFilterClicked
-                                            ? "text-white"
-                                            : "text-gray-400"
-                                    }`}
-                                />
-                            </div>
-                        </div>
-                        {/* Chat Cards */}
-                        <div className="w-full h-[83vh] ml-3 mt-2 overflow-y-scroll pb-5 pr-4">
-                            {!isAllChatsArrived ? (
-                                <div
-                                    className="flex-1"
-                                    onClick={() => handleCurrentChatClick(chat)}
-                                >
-                                { [1,2,3,4,5,6,7,8,9,10,11,12].map((item)=><ChatCardSkeleton key={item}/>) }
-                                </div>
-                            ) : (
-                                filteredChats.map((chat) => (
-                                    <div className="flex" key={chat.id}>
-                                        {showCheckbox && (
-                                            <Checkbox
-                                                {...label}
-                                                style={{ color: "green" }}
-                                                size="small"
-                                                onClick={() =>
-                                                    handleSelectChat(chat)
-                                                }
-                                            />
-                                        )}
-                                        <div
-                                            className="flex-1"
-                                            onClick={() =>
-                                                handleCurrentChatClick(chat)
-                                            }
-                                        >
-                                            <ChatCard
-                                                {...chat}
-                                                selectedChatId={
-                                                    selectedChat?.id
-                                                }
-                                            />
-                                        </div>
-                                    </div>
-                                ))
-                            )}
-                        </div>
-                    </>
-                )}
-
-                {showCheckbox && (
-                    <div className=" bg-[#1F2B32] w-full h-14 flex items-center justify-between absolute top-14 z-200 px-5">
-                        <div className="flex space-x-5">
-                            <IoClose
-                                className="text-gray-400 text-2xl cursor-pointer"
-                                onClick={handleCloseChatSelected}
-                            />
-                            <p className="text-gray-300">{`${selectedChats.length} selected`}</p>
-                        </div>
-                        {selectedChats.length > 0 && (
-                            <div>
-                                <div className="text-gray-400 text-xl rotate-90">
-                                    <BiDotsVerticalRounded
-                                        className="cursor-pointer"
-                                        onClick={handleClick2}
-                                    />
-                                </div>
-                                <Menu
-                                    id="basic-menu"
-                                    anchorEl={anchorE2}
-                                    open={open2}
-                                    onClose={handleClose2}
-                                    MenuListProps={{
-                                        "aria-labelledby": "basic-button",
-                                    }}
-                                >
-                                    <MenuItem onClick={handleClose2}>
-                                        Mark as unread
-                                    </MenuItem>
-                                    <MenuItem onClick={handleClose2}>
-                                        Mute notifications
-                                    </MenuItem>
-                                </Menu>
+                                )}
                             </div>
                         )}
                     </div>
-                )}
-            </div>
 
-            {/* Right Section */}
-            <div className="hidden md:flex md:w-[60%] border-l-2 border-slate-800">
-                {currentChat ? (
-                    <ChatDetails
-                        chatData={selectedChat}
-                        closeChatDetails={closeChatDetails}
-                    />
-                ) : (
-                    <div className="w-full h-screen flex flex-col items-center justify-center">
-                        {/* Image */}
-                        <div className="w-[270px]">
-                            <img
-                                className="w-full rounded-md bg-slate-700"
-                                src={HomePageImage}
-                                alt=""
+                    {/* Right Section */}
+                    <div className="hidden md:flex md:w-[60%] border-l-2 border-slate-800">
+                        {currentChat ? (
+                            <ChatDetails
+                                chatData={selectedChat}
+                                closeChatDetails={closeChatDetails}
                             />
-                            <div className="flex flex-col items-center relative bottom-7">
-                                <img src={applogo} className="w-16" alt="" />
-                                <h1 className="text-[#864AF9] text-2xl font-bold">
-                                    Talkify
-                                </h1>
+                        ) : (
+                            <div className="w-full h-screen flex flex-col items-center justify-center">
+                                {/* Image */}
+                                <div className="w-[270px]">
+                                    <img
+                                        className="w-full rounded-md bg-slate-700"
+                                        src={HomePageImage}
+                                        alt=""
+                                    />
+                                    <div className="flex flex-col items-center relative bottom-7">
+                                        <img
+                                            src={applogo}
+                                            className="w-16"
+                                            alt=""
+                                        />
+                                        <h1 className="text-[#864AF9] text-2xl font-bold">
+                                            Talkify
+                                        </h1>
+                                    </div>
+                                </div>
+                                {/* Text Content */}
+                                <div className="text-white text-center space-y-5">
+                                    <h1 className="text-4xl text-gray-200">
+                                        Connect With Your Loved Ones
+                                    </h1>
+                                    <p className="text-sm text-gray-400">
+                                        Connect with your loved ones
+                                        effortlessly. Stay in touch, <br />
+                                        share moments, and create lasting
+                                        memories. Whether near or far, <br />
+                                        bring your conversations.
+                                    </p>
+                                </div>
                             </div>
-                        </div>
-                        {/* Text Content */}
-                        <div className="text-white text-center space-y-5">
-                            <h1 className="text-4xl text-gray-200">
-                                Connect With Your Loved Ones
-                            </h1>
-                            <p className="text-sm text-gray-400">
-                                Connect with your loved ones effortlessly. Stay
-                                in touch, <br />
-                                share moments, and create lasting memories.
-                                Whether near or far, <br />
-                                bring your conversations.
-                            </p>
-                        </div>
+                        )}
                     </div>
-                )}
-            </div>
-        </div>
+                </div>
+            )}
+        </>
     )
 }
 
