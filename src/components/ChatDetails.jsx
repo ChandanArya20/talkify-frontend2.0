@@ -463,6 +463,7 @@ function ChatDetails({ chatData, closeChatDetails }) {
             {showMediaShare && (
                 <MultiMediaShare
                     selectedFiles={selectedFiles}
+                    setSelectedFiles={setSelectedFiles}
                     chatId={chatData.id}
                     closeMediaShare={closeMediaShare}
                 />

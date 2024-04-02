@@ -11,7 +11,7 @@ import { createNewMessage } from "../Redux/Message/action"
 import { toast } from "react-toastify"
 import { PulseLoader } from "react-spinners"
 
-const MultiMediaShare = ({ selectedFiles, chatId, closeMediaShare }) => {
+const MultiMediaShare = ({ selectedFiles, setSelectedFiles, chatId, closeMediaShare }) => {
     
     const [mediaFiles, setMediaFiles] = useState([])
     const [message, setMessage] = useState("")
@@ -30,6 +30,16 @@ const MultiMediaShare = ({ selectedFiles, chatId, closeMediaShare }) => {
     useEffect(() => {
         setSelectedMedia(mediaFiles[mediaFiles.length - 1])
     }, [mediaFiles])
+
+    useEffect(()=>{
+        console.log(mediaFiles);
+    },[mediaFiles])
+
+    useEffect(()=>{
+        console.log(selectedMedia);
+    },[selectedMedia])
+
+    console.log(selectedFiles);
 
     const sendMessage = async () => {
         setLoading(true)
@@ -60,6 +70,7 @@ const MultiMediaShare = ({ selectedFiles, chatId, closeMediaShare }) => {
         setMessage("")
         setMediaFiles([])
         setSelectedMedia(null)
+        setSelectedFiles([])
         closeMediaShare()
 
         setLoading(false)
