@@ -1,3 +1,5 @@
+import sockjs from "sockjs-client/dist/sockjs"
+import Stomp from "stompjs"
 import { PiCircleDashedBold } from "react-icons/pi"
 import { RiChatNewLine } from "react-icons/ri"
 import { BiDotsVerticalRounded } from "react-icons/bi"
@@ -6,7 +8,7 @@ import { IoIosSearch, IoMdArrowBack } from "react-icons/io"
 import { IoClose, IoFilter } from "react-icons/io5"
 import DefaultUser from "../assets/default-user.png"
 import ChatCard from "../components/ChatCard"
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import ChatDetails from "../components/ChatDetails"
 import Profile from "../components/Profile"
 import { useNavigate } from "react-router-dom"
@@ -18,16 +20,17 @@ import AddNewUser from "../components/AddNewUser"
 import HomePageImage from "../assets/login-image.png"
 import { useDispatch, useSelector } from "react-redux"
 import { logout } from "../Redux/Auth/action"
-import { getUsersChat } from "../Redux/Chat/action"
+import { getUsersChat, updateMessageInChat } from "../Redux/Chat/action"
 import axios from "axios"
 import { toast } from "react-toastify"
 import ChatCardSkeleton from "../components/ChatCardSkeleton"
-import { getCookie } from "../Utils/OTPUtils"
+import { BASE_API_URL } from "../config/api"
+import { getAuthToken } from "../Utils/tokenUtils"
+import { addNewMessage } from "../Redux/Message/action"
 
 function HomePage() {
-    const { isAuthenticated, currentUser } = useSelector(
-        (state) => state.userStore
-    )
+
+    const { isAuthenticated, currentUser } = useSelector((state) => state.userStore)
     const navigate = useNavigate()
 
     useEffect(() => {
@@ -55,6 +58,74 @@ function HomePage() {
     const [anchorEl, setAnchorEl] = useState(null)
     const open = Boolean(anchorEl)
     const isSmallDevice = window.innerWidth < 640
+    const [stompClient, setStompClient] = useState()
+    const [isConnect, setIsConnect] = useState(false)
+
+    useEffect(() => {
+        try {
+            // Create a new Stomp client and connect to the WebSocket
+            const socket = new sockjs(BASE_API_URL + "/websocket")
+            const stmClient = Stomp.over(socket)
+            setStompClient(stmClient)
+
+            // Attach the authentication token to the WebSocket headers
+            const authToken = getAuthToken()
+            const headers = { Authorization: authToken }
+
+            stmClient.connect(headers, onConnect, onError)
+
+            return () => {
+                // Disconnect only if the connection is established
+                if (stmClient && isConnect) {
+                    stmClient.disconnect()
+                }
+            }
+            
+        } catch (error) {
+            console.log(error)
+        }
+
+    }, [])
+
+    // Callback function for connection success
+    const onConnect = (response) => {
+        setIsConnect(true)
+    }
+
+    // Callback function for connection error
+    const onError = (error) => {
+        console.log(error)
+    }
+
+    useEffect(() => {
+        let subscription
+
+        if (stompClient && isConnect) {
+
+            chats.forEach((chat)=>{
+
+                subscription = stompClient.subscribe("/topic/message" + chat.id.toString(),
+                    onMessageRecieve
+                )
+            })
+        }
+
+        // Cleanup subscription when stompClient or isConnect changes or when the component unmounts
+        return () => {
+            if (subscription) {
+                subscription.unsubscribe()
+            }
+        }
+    }, [stompClient, isConnect, chats.length])
+
+    // Callback function for receiving messages
+    const onMessageRecieve = (response) => {
+        const newMessage = JSON.parse(response.body)
+        console.log("Received Message: ", newMessage)
+
+        dispatch(addNewMessage(newMessage))
+        dispatch(updateMessageInChat(chats, newMessage))
+    }
 
     // Function to handle opening the dropdown menu
     const handleClick = (event) => {
@@ -138,13 +209,8 @@ function HomePage() {
     }
 
     useEffect(() => {
-        console.log(chats)
         rearrangeChats()
     }, [chats])
-
-    useEffect(() => {
-        console.log(filteredChats)
-    }, [filteredChats])
 
     // Function to filter chats based on the search query
     const handleSearch = (query) => {
@@ -264,6 +330,8 @@ function HomePage() {
             {isSmallDevice && currentChat ? (
                 <ChatDetails
                     chatData={selectedChat}
+                    stompClient={stompClient}
+                    isConnect={isConnect}
                     closeChatDetails={closeChatDetails}
                 />
             ) : (
@@ -544,6 +612,8 @@ function HomePage() {
                         {currentChat ? (
                             <ChatDetails
                                 chatData={selectedChat}
+                                stompClient={stompClient}
+                                isConnect={isConnect}
                                 closeChatDetails={closeChatDetails}
                             />
                         ) : (

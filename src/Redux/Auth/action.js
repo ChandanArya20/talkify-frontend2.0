@@ -9,7 +9,7 @@ import {
     SEARCH_USERID,
     UPDATE_USER,
 } from "./actionType"
-import { getAuthToken } from "../../Utils/OTPUtils"
+import { getAuthToken } from "../../Utils/tokenUtils"
 
 // Action to register a new user
 export const register = (userData) => async (dispatch) => {

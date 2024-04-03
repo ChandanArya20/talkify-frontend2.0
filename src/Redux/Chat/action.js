@@ -9,7 +9,7 @@ import {
     GET_USERS_CHAT,
     UPDATE_MESSAGES_IN_CHAT,
 } from "./actionType"
-import { getAuthToken } from "../../Utils/OTPUtils"
+import { getAuthToken } from "../../Utils/tokenUtils"
 
 // Action to create a single chat
 export const createChat = (participantId) => async (dispatch) => {
@@ -62,10 +62,11 @@ export const getUsersChat = () => async (dispatch) => {
 }
 
 // Action to update messages in a chat
-export const updateMessageInChat = (chats, chatId, newMessage) => {
+export const updateMessageInChat = (chats, newMessage) => {
+   
     // Find the chat by its ID and update its messages with the new message
-    const Chat = chats.filter((chat) => chat.id === chatId)[0]
-    const remainingChats = chats.filter((chat) => chat.id !== chatId)
+    const Chat = chats.filter((chat) => chat.id === newMessage.chatId)[0]
+    const remainingChats = chats.filter((chat) => chat.id !== newMessage.chatId)
 
     // Add new message to chat
     Chat.messages = [...Chat.messages, newMessage]
@@ -94,8 +95,7 @@ export const deleteChat = (chats, chatId) => async (dispatch) => {
 }
 
 // Action to delete all messages in a chat
-export const deleteALLMessagesByChatId =
-    (chats, chatId) => async (dispatch) => {
+export const deleteALLMessagesByChatId = (chats, chatId) => async (dispatch) => {
         try {
             const response = await axios.delete(`${BASE_API_URL}/api/message/delete-all/${chatId}`,{
                 headers: {
@@ -117,8 +117,7 @@ export const deleteALLMessagesByChatId =
     }
 
 // Action to delete selected messages in a chat
-export const deleteSelecetdMessagesByChatId =
-    (chats, selectedMessages, chatId) => async (dispatch) => {
+export const deleteSelecetdMessagesByChatId = (chats, selectedMessages, chatId) => async (dispatch) => {
         const messageIds = selectedMessages.map((message) => message.id)
         try {
             const response = await axios.delete(`${BASE_API_URL}/api/message/delete/${chatId}`,{ 

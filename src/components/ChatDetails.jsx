@@ -13,21 +13,16 @@ import { IoClose, IoDocumentText, IoSend } from "react-icons/io5"
 import MessageCard from "./MessageCard"
 import { useDispatch, useSelector } from "react-redux"
 import {
-    addNewMessage,
     deleteSelectedMessages,
     setAllMessages,
     setNextPageMessagesFromServer,
 } from "../Redux/Message/action"
 import DefaultUser from "../assets/default-user.png"
 import DefaultGroup from "../assets/default-group.png"
-import sockjs, { log } from "sockjs-client/dist/sockjs"
-import Stomp from "stompjs"
-import { BASE_API_URL } from "../config/api"
 import {
     deleteALLMessagesByChatId,
     deleteChat,
     deleteSelecetdMessagesByChatId,
-    updateMessageInChat,
 } from "../Redux/Chat/action"
 import data from "@emoji-mart/data"
 import Picker from "@emoji-mart/react"
@@ -39,9 +34,8 @@ import ContactInfo from "./ContactInfo"
 import SearchMessages from "./SearchMessages"
 import MultiMediaShare from "./MultiMediaShare"
 import { toast } from "react-toastify"
-import axios from "axios"
 
-function ChatDetails({ chatData, closeChatDetails }) {
+function ChatDetails({ chatData, stompClient, isConnect, closeChatDetails }) {
     // Hooks for navigation, and dispatch
     const dispatch = useDispatch()
 
@@ -58,8 +52,6 @@ function ChatDetails({ chatData, closeChatDetails }) {
         (member) => member.id !== currentUser.id
     )[0]
 
-    const [stompClient, setStompClient] = useState()
-    const [isConnect, setIsConnect] = useState(false)
     const [showEmoji, setShowEmoji] = useState(false)
     const [showContentShare, setShowContentShare] = useState(false)
     const [showContactInfo, setShowContactInfo] = useState(false)
@@ -71,7 +63,6 @@ function ChatDetails({ chatData, closeChatDetails }) {
 
     const latestMessagesRef = useRef(messageStore.messages)
     const chatContainerRef = useRef(null)
-    const textMessageInputRef = useRef(null)
 
     const label = { inputProps: { "aria-label": "Checkbox demo" } }
     const [selectedMessages, setSelectedMessages] = useState([])
@@ -143,43 +134,39 @@ function ChatDetails({ chatData, closeChatDetails }) {
 
     // }, [isLoadingMore])
 
-    useEffect(() => {
+    // useEffect(() => {
         
-        const fetchMessagesFromServer = async()=>{
+    //     const fetchMessagesFromServer = async()=>{
             
-            let resData=[];
-            try {
-                if (page > 1) {
+    //         let resData=[];
+    //         try {
+    //             if (page > 1) {
 
-                    setPreviousPage(pre=>pre+1)
+    //                 setPreviousPage(pre=>pre+1)
     
-                    const response = await axios.get(`${BASE_API_URL}/api/message/${chatData.id}?page=${previousPage+1}&size=${10}`, 
-                    { withCredentials: true })
+    //                 const response = await axios.get(`${BASE_API_URL}/api/message/${chatData.id}?page=${previousPage+1}&size=${10}`, 
+    //                 { withCredentials: true })
     
-                    resData = response.data
-                    console.log(resData)
+    //                 resData = response.data
+    //                 console.log(resData)
                        
-                    if (resData.length === 0) {
-                        chatContainerRef.current.removeEventListener("scroll", handleScroll)
-                    } else {
-                        dispatch(setNextPageMessagesFromServer(resData))
-                    }
-                }
-            } catch (error) {
-                console.log(error)
-            } finally{
-                if (resData.length > 0) {
-                    setIsLoadingMore(false)
-                }
-            }
-        }
+    //                 if (resData.length === 0) {
+    //                     chatContainerRef.current.removeEventListener("scroll", handleScroll)
+    //                 } else {
+    //                     dispatch(setNextPageMessagesFromServer(resData))
+    //                 }
+    //             }
+    //         } catch (error) {
+    //             console.log(error)
+    //         } finally{
+    //             if (resData.length > 0) {
+    //                 setIsLoadingMore(false)
+    //             }
+    //         }
+    //     }
 
-        fetchMessagesFromServer()
-    }, [page])
-
-    useEffect(()=>{
-        console.log(page);
-    },[page])
+    //     fetchMessagesFromServer()
+    // }, [page])
 
     // Function to add an emoji to the text message
     const addEmoji = (emoji) => {
@@ -247,42 +234,8 @@ function ChatDetails({ chatData, closeChatDetails }) {
         console.log(messageList)
     }, [messageList])
 
-    useEffect(() => {
-        try {
-            // Create a new Stomp client and connect to the WebSocket
-            const socket = new sockjs(BASE_API_URL + "/websocket")
-            const stmClient = Stomp.over(socket)
-            setStompClient(stmClient)
-
-            // Attach the authentication token to the WebSocket headers
-            const authToken = "0f6f9cde-c100-4684-b2fd-d79cd31e396a" // Implement a function to retrieve the authentication token
-            const headers = { Authorization: authToken }
-
-            stmClient.connect(headers, onConnect, onError)
-
-            return () => {
-                // Disconnect only if the connection is established
-                if (stmClient && isConnect) {
-                    stmClient.disconnect()
-                }
-            }
-            
-        } catch (error) {
-            console.log(error)
-        }
-    }, [])
-
-    // Callback function for connection success
-    const onConnect = (response) => {
-        setIsConnect(true)
-    }
-
-    // Callback function for connection error
-    const onError = (error) => {
-        console.log(error)
-    }
-
     const handleSendMessage = () => {
+
         if (stompClient && isConnect) {
             if (textMessage.trim().length > 0) {
                 stompClient.send("/app/message/send", {},
@@ -299,51 +252,6 @@ function ChatDetails({ chatData, closeChatDetails }) {
         setShowContentShare(false)
         setActiveFocus(true)
     }
-
-    useEffect(() => {
-        let subscription
-
-        if (stompClient && isConnect) {
-            // subscription = stompClient.subscribe("/topic/messages" + chatData.id.toString(),
-            //     onChatMessagesRecieve);
-
-            // stompClient.send("/app/chat/messages",{},
-            //     JSON.stringify({
-            //         reqUserId: currentUser.id,
-            //         chatId: chatData.id,
-            //     })
-            // );
-
-            subscription = stompClient.subscribe(
-                "/topic/message" + chatData.id.toString(),
-                onMessageRecieve
-            )
-        }
-
-        // Cleanup subscription when stompClient or isConnect changes or when the component unmounts
-        return () => {
-            if (subscription) {
-                subscription.unsubscribe()
-            }
-        }
-    }, [stompClient, isConnect, chatData.id])
-
-    // Callback function for receiving messages
-    const onMessageRecieve = (response) => {
-        const newMessage = JSON.parse(response.body)
-        console.log("Received Message: ", newMessage)
-        const latestMessages = latestMessagesRef.current
-
-        dispatch(addNewMessage(latestMessages, newMessage))
-        dispatch(updateMessageInChat(chats, chatData.id, newMessage))
-    }
-
-    // const onChatMessagesRecieve = (response) => {
-    //     const messages = JSON.parse(response.body);
-    //     console.log("Recieved Messages : ", messages);
-
-    //     dispatch(setAllMessages(messages));
-    // };
 
     // Function to close contact info
     const closeContactInfo = () => {
@@ -590,7 +498,7 @@ function ChatDetails({ chatData, closeChatDetails }) {
                             {/* Render each message */}
                             {messageList.map((message) => {
                                 const isReqUserMsg =
-                                    message.createdBy.id === currentUser.id
+                                    message.createdBy?.id === currentUser.id
 
                                 return (
                                     <div

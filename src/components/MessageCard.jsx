@@ -4,6 +4,9 @@ import { BiDownload } from "react-icons/bi"
 import { IoCheckmarkOutline } from "react-icons/io5"
 
 export const MessageCard = ({ isReqUserMsg, message, isGroup }) => {
+
+    // console.log(message)
+
     // Function to download content
     const downloadContent = () => {
         // Create a temporary link element
