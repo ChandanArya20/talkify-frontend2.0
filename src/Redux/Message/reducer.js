@@ -14,7 +14,7 @@ export const messageReducer = (state = initialState, { type, payload }) => {
             return { ...state, messages: [...messages, payload], sentMessage: payload };
 
         case SET_NEW_MESSAGES:
-            return { ...state, messages: [...state.messages, ...payload] };
+            return { ...state, messages: [...payload, ...state.messages] };
 
         case SET_ALL_MESSAGES:
             return { ...state, messages: [...payload] };

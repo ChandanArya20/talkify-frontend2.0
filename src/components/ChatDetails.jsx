@@ -34,6 +34,9 @@ import ContactInfo from "./ContactInfo"
 import SearchMessages from "./SearchMessages"
 import MultiMediaShare from "./MultiMediaShare"
 import { toast } from "react-toastify"
+import axios from "axios"
+import { BASE_API_URL } from "../config/api"
+import { getAuthToken, getCookieValue } from "../Utils/tokenUtils"
 
 function ChatDetails({ chatData, stompClient, isConnect, closeChatDetails }) {
     // Hooks for navigation, and dispatch
@@ -68,7 +71,6 @@ function ChatDetails({ chatData, stompClient, isConnect, closeChatDetails }) {
     const [selectedMessages, setSelectedMessages] = useState([])
     const [selectedFiles, setSelectedFiles] = useState([])
     const [page, setPage] = useState(1)
-    const [previousPage, setPreviousPage] = useState(1)
     const isSmallDevice = window.innerWidth < 640
 
     const scrollToBottom = () => {
@@ -76,53 +78,39 @@ function ChatDetails({ chatData, stompClient, isConnect, closeChatDetails }) {
             chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight
         }
     }
+
+    useEffect(()=>{
+        setPage(1)
+    },[chatData.id])
     
     // Effect to scroll to the bottom when messageList updates
     useEffect(() => {
         scrollToBottom()
     }, [messageList])
 
-    useEffect(()=>{
-        setTimeout(()=>{ 
-            console.log("SetTimeout");
-            setIsLoadingMore(false)
-        }, 1000) 
-    },[])
+    // useEffect(()=>{
+    //     setTimeout(()=>{ 
+    //         setIsLoadingMore(false)
+    //     }, 1000) 
+    // },[chatData.id])
 
-    const changePageNumber = ()=>{
-        console.log("changePageNumber");
-        setTimeout(()=>{ 
-            setPage((prevPage) => prevPage + 1);
-        }, 1000)
-    }
+    // useEffect(()=>{
+    //     console.log(page);
+    // },[page])
 
-    // Effect to log selectedMessages
-    useEffect(() => {
-        console.log(selectedMessages)
-    }, [selectedMessages])
-
-    const handleScroll = () => {
-        console.log("handleScroll");
-        console.log(page);
-        console.log(isLoadingMore);
-        const chatContainer = chatContainerRef.current;
-    
-        // Calculate how far the user has scrolled from the bottom
-        const scrollDistanceFromBottom = chatContainer.scrollHeight - chatContainer.clientHeight - chatContainer.scrollTop;
-        console.log(scrollDistanceFromBottom);
-
-        // Calculate 70% of the container height
-        const seventyPercentOfContainerHeight = 0.7 * chatContainer.scrollHeight;
-        console.log(seventyPercentOfContainerHeight);
-    
-        // Check if the user has scrolled 70% from the bottom
-        if (!isLoadingMore && scrollDistanceFromBottom <= seventyPercentOfContainerHeight) {
-            console.log("Condition for changing page");
-            changePageNumber()
-            setIsLoadingMore(true);
-        }
-    }
-    
+    // function handleScroll() {
+    //     const chatContainer = chatContainerRef.current;
+       
+    //     if (chatContainer) {
+    //         const { scrollTop, scrollHeight, clientHeight } = chatContainer;
+    //         const isNearTop = scrollTop <= 10; // Adjust threshold as needed
+        
+    //         if (isNearTop && !isLoadingMore) {
+    //             setIsLoadingMore(true)
+    //             setPage((prevPage) => prevPage + 1)
+    //         }
+    //     }
+    // }
 
     // useEffect(() => {    
 
@@ -139,13 +127,16 @@ function ChatDetails({ chatData, stompClient, isConnect, closeChatDetails }) {
     //     const fetchMessagesFromServer = async()=>{
             
     //         let resData=[];
+        
     //         try {
     //             if (page > 1) {
-
-    //                 setPreviousPage(pre=>pre+1)
     
-    //                 const response = await axios.get(`${BASE_API_URL}/api/message/${chatData.id}?page=${previousPage+1}&size=${10}`, 
-    //                 { withCredentials: true })
+    //                 const response = await axios.get(`${BASE_API_URL}/api/message/${chatData.id}?page=${page}&size=${10}`, 
+    //                 {
+    //                     headers:{
+    //                         Authorization:getAuthToken()
+    //                     }
+    //                 })
     
     //                 resData = response.data
     //                 console.log(resData)
@@ -154,14 +145,11 @@ function ChatDetails({ chatData, stompClient, isConnect, closeChatDetails }) {
     //                     chatContainerRef.current.removeEventListener("scroll", handleScroll)
     //                 } else {
     //                     dispatch(setNextPageMessagesFromServer(resData))
+    //                     setIsLoadingMore(false)
     //                 }
     //             }
     //         } catch (error) {
     //             console.log(error)
-    //         } finally{
-    //             if (resData.length > 0) {
-    //                 setIsLoadingMore(false)
-    //             }
     //         }
     //     }
 
@@ -212,11 +200,6 @@ function ChatDetails({ chatData, stompClient, isConnect, closeChatDetails }) {
         handleClose()
     }, [chatData.id])
 
-    // Effect to log chatData
-    useEffect(() => {
-        console.log(chatData)
-    }, [chatData.id])
-
     // Effect to set all messages of the chatData
     useEffect(() => {
         dispatch(setAllMessages(chatData.messages))
@@ -227,12 +210,6 @@ function ChatDetails({ chatData, stompClient, isConnect, closeChatDetails }) {
         setMessageList(messageStore.messages)
         latestMessagesRef.current = messageStore.messages
     }, [messageStore.messages])
-
-    // Effect to log messageList and messageStore.messages
-    useEffect(() => {
-        console.log(messageStore.messages)
-        console.log(messageList)
-    }, [messageList])
 
     const handleSendMessage = () => {
 
