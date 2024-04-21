@@ -2,6 +2,7 @@ import React from "react"
 import DefaultFile from "../assets/defaultFileIcon.png"
 import { BiDownload } from "react-icons/bi"
 import { IoCheckmarkOutline } from "react-icons/io5"
+import formatMessageTiming from "../Utils/dateFormatter.js"
 
 export const MessageCard = ({ isReqUserMsg, message, isGroup }) => {
 
@@ -43,7 +44,7 @@ export const MessageCard = ({ isReqUserMsg, message, isGroup }) => {
                                 <div className="flex items-center space-x-1 mt-2">
                                     {/* Message timestamp */}
                                     <p className="text-xs text-gray-300 text-nowrap">
-                                        {message.creationTime}
+                                        {formatMessageTiming(message.creationTime)}
                                     </p>
                                     {/* Checkmark icon for sent messages */}
                                     {isReqUserMsg && (
@@ -77,7 +78,7 @@ export const MessageCard = ({ isReqUserMsg, message, isGroup }) => {
                                     {/* Message timestamp */}
                                     <div className="flex items-center space-x-1 mt-2">
                                         <p className="text-xs text-gray-300 text-nowrap">
-                                            {message.creationTime}
+                                            {formatMessageTiming(message.creationTime)}
                                         </p>
                                         {/* Checkmark icon for sent messages */}
                                         {isReqUserMsg && (
@@ -109,7 +110,7 @@ export const MessageCard = ({ isReqUserMsg, message, isGroup }) => {
                                     {/* Message timestamp */}
                                     <div className="flex items-center space-x-1 mt-2">
                                         <p className="text-xs text-gray-300 text-nowrap">
-                                            {message.creationTime}
+                                            {formatMessageTiming(message.creationTime)}
                                         </p>
                                         {/* Checkmark icon for sent messages */}
                                         {isReqUserMsg && (
@@ -141,7 +142,7 @@ export const MessageCard = ({ isReqUserMsg, message, isGroup }) => {
                                     {/* Message timestamp */}
                                     <div className="flex items-center space-x-1 mt-2">
                                         <p className="text-xs text-gray-300 text-nowrap">
-                                            {message.creationTime}
+                                            {formatMessageTiming(message.creationTime)}
                                         </p>
                                         {/* Checkmark icon for sent messages */}
                                         {isReqUserMsg && (
@@ -215,7 +216,7 @@ export const MessageCard = ({ isReqUserMsg, message, isGroup }) => {
                                         {/* Message timestamp */}
                                         <div className="flex items-center space-x-1 mt-2">
                                             <p className="text-xs text-gray-300 text-nowrap">
-                                                {message.creationTime}
+                                                {formatMessageTiming(message.creationTime)}
                                             </p>
                                             {/* Checkmark icon for sent messages */}
                                             {isReqUserMsg && (
@@ -248,7 +249,7 @@ export const MessageCard = ({ isReqUserMsg, message, isGroup }) => {
                                 <div className="flex items-center space-x-1 mt-2">
                                     {/* Message timestamp */}
                                     <p className="text-xs text-gray-300 text-nowrap">
-                                        {message.creationTime}
+                                        {formatMessageTiming(message.creationTime)}
                                     </p>
                                     {/* Checkmark icon for sent messages */}
                                     {isReqUserMsg && (
@@ -283,7 +284,7 @@ export const MessageCard = ({ isReqUserMsg, message, isGroup }) => {
                                     {/* Message timestamp */}
                                     <div className="flex items-center space-x-1 mt-2">
                                         <p className="text-xs text-gray-300 text-nowrap">
-                                            {message.creationTime}
+                                            {formatMessageTiming(message.creationTime)}
                                         </p>
                                         {/* Checkmark icon for sent messages */}
                                         {isReqUserMsg && (
@@ -316,7 +317,7 @@ export const MessageCard = ({ isReqUserMsg, message, isGroup }) => {
                                     {/* Message timestamp */}
                                     <div className="flex items-center space-x-1 mt-2">
                                         <p className="text-xs text-gray-300 text-nowrap">
-                                            {message.creationTime}
+                                            {formatMessageTiming(message.creationTime)}
                                         </p>
                                         {/* Checkmark icon for sent messages */}
                                         {isReqUserMsg && (
@@ -349,7 +350,7 @@ export const MessageCard = ({ isReqUserMsg, message, isGroup }) => {
                                     {/* Message timestamp */}
                                     <div className="flex items-center space-x-1 mt-2">
                                         <p className="text-xs text-gray-300 text-nowrap">
-                                            {message.creationTime}
+                                            {formatMessageTiming(message.creationTime)}
                                         </p>
                                         {/* Checkmark icon for sent messages */}
                                         {isReqUserMsg && (
@@ -424,7 +425,7 @@ export const MessageCard = ({ isReqUserMsg, message, isGroup }) => {
                                         {/* Message timestamp */}
                                         <div className="flex items-center space-x-1 mt-2">
                                             <p className="text-xs text-gray-300 text-nowrap">
-                                                {message.creationTime}
+                                                {formatMessageTiming(message.creationTime)}
                                             </p>
                                             {/* Checkmark icon for sent messages */}
                                             {isReqUserMsg && (

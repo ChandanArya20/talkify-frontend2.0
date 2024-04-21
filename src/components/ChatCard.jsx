@@ -5,6 +5,7 @@ import DefaultGroup from "../assets/default-group.png"
 import { MdInsertPhoto } from "react-icons/md"
 import { BiSolidVideo } from "react-icons/bi"
 import { IoDocumentText } from "react-icons/io5"
+import formatMessageTiming from "../Utils/dateFormatter.js"
 
 function ChatCard({id, chatName, chatImage, isGroup, members, messages, selectedChatId}) {
 
@@ -147,7 +148,7 @@ function ChatCard({id, chatName, chatImage, isGroup, members, messages, selected
                                 : "text-gray-400"
                         } text-xs`}
                     >
-                        {lastMessage?.creationTime}
+                        {formatMessageTiming(lastMessage?.creationTime)}
                     </p>
                 </div>
                 {newMessages > 0 && (

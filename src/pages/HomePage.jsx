@@ -61,6 +61,10 @@ function HomePage() {
     const [stompClient, setStompClient] = useState()
     const [isConnect, setIsConnect] = useState(false)
 
+    useEffect(()=>{
+        console.log(chats);
+    },[chats])
+
     useEffect(() => {
         try {
             // Create a new Stomp client and connect to the WebSocket
