@@ -16,7 +16,7 @@ export const createChat = (participantId) => async (dispatch) => {
     try {
         // Send a request to the server to create a single chat with the specified participant
         const response = await axios.post(
-            `${BASE_API_URL}/api/chat/single?participantId=${participantId}`,{},{
+            `${BASE_API_URL}/api/chat?participantId=${participantId}`,{},{
                 headers: {
                     Authorization: getAuthToken(),
                 },
@@ -34,7 +34,7 @@ export const createChat = (participantId) => async (dispatch) => {
 export const createGroupChat = (chatData) => async (dispatch) => {
     try {
         // Send a request to the server to create a group chat with the specified data
-        const response = await axios.post(`${BASE_API_URL}/api/chat/create-group`,chatData,{
+        const response = await axios.post(`${BASE_API_URL}/api/chat/group`,chatData,{
             headers: {
                 Authorization: getAuthToken(),
             },
@@ -50,7 +50,7 @@ export const createGroupChat = (chatData) => async (dispatch) => {
 
 // Action to fetch all user chats
 export const getUsersChat = () => async (dispatch) => {
-    const response = await axios.get(`${BASE_API_URL}/api/chat/all-chat`, {
+    const response = await axios.get(`${BASE_API_URL}/api/chat/all`, {
         headers: {
             Authorization: getAuthToken(),
         },
@@ -78,7 +78,7 @@ export const updateMessageInChat = (chats, newMessage) => {
 // Action to delete a chat
 export const deleteChat = (chats, chatId) => async (dispatch) => {
     try {
-        const response = await axios.delete(`${BASE_API_URL}/api/chat/${chatId}/delete`,{
+        const response = await axios.delete(`${BASE_API_URL}/api/chat/${chatId}`,{
             headers: {
                 Authorization: getAuthToken(),
             },
@@ -97,7 +97,7 @@ export const deleteChat = (chats, chatId) => async (dispatch) => {
 // Action to delete all messages in a chat
 export const deleteALLMessagesByChatId = (chats, chatId) => async (dispatch) => {
         try {
-            const response = await axios.delete(`${BASE_API_URL}/api/message/delete-all/${chatId}`,{
+            const response = await axios.delete(`${BASE_API_URL}/api/message/${chatId}/clear`,{
                 headers: {
                     Authorization: getAuthToken(),
                 },
@@ -120,7 +120,7 @@ export const deleteALLMessagesByChatId = (chats, chatId) => async (dispatch) => 
 export const deleteSelecetdMessagesByChatId = (chats, selectedMessages, chatId) => async (dispatch) => {
         const messageIds = selectedMessages.map((message) => message.id)
         try {
-            const response = await axios.delete(`${BASE_API_URL}/api/message/delete/${chatId}`,{ 
+            const response = await axios.delete(`${BASE_API_URL}/api/message/${chatId}/delete`,{ 
                 data: messageIds, 
                 headers:{
                     Authorization:getAuthToken()

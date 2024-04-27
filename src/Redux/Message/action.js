@@ -41,4 +41,4 @@ export const setNextPageMessagesFromServer = (messages) => {
 export const deleteSelectedMessages = (messages, selectedMessages) => async (dispatch) => {
         messages = messages.filter((msg) => !selectedMessages.includes(msg))
         dispatch({ type: DELETE_SELECTED_MESSAGES, payload: messages })
-    }
+}
