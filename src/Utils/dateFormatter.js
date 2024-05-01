@@ -1,8 +1,13 @@
+
 export default function formatMessageTiming(dateString) {
     const date = new Date(dateString);
     const now = new Date();
+
+    console.log(dateString);
     
-    if (isToday(date)) {
+    if(!dateString){
+        return ""
+    }else if (isToday(date)) {
         return formatTime(date);
     } else if (isYesterday(date)) {
         return 'Yesterday';
