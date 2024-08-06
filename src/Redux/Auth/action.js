@@ -7,124 +7,88 @@ import {
     REQ_USER,
     SEARCH_USER,
     SEARCH_USERID,
+    UPDATE_JWT_TOKEN,
     UPDATE_USER,
 } from "./actionType"
-import { getAuthToken } from "../../Utils/tokenUtils"
+import axiosInstance from "../../config/axiosInstance";
 
 // Action to register a new user
 export const register = (userData) => async (dispatch) => {
-    const response = await axios.post(`${BASE_API_URL}/api/user/register`,userData)
+    const response = await axiosInstance.post(`${BASE_API_URL}/api/users/signup`, userData)
     const resData = response.data
 
     // Store user data in local storage and update state
-    localStorage.setItem("user", JSON.stringify(resData.userResponse))
-    localStorage.setItem("authToken", resData.authToken)
+    localStorage.setItem("user", JSON.stringify(resData.user))
+    localStorage.setItem("jwtToken", JSON.stringify(resData.jwtToken))
     localStorage.setItem("isLoggedin", "true")
-    console.log("User registered ", resData)
+    console.log("User logged in ", resData)
 
-    dispatch({ type: REGISTER, payload: {user:resData.userResponse, authToken:resData.authToken} })
+    dispatch({ type: REGISTER, payload: resData })
 }
 
 // Action to log in a user
 export const login = (userData) => async (dispatch) => {
-    const response = await axios.post(`${BASE_API_URL}/api/user/login`, userData)
+    const response = await axiosInstance.post(`${BASE_API_URL}/api/users/login`, userData)
     const resData = response.data
 
     // Store user data in local storage and update state
-    localStorage.setItem("user", JSON.stringify(resData.userResponse))
-    localStorage.setItem("authToken", resData.authToken)
+    localStorage.setItem("user", JSON.stringify(resData.user))
+    localStorage.setItem("jwtToken", JSON.stringify(resData.jwtToken))
     localStorage.setItem("isLoggedin", "true")
     console.log("User logged in ", resData)
 
-    dispatch({ type: LOGIN, payload: {user:resData.userResponse, authToken:resData.authToken}})
+    dispatch({ type: LOGIN, payload: resData })
 }
 
 // Action to log out a user
-export const logout = () => async (dispatch) => {
-    try {
-        // Send logout request to the server
-        const response = await axios.get(`${BASE_API_URL}/api/user/logout`, {
-            headers:{
-                Authorization:getAuthToken()
-            }
-        })
-        console.log("User logged out : ", response.data)
-    } catch (error) {
-        console.log(error)
-    } finally {
-        // Clear local storage and update state
-        localStorage.removeItem("user")
-        localStorage.removeItem("authToken")
-        localStorage.removeItem("isLoggedin")
+export const logout = () => {
+    // Clear local storage and update state
+    localStorage.removeItem("user")
+    localStorage.removeItem("jwtToken")
+    localStorage.removeItem("isLoggedin")
 
-        dispatch({ type: LOGOUT, payload: null })
-    }
+    return { type: LOGOUT, payload: null }
 }
 
 // Action to fetch current user data
 export const currentUser = () => async (dispatch) => {
     try {
-        const response = await axios.get(`${BASE_API_URL}/api/user/profile`, {
-            headers:{
-                Authorization:getAuthToken()
-            }
-        })
+        const response = await axiosInstance.get(`${BASE_API_URL}/api/users/profile`)
         const resData = response.data
-        console.log("User ", resData)
 
+        console.log("User ", resData)
         dispatch({ type: REQ_USER, payload: resData })
     } catch (error) {
         console.log(error)
     }
 }
 
+export const updateJwtToken = (jwtToken) => {
+    return { type: UPDATE_JWT_TOKEN, payload: jwtToken }
+}
+
 // Action to search for users
 export const SearchUser = (query) => async (dispatch) => {
     try {
-        const response = await axios.get(`${BASE_API_URL}/api/user/search-users?query=${query}`,{ 
-            headers:{
-                Authorization:getAuthToken()
-            },
-        })
+        const response = await axiosInstance.get(`${BASE_API_URL}/api/users/search?query=${query}`)
         const resData = response.data
-        console.log("search user ", resData)
 
+        console.log("search user ", resData)
         dispatch({ type: SEARCH_USER, payload: resData })
     } catch (error) {
         console.log(error)
     }
 }
 
-// Action to search for user by ID
-// export const searchUserId = (query) => async (dispatch) => {
-//     try {
-//         const response = await axios.get(`${BASE_API_URL}/api/user/search-users?query=${query}`,
-//         { 
-//             headers:{
-//                 Authorization:getAuthToken()
-//             },
-//         });
-//         const resData = response.data;
-//         console.log("Search user ", resData);
-
-//         dispatch({ type: SEARCH_USERID, payload: resData });
-//     } catch (error) {
-//         console.log(error);
-//     }
-// };
-
 // Action to update user data
 export const updateUser = (userData) => async (dispatch) => {
     try {
-        const response = await axios.post(`${BASE_API_URL}/api/user/update`, userData,{ 
-            headers:{
-                Authorization:getAuthToken()
-            }
-        })
+        const response = await axiosInstance.post(`${BASE_API_URL}/api/users/update`, userData)
         const resData = response.data
-        console.log("Updated user ", resData)
 
+        console.log("Updated user ", resData)
         localStorage.setItem("user", JSON.stringify(resData))
+
         dispatch({ type: UPDATE_USER, payload: resData })
     } catch (error) {
         console.log(error)
@@ -132,13 +96,12 @@ export const updateUser = (userData) => async (dispatch) => {
 }
 
 // Action to log in a user after password update
-export const loginAfterPasswordUpdate = (resData) => async (dispatch) => {
+export const loginAfterPasswordUpdate = (userData) => async (dispatch) => {
     // Update local storage and state with new user data
-
-    localStorage.setItem("user", JSON.stringify(resData.userResponse))
-    localStorage.setItem("authToken", resData.authToken)
+    localStorage.setItem("user", JSON.stringify(userData.user))
+    localStorage.setItem("jwtToken", JSON.stringify(userData.jwtToken))
     localStorage.setItem("isLoggedin", "true")
-    console.log("User logged in ", resData)
+    console.log("User logged in ", userData)
 
-    dispatch({ type: LOGIN, payload: {user:resData.userResponse, authToken:resData.authToken} })
+    dispatch({ type: LOGIN, payload: userData })
 }

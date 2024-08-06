@@ -4,8 +4,9 @@ import { useNavigate } from "react-router-dom"
 import { BASE_API_URL } from "../config/api"
 import { ClipLoader } from "react-spinners"
 import axios from "axios"
-import { useDispatch } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 import { loginAfterPasswordUpdate } from "../Redux/Auth/action"
+import axiosInstance from "../config/axiosInstance";
 
 const CreatePassword = ({ email, token}) => {
 
@@ -14,6 +15,7 @@ const CreatePassword = ({ email, token}) => {
     const [confirmPassword, setConfirmPassword] = useState("")
     const navigate = useNavigate()
     const dispatch = useDispatch()
+    const {jwtToken} = useSelector(store=>store.userStore)
 
     // Function to handle new password creation
     const generateNewPassword = async (e) => {
@@ -29,15 +31,14 @@ const CreatePassword = ({ email, token}) => {
             setLoading(true)
 
             // Make API request to update password
-            const response = await axios.post(`${BASE_API_URL}/api/user/otp-verified/update-password`,
+            const response = await axios.put(`${BASE_API_URL}/api/users/password/update-with-otp`,
                 {
-                    email: email,
-                    newPassword: password,
+                    newPassword: password
                 },
-                { 
+                {
                     headers:{
-                        Authorization:token
-                    } 
+                        Authorization: `Bearer ${jwtToken}`
+                    }
                 }
             )
             console.log(response.data)

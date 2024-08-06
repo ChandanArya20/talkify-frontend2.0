@@ -34,9 +34,6 @@ import ContactInfo from "./ContactInfo"
 import SearchMessages from "./SearchMessages"
 import MultiMediaShare from "./MultiMediaShare"
 import { toast } from "react-toastify"
-import axios from "axios"
-import { BASE_API_URL } from "../config/api"
-import { getAuthToken, getCookieValue } from "../Utils/tokenUtils"
 
 function ChatDetails({ chatData, stompClient, isConnect, closeChatDetails }) {
     // Hooks for navigation, and dispatch
@@ -131,7 +128,7 @@ function ChatDetails({ chatData, stompClient, isConnect, closeChatDetails }) {
     //         try {
     //             if (page > 1) {
     
-    //                 const response = await axios.get(`${BASE_API_URL}/api/message/${chatData.id}?page=${page}&size=${10}`, 
+    //                 const response = await axios.get(`${BASE_API_URL}/api/messages/${chatData.id}?page=${page}&size=${10}`, 
     //                 {
     //                     headers:{
     //                         Authorization:getAuthToken()
@@ -212,9 +209,11 @@ function ChatDetails({ chatData, stompClient, isConnect, closeChatDetails }) {
     }, [messageStore.messages])
 
     const handleSendMessage = () => {
-
+        console.log("strted");
         if (stompClient && isConnect) {
+            console.log("dfghj");
             if (textMessage.trim().length > 0) {
+                console.log("dfghjk");
                 stompClient.send("/app/message/send", {},
                     JSON.stringify({
                         reqUserId: currentUser.id,
@@ -474,8 +473,7 @@ function ChatDetails({ chatData, stompClient, isConnect, closeChatDetails }) {
                             className="flex flex-col space-y-2 p-3 md:p-10 ">
                             {/* Render each message */}
                             {messageList.map((message) => {
-                                const isReqUserMsg =
-                                    message.createdBy?.id === currentUser.id
+                                const isReqUserMsg =message.createdBy?.id === currentUser.id
 
                                 return (
                                     <div

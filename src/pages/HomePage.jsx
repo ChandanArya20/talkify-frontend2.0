@@ -30,7 +30,7 @@ import { addNewMessage } from "../Redux/Message/action"
 
 function HomePage() {
 
-    const { isAuthenticated, currentUser } = useSelector((state) => state.userStore)
+    const { isAuthenticated, currentUser, jwtToken } = useSelector((state) => state.userStore)
     const navigate = useNavigate()
 
     useEffect(() => {
@@ -48,9 +48,7 @@ function HomePage() {
     const [isSearchClicked, setIsSearchClicked] = useState(false)
     const [isAllChatsArrived, setIsAllChatsArrived] = useState(false)
     const dispatch = useDispatch()
-    const { chats, createdChat, createdGroup } = useSelector(
-        (store) => store.chatStore
-    )
+    const { chats, createdChat, createdGroup } = useSelector((store) => store.chatStore)
     const [selectedChats, setSelectedChats] = useState([])
     const [filteredChats, setFilteredChats] = useState([])
     const label = { inputProps: { "aria-label": "Checkbox demo" } }
@@ -74,7 +72,7 @@ function HomePage() {
 
             // Attach the authentication token to the WebSocket headers
             const authToken = getAuthToken()
-            const headers = { Authorization: authToken }
+            const headers = { Authorization: jwtToken }
 
             stmClient.connect(headers, onConnect, onError)
 

@@ -15,7 +15,12 @@ const ForgotPassword = ({ closeForgotPassword, email, setEmail, goForVerificatio
 
         try {
             // Make API call to send OTP
-            const apiCall = fetch(`${BASE_API_URL}/api/user/send-otp?email=${email}`)
+            const apiCall = fetch(`${BASE_API_URL}/api/users/otp/send?email=${email}`, {
+                method:'POST',
+                headers:{
+                    'Content-Type': 'application/json'
+                }
+            })
 
             // Create a promise that resolves after 3 seconds (timeout)
             const timeoutPromise = new Promise((resolve, reject) => {

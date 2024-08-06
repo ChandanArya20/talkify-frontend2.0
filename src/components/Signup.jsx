@@ -15,7 +15,6 @@ const Signup = ({ closeSignup }) => {
     const [user, setUser] = useState({
         name: "",
         email: "",
-        phone: "",
         password: "",
     })
     const [confirmPassword, setConfirmPassword] = useState("")
@@ -100,12 +99,7 @@ const Signup = ({ closeSignup }) => {
                                 onClick={handleBtnClick}
                                 className="px-6 py-2 bg-[#06CF9C] rounded-full text-white uppercase font-medium text-sm"
                             >
-                                {loading ? "Signup..." : "Sign up"}
-                                {loading && (
-                                    <div className="loading-overlay-btn">
-                                        <ClipLoader color="#620c88" />
-                                    </div>
-                                )}
+                               Continue
                             </button>
                         </div>
                     </div>

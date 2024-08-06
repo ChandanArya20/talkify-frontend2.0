@@ -3,12 +3,15 @@ import { toast } from "react-toastify"
 import { BASE_API_URL } from "../config/api"
 import { ClipLoader } from "react-spinners"
 import axios from "axios"
+import { useDispatch } from "react-redux"
+import { updateJwtToken } from "../Redux/Auth/action"
 
 const OTPVerification = ({ email, goForCreatePassword }) => {
     // State variables
     const [loading, setLoading] = useState(false)
     const [OTP, setOTP] = useState("")
     const [showResendOTP, setShowResendOTP] = useState(false)
+    const dispatch = useDispatch()
 
     // useEffect to show resend OTP option after 15 seconds
     useState(() => {
@@ -25,20 +28,19 @@ const OTPVerification = ({ email, goForCreatePassword }) => {
         setLoading(true)
 
         try {
-            const response = await axios.get(
-                `${BASE_API_URL}/api/user/verify-otp?email=${email}&otp=${OTP}`)
+            const response = await axios.post(`${BASE_API_URL}/api/users/otp/verify`, { email, OTP })
 
             // If OTP is verified
-            console.log("OTP verified with token "+ response.data)
-            goForCreatePassword(response.data)
+            dispatch(updateJwtToken(response.data.token))
+            goForCreatePassword()
         } catch (error) {
             console.log(error)
 
             if (axios.isAxiosError(error)) {
                 // Handle specific Axios error cases if needed
-                if (error.response.status === 404) {
+                if (error.response.data.errorCode === 1003) {
                     toast.error("Account not found for this " + email)
-                } else if (error.response.status === 400) {
+                } else if (error.response.data.errorCode === 1013) {
                     toast.error("OTP verification failed...")
                 } else {
                     toast.error("Something went wrong...")
@@ -55,7 +57,7 @@ const OTPVerification = ({ email, goForCreatePassword }) => {
         e.preventDefault()
         try {
             toast.info("OTP sent to "+email)
-            const response = await axios.get(`${BASE_API_URL}/api/user/send-otp?email=${email}`)
+            const response = await axios.post(`${BASE_API_URL}/api/users/otp/send?email=${email}`,{})
         } catch (error) {
             console.error(error)
         }

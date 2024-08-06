@@ -9,6 +9,7 @@ import { toast } from "react-toastify"
 import ForgotPassword from "../components/ForgotPassword"
 import OTPVerification from "../components/OTPVerification"
 import CreatePassword from "../components/CreatePassword"
+import { ClipLoader } from "react-spinners"
 
 const Singin = () => {
     // Redux state selectors
@@ -54,21 +55,23 @@ const Singin = () => {
     // Handle login submission
     const handleLogin = async (e) => {
         e.preventDefault()
+        setLoading(true)
         try {
             await dispatch(login(userData))
         } catch (error) {
             if (axios.isAxiosError(error)) {
                 if(!error.response){
                     toast.error("Server is down, try again later...")
-                } else if (error.response?.status === 404) {
+                } else if (error.response.data.errorCode == 1003) {
                     toast.error("Account not found with this email")
-                } else if (error.response?.status === 401) {
+                } else if (error.response.data.errorCode == 1012) {
                     toast.error("Invalid Password")
                 } else {
                     console.log(error.response?.data)
-                    console.log(error)
                 }
             }
+        } finally{
+            setLoading(false)
         }
     }
 
@@ -175,11 +178,11 @@ const Singin = () => {
                                     Forgot your password?
                                 </p>
                                 <div className="w-full flex justify-center mt-4">
-                                    <button className="px-10 py-2 bg-[#06CF9C] rounded-full text-white uppercase font-medium text-sm">
-                                        {loading ? "Sign in..." : "Sign in"}
+                                    <button className="px-10 py-2 bg-[#06CF9C] rounded-full text-white uppercase font-medium text-sm relative">
+                                        {loading ? "Signin..." : "Sign in"}
                                         {loading && (
-                                            <div className="loading-overlay-btn">
-                                                <ClipLoader color="#620c88" />
+                                            <div className="loading-overlay-btn rounded-full">
+                                                <ClipLoader color="#620c88" size={25} />
                                             </div>
                                         )}
                                     </button>

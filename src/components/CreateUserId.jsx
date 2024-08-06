@@ -12,6 +12,7 @@ const CreateUserId = ({ user, closeCreateUserId }) => {
 
     const [profileLoading, setProfileLoading] = useState(false)
     const [loading, setLoading] = useState(false)
+    const [finishLoading, SetFinishLoading] = useState(false)
     const [userid, setUserId] = useState("")
     const [useridAvailable, setUseridAvailable] = useState(false)
     const [profileImage, setProfileImage] = useState(null)
@@ -33,7 +34,7 @@ const CreateUserId = ({ user, closeCreateUserId }) => {
                 return
             }
             try {
-                const response = await axios.get(`${BASE_API_URL}/api/user/search-userid?query=` + userid)
+                const response = await axios.get(`${BASE_API_URL}/api/users/userid/available?query=` + userid)
                 console.log(response.data)
                 setUseridAvailable(response.data)
                 setLoading(false)
@@ -56,6 +57,7 @@ const CreateUserId = ({ user, closeCreateUserId }) => {
     // Function to handle signup
     const handleSignup = async (e) => {
         e.preventDefault()
+        SetFinishLoading(true)
         try {
             // Dispatch action to register user
             await dispatch(register({ ...user, userid, profileImage }))
@@ -64,12 +66,14 @@ const CreateUserId = ({ user, closeCreateUserId }) => {
             if (axios.isAxiosError(error)) {
                 if(!error.response){
                     toast.error("Server is down, try again later...")
-                } else if (error.response?.status === 409) {
-                    toast.error(error.response.data)
+                } else if (error.response.data.errorCode == 1011) {
+                    toast.error(error.response.data.message)
                 } else {
                     console.log(error.response?.data)
                 }
             }
+        } finally{
+            SetFinishLoading(false)
         }
     }
 
@@ -163,7 +167,12 @@ const CreateUserId = ({ user, closeCreateUserId }) => {
                         className="px-5 py-2 bg-[#379ee2] rounded-full text-gray-100 text-base relative disabled:disabled:cursor-not-allowed"
                         disabled={userid.length < 3 || useridAvailable}
                     >
-                        Finish
+                        {finishLoading ? "Finish..." : "Finish"}
+                        {finishLoading && (
+                            <div className="loading-overlay-btn rounded-full">
+                                <ClipLoader color="#620c88" size={25} />
+                            </div>
+                        )}   
                     </button>
                 </div>
             </form>

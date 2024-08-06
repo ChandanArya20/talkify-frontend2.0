@@ -1,4 +1,3 @@
-import axios from "axios"
 import {
     ADD_NEW_MESSAGE,
     CREATE_NEW_MESSAGE,
@@ -7,15 +6,11 @@ import {
     SET_NEW_MESSAGES,
 } from "./actionType"
 import { BASE_API_URL } from "../../config/api"
-import { getAuthToken } from "../../Utils/tokenUtils"
+import axiosInstance from "../../config/axiosInstance"
 
 export const createNewMessage = (messageData) => async (dispatch) => {
     try {
-        const response = await axios.post(`${BASE_API_URL}/api/message/send`,messageData,{
-            headers:{
-                Authorization:getAuthToken()
-            }
-        })
+        const response = await axiosInstance.post(`${BASE_API_URL}/api/messages`, messageData);
         const resData = response.data
         console.log(resData)
 

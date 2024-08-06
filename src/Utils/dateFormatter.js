@@ -2,8 +2,6 @@
 export default function formatMessageTiming(dateString) {
     const date = new Date(dateString);
     const now = new Date();
-
-    console.log(dateString);
     
     if(!dateString){
         return ""
