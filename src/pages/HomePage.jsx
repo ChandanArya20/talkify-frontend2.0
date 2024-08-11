@@ -34,7 +34,7 @@ function HomePage() {
     const navigate = useNavigate()
 
     useEffect(() => {
-        !isAuthenticated && navigate("/signing")
+        !isAuthenticated && navigate("/signin")
     }, [isAuthenticated])
 
     const [query, setQuery] = useState("")
