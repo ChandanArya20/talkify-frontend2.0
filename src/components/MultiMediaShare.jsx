@@ -31,16 +31,6 @@ const MultiMediaShare = ({ selectedFiles, setSelectedFiles, chatId, closeMediaSh
         setSelectedMedia(mediaFiles[mediaFiles.length - 1])
     }, [mediaFiles])
 
-    useEffect(()=>{
-        console.log(mediaFiles);
-    },[mediaFiles])
-
-    useEffect(()=>{
-        console.log(selectedMedia);
-    },[selectedMedia])
-
-    console.log(selectedFiles);
-
     const sendMessage = async () => {
         setLoading(true)
 

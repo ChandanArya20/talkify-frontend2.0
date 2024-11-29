@@ -49,9 +49,6 @@ export const getUsersChat = () => async (dispatch) => {
 
 // Action to update messages in a chat
 export const updateMessageInChat = (chats, newMessage) => {
-
-    console.log(chats);
-    console.log(newMessage);
    
     // Find the chat by its ID and update its messages with the new message
     const Chat = chats.filter((chat) => chat.id === newMessage.chatId)[0]

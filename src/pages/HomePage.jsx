@@ -106,7 +106,8 @@ function HomePage() {
 
             chats.forEach((chat)=>{
 
-                subscription = stompClient.subscribe("/topic/message" + chat.id.toString(),
+                subscription = stompClient.subscribe(
+                    "/topic/message" + chat.id.toString(),
                     onMessageRecieve
                 )
             })

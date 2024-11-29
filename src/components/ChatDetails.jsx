@@ -209,11 +209,10 @@ function ChatDetails({ chatData, stompClient, isConnect, closeChatDetails }) {
     }, [messageStore.messages])
 
     const handleSendMessage = () => {
-        console.log("strted");
+       
         if (stompClient && isConnect) {
-            console.log("dfghj");
+            
             if (textMessage.trim().length > 0) {
-                console.log("dfghjk");
                 stompClient.send("/app/message/send", {},
                     JSON.stringify({
                         reqUserId: currentUser.id,

@@ -32,7 +32,7 @@ axiosInstance.interceptors.response.use(
     (error) => {
         console.log("Response intercepted")
         const { response } = error
-        if (response && response.data.errorCode === 1005) {
+        if (response && response.data.errorCode === 1005 || response.data.errorCode === 1014) {
             store.dispatch(logout());
             history.push("/signin")
         }

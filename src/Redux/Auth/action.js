@@ -83,7 +83,7 @@ export const SearchUser = (query) => async (dispatch) => {
 // Action to update user data
 export const updateUser = (userData) => async (dispatch) => {
     try {
-        const response = await axiosInstance.post(`${BASE_API_URL}/api/users/update`, userData)
+        const response = await axiosInstance.put(`${BASE_API_URL}/api/users/update`, userData)
         const resData = response.data
 
         console.log("Updated user ", resData)
